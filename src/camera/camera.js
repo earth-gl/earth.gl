@@ -12,30 +12,32 @@
  * const uMatrix = projectionMatrix * viewMatrix * objectMatrix
  */
 
- /**
-  * 矩阵
-  */
-const Mat4 = require('kiwi.matrix').Mat4,
-    Vec3 = require('kiwi.matrix').Vec3,
-    Vec4 = require('kiwi.matrix').Vec4,
-    GLMatrix = require('kiwi.matrix').GLMatrix;
+/**
+ * 矩阵
+ */
+const Mat4 = require('kiwi.matrix').Mat4;
 
+/**
+ * 
+ */
+class Camera {
 
- class Camera{
-
-    constructor(){
+    constructor() {
         /**
-         * 视图矩阵是将所有物体以相反于相机的方向运动
+         * 视角矩阵 
          */
         this._viewMatrix = new Mat4();
         /**
-         * 
+         * 投影矩阵
          */
         this._projectionMatrix = new Mat4();
+        /**
+         * 视角投影矩阵
+         */
+        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
     }
 
+}
 
- }
-
- module.exports = Camera;
+module.exports = Camera;
 
