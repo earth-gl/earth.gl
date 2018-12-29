@@ -5,10 +5,6 @@ const Camera = require('./Camera'),
     Mat4 = require('kiwi.matrix').Mat4,
     Vec3 = require('kiwi.matrix').Vec3,
     GLMatrix = require('kiwi.matrix').GLMatrix;
-/**
- * 辅助计算常量
- */
-const up = new Vec3().set(0, 1, 0);
 
 /**
  * const viewProjectionMatrix = projectionMatrix * viewMatrix * [objectMatrix]
@@ -31,6 +27,7 @@ class PerspectiveCamera extends Camera {
         this._aspect = aspect ? aspect : 1.0;
         this._target = new Vec3().set(0, 0, 0);
         this._position = new Vec3().set(0, 0, 1);
+        this._up = new Vec3().set(0, 1, 0);
         //更新投影矩阵
         this._updateProjectionMatrix();
     }
@@ -85,7 +82,7 @@ class PerspectiveCamera extends Camera {
          * 相机矩阵，这个矩阵代表的是相机在世界坐标中的位置和姿态。
          * https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-3d-camera.html 
          */
-        const cameraMatrix = new Mat4().lookAt(this._position, this._target, up);
+        const cameraMatrix = new Mat4().lookAt(this._position, this._target, this._up);
         /**
          * 视图矩阵是将所有物体以相反于相机的方向运动
          */
