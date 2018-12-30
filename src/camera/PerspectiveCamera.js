@@ -1,10 +1,10 @@
 /**
  * 
  */
-const Camera = require('./Camera'),
-    Mat4 = require('kiwi.matrix').Mat4,
-    Vec3 = require('kiwi.matrix').Vec3,
-    GLMatrix = require('kiwi.matrix').GLMatrix;
+const Camera = require("./Camera"),
+    Mat4 = require("kiwi.matrix").Mat4,
+    Vec3 = require("kiwi.matrix").Vec3,
+    GLMatrix = require("kiwi.matrix").GLMatrix;
 
 /**
  * const viewProjectionMatrix = projectionMatrix * viewMatrix * [objectMatrix]

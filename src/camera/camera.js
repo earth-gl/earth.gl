@@ -15,7 +15,7 @@
 /**
  * 矩阵
  */
-const Mat4 = require('kiwi.matrix').Mat4;
+const Mat4 = require("kiwi.matrix").Mat4;
 
 /**
  * 

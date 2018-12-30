@@ -1,18 +1,15 @@
 {
     "presets": [
         [
-            "es2015",
-            {
-                "modules": false
-            }
+            "@babel/preset-env",
         ]
     ],
     "plugins": [
         //"transform-es2015-modules-commonjs",
-        "external-helpers",
         "transform-class-properties",
         "transform-object-assign",
         "transform-es2015-typeof-symbol",
-        "transform-es2015-template-literals"
+        "transform-es2015-template-literals",
+        [ "import-to-require", { "modules": [ "foo" ] } ]
     ]
 }
