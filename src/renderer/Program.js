@@ -8,17 +8,20 @@ const merge = require("./../utils/merge");
 const PROGRAM_OPTIONS={
     debug:true
 };
+
 /**
- * @clas 
- * 
+ *
+ * @interface Program
+ * @class Program
  */
 class Program {
     /**
-     * 
-     * @param {WebGLRenderingContext} gl 
-     * @param {*} vertexShaderText 
-     * @param {*} fragShaderText 
-     * @param {*} [options] 
+     *Creates an instance of Program.
+     * @param {WebGLRenderingContext} gl
+     * @param {*} vertexShaderText
+     * @param {*} fragShaderText
+     * @param {*} options
+     * @memberof Program
      */
     constructor(gl, vertexShaderText, fragShaderText, options) {
         /**
@@ -44,6 +47,13 @@ class Program {
          * @type {WebGLProgram}
          */
         this._program = this._createProgram();
+    }
+
+    /**
+     * 获取 { AttributeName : AttributeLocation }
+     */
+    get Attributes(){
+        return {};
     }
 
     /**

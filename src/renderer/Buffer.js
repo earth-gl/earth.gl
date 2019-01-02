@@ -1,24 +1,28 @@
-const Program = require("./Program");
-
+/**
+ * @typedef {import("./Program")} Program
+ */
 
 /**
- * 
+ * @module
+ * @export
+ * @class
+ * @example
+ * var buffer = new Buffer();
+ * buffer.bindBuffer();
+ * buffer.bufferData();
  */
 class Buffer {
     /**
-     * 
+     * Creates an instance of Buffer.
      * @param {Program} program 
-     * @param {number} bufferType 
-     * @param {number} attribName 
+     * @param {Number} bufferType 
+     * @param {number} drawType gl.STATIC_DRAW 
      * @param {string} attribName 
+     * @memberof Buffer
      */
     constructor(program, bufferType, drawType, attribName) {
         /**
-         * use program
-         */
-        program.useProgram();
-        /**
-         * 
+         * @type {Program}
          */
         this._program = program;
         /**
@@ -65,13 +69,14 @@ class Buffer {
             gl.bufferData(bufferType, new Float32Array(arr), drawType);
     }
 
-    /**
-     * enable attrib pointer
-     */
-    _vertexAttriPointer(){
-        const program = this._program;
+    // /**
+    //  * enable attrib pointer
+    //  */
+    // _vertexAttriPointer(size,type,normalize,stride,offset){
+    //     const gl = this._gl;
+    //     gl.vertexAttribPointer()
 
-    }
+    // }
 
     _createBuffer() {
         const gl = this._gl;
