@@ -69,14 +69,13 @@ class Buffer {
             gl.bufferData(bufferType, new Float32Array(arr), drawType);
     }
 
-    // /**
-    //  * enable attrib pointer
-    //  */
-    // _vertexAttriPointer(size,type,normalize,stride,offset){
-    //     const gl = this._gl;
-    //     gl.vertexAttribPointer()
-
-    // }
+    /**
+     * enable attrib pointer
+     */
+    _vertexAttriPointer(size,type,normalize,stride,offset){
+        const gl = this._gl;
+        
+    }
 
     _createBuffer() {
         const gl = this._gl;
