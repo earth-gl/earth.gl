@@ -33,6 +33,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.24.1",
     "glfw-raub": "^2.0.1",
+    "glslify": "^7.0.0",
     "install": "^0.12.2",
     "kiwi.matrix": "^0.2.8",
     "npm": "^6.5.0",
@@ -42,5 +43,8 @@
     "rollup-plugin-glslify": "^1.0.7",
     "rollup-plugin-node-resolve": "^4.0.0",
     "webgl-raub": "^1.0.0"
+  },
+  "dependencies": {
+    "glsl-specular-phong": "^1.0.0"
   }
 }

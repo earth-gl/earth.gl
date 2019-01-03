@@ -23,7 +23,6 @@ class PerspectiveCamera extends Camera {
         this._zoom = 1;
         this._near = near ? near : 0.1;
         this._far = far ? far : 2000;
-        this._focus = 10;
         this._aspect = aspect ? aspect : 1.0;
         this._target = new Vec3().set(0, 0, 0);
         this._position = new Vec3().set(0, 0, 1);
@@ -46,6 +45,13 @@ class PerspectiveCamera extends Camera {
     set position(v){
         this._position.set(v[0], v[1], v[2]);
         this._update();
+    }
+
+    /**
+     * 返回identityMatrix，一般用作没有指定的modelMatrix填充
+     */
+    get IdentityMatrix(){
+        return new Mat4().identity().value;
     }
 
     /**

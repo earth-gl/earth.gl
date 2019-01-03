@@ -1,7 +1,7 @@
 /**
  * merge objects
  */
-const merge = require("./../utils/merge");
+const merge = require("../utils/merge");
 /**
  * default program options
  */
@@ -11,7 +11,7 @@ const PROGRAM_OPTIONS = {
 /**
  * @class Program
  */
-class Program {
+class GProgram {
     /**
      * Creates an instance of Program.
      * @param {WebGLRenderingContext} gl
@@ -95,7 +95,8 @@ class Program {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
-        if (options.debug) gl.getShaderInfoLog(shader);
+        if (options.debug) console.log(gl.getShaderInfoLog(shader));
+        return shader;
     }
 
     /**
@@ -110,7 +111,8 @@ class Program {
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
         gl.linkProgram(program);
-        if (options.debug) gl.getProgramInfoLog(program);
+        if (options.debug)  console.log(gl.getProgramInfoLog(program));
+        return program;
     }
 
     /**
@@ -120,23 +122,21 @@ class Program {
      */
     _activate() {
         const gl = this._gl,
-            program = this._program,
-            attribs = this._attribs,
-            uniforms = this._uniforms;
+            program = this._program;
         //attrib
         const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
         for (let i = 0; i < numAttribs; ++i) {
             const info = gl.getActiveAttrib(program, i);
-            attribs[info.name] = { location: i, type: info.type, size: info.size, name: info.name };
+            this._attribs[info.name] = gl.getAttribLocation(program,info.name);
         }
         //uniform
         const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
         for (let i = 0; i < numUniforms; ++i) {
             const info = gl.getActiveUniform(program, i);
-            uniforms[info.name] = { location: i, type: info.type, size: info.size };
+            this._uniforms[info.name] = { location: gl.getUniformLocation(program,info.name) , type: info.type, size: info.size };
         }
     }
 
 }
 
-module.exports = Program;
+module.exports = GProgram;

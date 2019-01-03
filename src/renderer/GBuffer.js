@@ -1,5 +1,5 @@
 /**
- * @typedef {import("./Program")} Program
+ * @typedef {import("./GProgram")} GProgram
  */
 
 /**
@@ -11,18 +11,18 @@
  * buffer.bindBuffer();
  * buffer.bufferData();
  */
-class Buffer {
+class GBuffer {
     /**
      * Creates an instance of Buffer.
-     * @param {Program} program 
-     * @param {Number} bufferType 
+     * @param {GProgram} program 
+     * @param {Number} bufferType gl.ARRAY_BUFFER
      * @param {number} drawType gl.STATIC_DRAW 
-     * @param {string} attribName 
+     * @param {string} attribName "a_position"
      * @memberof Buffer
      */
     constructor(program, bufferType, drawType, attribName) {
         /**
-         * @type {Program}
+         * @type {GProgram}
          */
         this._program = program;
         /**
@@ -45,11 +45,15 @@ class Buffer {
          * @type {String}
          */
         this._attribName = attribName;
+        /**
+         * @type {Number}
+         */
+        this._attribLocation = program.ActivateAttributes[attribName];
     }
 
     /**
      * 
-     * @param {number} type gl.ARRAY_BUFFER
+     * @param {Number} type gl.ARRAY_BUFFER
      */
     bindBuffer() {
         const gl = this._gl,
@@ -66,19 +70,21 @@ class Buffer {
         const gl = this._gl,
             bufferType = this._bufferType,
             drawType = this._drawType;
-        gl.bufferData(bufferType, new Float32Array(arr), drawType);
+        gl.bufferData(bufferType, arr, drawType);
     }
 
     /**
      * turn on the attribute
-     * enable attrib pointer
+     * 制定数据输入方式和输入管道
+     * 关联缓冲区对象和position变量
      */
-    vertexAttriPointer(size, type, normalize, stride, offset) {
+    linkPointerAndPosition(size, type, normalize, stride, offset) {
         const gl = this._gl,
             program = this._program,
             attribName = this._attribName,
-            attribLocation = program.ActivateAttributes[attribName].location;
-        gl.vertexAttribPointer(attribLocation,size,type,normalize,stride,offset);
+            attribLocation = this._attribLocation;
+        gl.vertexAttribPointer(attribLocation, size, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(attribLocation);
     }
 
     /**
@@ -92,4 +98,4 @@ class Buffer {
 
 }
 
-module.exports = Buffer;
+module.exports = GBuffer;
