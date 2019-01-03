@@ -1,5 +1,10 @@
-
-const merge = require("./../utils/merge");
+/**
+ * 用于
+ * 1. 组织earth.gl元素
+ * 2. 管理资源调度
+ * 3. 动态构造和消费数据
+ */
+const merge = require("../utils/merge");
 
 const CONTEXT_OPTIONS = {
     alpha: false,
