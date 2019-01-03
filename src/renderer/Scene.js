@@ -15,7 +15,6 @@ const CONTEXT_OPTIONS = {
  * @class Scene
  */
 class Scene {
-
     /**
      * 
      * @param {Object} [options]

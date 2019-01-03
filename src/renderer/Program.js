@@ -15,9 +15,10 @@ class Program {
     /**
      * Creates an instance of Program.
      * @param {WebGLRenderingContext} gl
-     * @param {*} vertexShaderText
-     * @param {*} fragShaderText
-     * @param {*} options
+     * @param {String} vertexShaderText
+     * @param {String} fragShaderText
+     * @param {Object} [options]
+     * @param {Boolean} [options.debug]
      * @memberof Program
      */
     constructor(gl, vertexShaderText, fragShaderText, options) {
@@ -56,6 +57,22 @@ class Program {
          * activate attributes and uniforms
          */
         this._activate();
+    }
+
+    /**
+     * get activate attributes
+     * @type {Object}
+     */
+    get ActivateAttributes(){
+        return this._attribs;
+    }
+
+    /**
+     * get activate unifroms
+     * @type {Object}
+     */
+    get ActivateUniforms(){
+        return this._uniforms;
     }
 
     /**

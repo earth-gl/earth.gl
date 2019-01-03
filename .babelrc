@@ -5,7 +5,6 @@
         ]
     ],
     "plugins": [
-        //"transform-es2015-modules-commonjs",
         "transform-class-properties",
         "transform-object-assign",
         "transform-es2015-typeof-symbol",

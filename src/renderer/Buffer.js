@@ -44,7 +44,7 @@ class Buffer {
         /**
          * @type {String}
          */
-        this._attribName= attribName;
+        this._attribName = attribName;
     }
 
     /**
@@ -62,21 +62,28 @@ class Buffer {
      * 
      * @param {Array} arr , mat4,vec3...
      */
-    bufferData(arr){
+    bufferData(arr) {
         const gl = this._gl,
             bufferType = this._bufferType,
             drawType = this._drawType;
-            gl.bufferData(bufferType, new Float32Array(arr), drawType);
+        gl.bufferData(bufferType, new Float32Array(arr), drawType);
     }
 
     /**
+     * turn on the attribute
      * enable attrib pointer
      */
-    _vertexAttriPointer(size,type,normalize,stride,offset){
-        const gl = this._gl;
-        
+    vertexAttriPointer(size, type, normalize, stride, offset) {
+        const gl = this._gl,
+            program = this._program,
+            attribName = this._attribName,
+            attribLocation = program.ActivateAttributes[attribName].location;
+        gl.vertexAttribPointer(attribLocation,size,type,normalize,stride,offset);
     }
 
+    /**
+     * 
+     */
     _createBuffer() {
         const gl = this._gl;
         const buffer = gl.createBuffer();

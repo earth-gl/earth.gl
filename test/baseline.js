@@ -1,10 +1,12 @@
-const webgl = require('webgl-raub');
-const { Document } = require('glfw-raub');
+/**
+ * build document environment
+ */
 
-Document.setWebgl(webgl); // plug this WebGL impl into the Document
+const webgl = require("webgl-raub");
+Document.setWebgl(webgl);
 
-const doc = new Document();
-global.document = global.window = doc;
+/**
+ * 
+ */
 
-const canvas = document.createElement('canvas'); // === doc
-const gl = canvas.getContext('webgl'); // === webgl
+ const doc = new Document();
