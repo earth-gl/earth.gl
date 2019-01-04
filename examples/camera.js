@@ -25,7 +25,7 @@ gl.viewport(0, 0, 800, 600);
 var i = 3;
 var x =0;
 var y=0;
-Math.random()
+
 const refresh = function(){
     //i = i+Math.random()*0.01;
     x = x+Math.random()*0.1;
