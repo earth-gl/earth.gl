@@ -48,7 +48,7 @@ class GBuffer {
         /**
          * @type {Number}
          */
-        this._attribLocation = program.ActivateAttributes[attribName];
+        this._attribLocation = !!attribName? program.ActivateAttributes[attribName] : null;
     }
 
     /**

@@ -20,22 +20,18 @@ const program = new GProgram(gl, vertText, fragText);
 program.useProgram();
 const buffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
 buffer.bindBuffer();
-buffer.bufferData(new Float32Array([-0.5, -0.5, 0.0, 0.0, -0.5, 0.0, 0.0, 0.0, 0.0]));
+buffer.bufferData(new Float32Array([-0.5*65535, -0.5*65535, 0.0, 0.0, -0.5*65535, 0.0, 0.0, 0.0, 0.0]));
 buffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
 gl.viewport(0, 0, 800, 600);
 //
 var camera = new PerspectiveCamera(60,800/600,0.01,10);
-camera.position = [0,0,3];
+camera.position = [0,0,1];
 //
 var u_projectionMatrix = new GUniform(program,"u_projectionMatrix");
 var u_viewMatrix = new GUniform(program,"u_viewMatrix");
 var u_modelMatrix = new GUniform(program,"u_modelMatrix");
 //
-var i =3;
-//
 const refresh = function(){
-    i = i+Math.random()*0.0001;
-    camera.position = [0,0,i];
     //
     u_projectionMatrix.assignValue(camera.ProjectionMatrix);
     u_viewMatrix.assignValue(camera.ViewMatrix);
