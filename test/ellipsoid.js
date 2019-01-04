@@ -11,10 +11,6 @@ const screen = new Screen();
 /**
  * 
  */
-const Vec4 = require("kiwi.matrix").Vec4;
-/**
- * 
- */
 const fragText = glslify.file("./../src/shader/glsl-earth-gl-camera-fs.glsl");
 const vertText = glslify.file("./../src/shader/glsl-earth-gl-camera-vs.glsl");
 /**
@@ -37,7 +33,7 @@ buffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
 
 const indexBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
 indexBuffer.bindBuffer();
-indexBuffer.bufferData(new Uint16Array(earthObject._indexs))
+indexBuffer.bufferData(new Uint16Array(earthObject._indexs));
 
 gl.viewport(0, 0, 800, 600);
 //
