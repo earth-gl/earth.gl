@@ -20,7 +20,8 @@ const vertText = glslify.file("./../src/shader/glsl-earth-gl-camera-vs.glsl");
 /**
  * 
  */
-const Ellipsoid = require("../src/core/Ellipsoid");
+const EarthObject = require("../src/scene/Global");
+const earthObject = new EarthObject();
 //vertexPositionData,indexData
 const { vertexPositionData, indexData } = Ellipsoid.WGS84.toGerometry();
 const GProgram = require("../src/renderer/GProgram");
@@ -32,12 +33,12 @@ program.useProgram();
 
 const buffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
 buffer.bindBuffer();
-buffer.bufferData(new Float32Array(vertexPositionData));
+buffer.bufferData(new Float32Array(earthObject._vertices));
 buffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
 
 const indexBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
 indexBuffer.bindBuffer();
-indexBuffer.bufferData(new Uint16Array(indexData))
+indexBuffer.bufferData(new Uint16Array(earthObject._indexs))
 
 gl.viewport(0, 0, 800, 600);
 //
@@ -59,7 +60,7 @@ const refresh = function () {
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT);
     //gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.drawElements(gl.TRIANGLES, indexData.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, earthObject._indexs.length, gl.UNSIGNED_SHORT, 0);
     requestAnimationFrame(refresh);
     screen.draw();
 };
