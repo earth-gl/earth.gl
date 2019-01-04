@@ -22,8 +22,7 @@ const vertText = glslify.file("./../src/shader/glsl-earth-gl-camera-vs.glsl");
  */
 const EarthObject = require("../src/scene/Global");
 const earthObject = new EarthObject();
-//vertexPositionData,indexData
-const { vertexPositionData, indexData } = Ellipsoid.WGS84.toGerometry();
+
 const GProgram = require("../src/renderer/GProgram");
 const GBuffer = require("../src/renderer/GBuffer");
 const GUniform = require("../src/renderer/GUniform");
@@ -43,7 +42,7 @@ indexBuffer.bufferData(new Uint16Array(earthObject._indexs))
 gl.viewport(0, 0, 800, 600);
 //
 var camera = new PerspectiveCamera(60, 800 / 600, 0.01,6356753);
-camera.position = [0, 0, 6356753*2];
+camera.position = [0, 0, 6356753*3];
 camera.lookAt([0, 0, 0]);
 //
 var u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
