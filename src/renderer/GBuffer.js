@@ -48,7 +48,7 @@ class GBuffer {
         /**
          * @type {Number}
          */
-        this._attribLocation = program.ActivateAttributes[attribName];
+        this._attribLocation = !attribName ? null : program.ActivateAttributes[attribName];
     }
 
     /**
@@ -80,8 +80,6 @@ class GBuffer {
      */
     linkPointerAndPosition(size, type, normalize, stride, offset) {
         const gl = this._gl,
-            program = this._program,
-            attribName = this._attribName,
             attribLocation = this._attribLocation;
         gl.vertexAttribPointer(attribLocation, size, type, normalize, stride, offset);
         gl.enableVertexAttribArray(attribLocation);
