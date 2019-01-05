@@ -8,6 +8,7 @@ const { Screen } = node3d;
  */
 const gl = node3d.gl;
 const screen = new Screen();
+
 /**
  * 
  */
@@ -34,10 +35,11 @@ buffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
 const indexBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
 indexBuffer.bindBuffer();
 indexBuffer.bufferData(new Uint16Array(earthObject._indexs));
-
-gl.viewport(0, 0, 800, 600);
+//设置viewport适配retina屏
+gl.viewport(0, 0, document.clientWidth * window.devicePixelRatio, document.clientHeight * window.devicePixelRatio);
 //
-var camera = new PerspectiveCamera(60, 800 / 600, 0.01,6356753);
+//
+var camera = new PerspectiveCamera(60, document.width / document.height, 0.01,6356753);
 camera.position = [0, 0, 6356753*3];
 camera.lookAt([0, 0, 0]);
 //
