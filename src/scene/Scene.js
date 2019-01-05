@@ -1,10 +1,13 @@
 /**
  * 用于
+ * 1. 注册dom事件
  * 1. 组织earth.gl元素
  * 2. 管理资源调度
  * 3. 动态构造和消费数据
  */
-const merge = require("../utils/merge");
+const merge = require("../utils/merge"),
+    Event = require("../utils/Event"),
+    { addDomEvent, removeDomEvent, domEventNames } = require("../utils/domEvent");
 
 const CONTEXT_OPTIONS = {
     alpha: false,
@@ -19,7 +22,7 @@ const CONTEXT_OPTIONS = {
 /**
  * @class Scene
  */
-class Scene {
+class Scene extends Event {
     /**
      * 
      * @param {Object} [options]
@@ -39,7 +42,7 @@ class Scene {
         /**
          * 
          */
-        this._shadow = options.shadow ||false;
+        this._shadow = options.shadow || false;
     }
 
 }

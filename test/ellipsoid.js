@@ -47,7 +47,7 @@ var u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
 var u_viewMatrix = new GUniform(program, "u_viewMatrix");
 var u_modelMatrix = new GUniform(program, "u_modelMatrix");
 //
-const refresh = function () {
+const update = function () {
     //
     u_projectionMatrix.assignValue(camera.ProjectionMatrix);
     u_viewMatrix.assignValue(camera.ViewMatrix);
@@ -58,11 +58,10 @@ const refresh = function () {
     gl.clear(gl.COLOR_BUFFER_BIT);
     //gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.drawElements(gl.TRIANGLES, earthObject._indexs.length, gl.UNSIGNED_SHORT, 0);
-    requestAnimationFrame(refresh);
+    requestAnimationFrame(update);
     screen.draw();
 };
-
-refresh();
+update();
 
     // //
     // var pos = new Vec4().set(-0.5*6356753, -0.5*6356753, 0.0, 1.0);
