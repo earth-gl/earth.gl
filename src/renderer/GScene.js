@@ -19,8 +19,9 @@ const merge = require("./../utils/merge"),
     { PHYSICAL_CONSTANT } = require('../utils/util'),
     Event = require("./../utils/Event"),
     Earth = require("./../scene/Earth"),
+    now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
-    { addDomEvent, removeDomEvent, domEventNames } = require("../utils/domEvent");
+    { addDomEvent, removeDomEvent, preventDefault, stopPropagation, domEventNames } = require("../utils/domEvent");
 
 const CONTEXT_OPTIONS = {
     alpha: false,
@@ -88,6 +89,10 @@ class GScene extends Event {
          * 加载显示资源
          */
         this._initComponents();
+        /**
+         * 注册dom时间，操作相机矩阵
+         */
+        this._registerDomEvents();
     }
 
     _initialize() {
@@ -111,15 +116,68 @@ class GScene extends Event {
         this._earth = new Earth(gl);
     }
 
+    _registerDomEvents() {
+        const dom = this._canvas;
+        addDomEvent(dom, domEventNames, this._handleDomEvent, this);
+    }
+
+    /**
+     * refrenece:
+     * https://github.com/maptalks/maptalks.js/blob/169cbed69f3e0db1801d559511dad6646a227224/src/map/Map.DomEvents.js#L191
+     * handle dom events
+     * @param {} e 
+     */
+    _handleDomEvent(e) {
+        //dom event type
+        const type = e.type;
+        //ignore click lasted for more than 300ms.
+        if (type === 'mousedown' || (type === 'touchstart' && e.touches.length === 1)) {
+            this._mouseDownTime = now();
+            this._startContainerPoint = [e.x,e.y];
+        } else if (type === "mousemove") {
+            const downTime = this._mouseDownTime,
+                endTime = now();
+            const deltaTime =!downTime?1:downTime - endTime;
+
+        }else if (type === 'click' || type === 'touchend' || type === "mouseup") {
+            //mousedown | touchstart propogation is stopped
+            if (!this._mouseDownTime) return;
+            //
+            const downTime = this._mouseDownTime;
+            delete this._mouseDownTime;
+            const time = now();
+        }
+        this._fireDOMEvent(this, e, type);
+    }
+
+    _getActualEvent(e) {
+        return e.touches && e.touches.length > 0 ? e.touches[0] : e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e;
+    }
+
+    _parseEvent(e, type) {
+        if (!e) return null;
+        let eventParam = {
+            domEvent: e
+        };
+        if (type !== 'keypress') {
+            const actual = this._getActualEvent(e);
+            //get webgl rotate radius
+        }
+    }
+
+    _fireDOMEvent(target, e, type) {
+        this.fire(type)
+    }
+
     render() {
         const gl = this._gl,
             camera = this._camera,
             earth = this._earth;
-            //
+        //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        //
+        //render object
         earth.render(camera);
     }
 

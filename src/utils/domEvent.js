@@ -325,5 +325,7 @@ const domEventNames =
 module.exports = {
     addDomEvent,
     removeDomEvent,
+    preventDefault,
+    stopPropagation,
     domEventNames
 };

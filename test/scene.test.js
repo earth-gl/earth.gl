@@ -6,6 +6,7 @@ const GScene = require("./../src/renderer/GScene");
 
 const scene = new GScene({
     gl: gl,
+    canvas: document,
     width: document.clientWidth,
     height: document.clientHeight
 });
