@@ -48,6 +48,13 @@ class PerspectiveCamera extends Camera {
     }
 
     /**
+     * @return {Vec3} position vec
+     */
+    get position(){
+        return this._position;
+    }
+
+    /**
      * 返回identityMatrix，一般用作没有指定的modelMatrix填充
      */
     get IdentityMatrix(){
@@ -59,6 +66,13 @@ class PerspectiveCamera extends Camera {
      */
     get ProjectionMatrix(){
         return this._projectionMatrix.value;
+    }
+
+    /**
+     * 
+     */
+    get up(){
+        return this._up;
     }
 
     /**

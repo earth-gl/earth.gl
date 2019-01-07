@@ -1,14 +1,13 @@
 const glslify = require("glslify"), 
-  { PHYSICAL_CONSTANT } = require('../utils/util'),
-  GProgram = require('../renderer/GProgram'),
-  GBuffer = require('../renderer/GBuffer'),
-  GUniform = require("../renderer/GUniform");
-
+  { PHYSICAL_CONSTANT } = require("./../utils/util"),
+  GProgram = require("./../renderer/GProgram"),
+  GBuffer = require("./../renderer/GBuffer"),
+  GUniform = require("./../renderer/GUniform");
 /**
  * glsl resource
  */
-const fragText = glslify.file('./../shader/glsl-earth-gl-camera-fs.glsl');
-const vertText = glslify.file('./../shader/glsl-earth-gl-camera-vs.glsl');
+const fragText = glslify.file("./../shader/glsl-earth-gl-camera-fs.glsl");
+const vertText = glslify.file("./../shader/glsl-earth-gl-camera-vs.glsl");
 
 /**
  * 绘制全球
@@ -121,7 +120,7 @@ class Earth {
     program.useProgram();
     //
     const verticesBuffer = this._verticesBuffer = new GBuffer(
-      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, 'a_position');
+      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
     // transform data
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData(new Float32Array(this._vertices));
@@ -142,9 +141,9 @@ class Earth {
    */
   render(camera) {
     const gl = this._gl,
-      program = this._program,
-      verticesBuffer = this._verticesBuffer,
-      indexBuffer = this._indexBuffer;
+      program = this._program;
+      // verticesBuffer = this._verticesBuffer,
+      // indexBuffer = this._indexBuffer;
     //use program
     program.useProgram();
     //bind 

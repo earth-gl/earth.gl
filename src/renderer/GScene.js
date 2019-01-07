@@ -1,4 +1,7 @@
 /**
+ * 计算屏幕坐标到大地坐标
+ * https://github.com/AnalyticalGraphicsInc/cesium/blob/c36e4d37f9a55993781922887d6acd2ed7f7b54c/Source/Scene/SceneTransforms.js
+ * 
  * 用于
  * 1. 注册dom事件
  * 1. 组织earth.gl元素
@@ -16,7 +19,7 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require("./../utils/merge"),
-    { PHYSICAL_CONSTANT } = require('../utils/util'),
+    { PHYSICAL_CONSTANT } = require("./../utils/util"),
     Event = require("./../utils/Event"),
     Earth = require("./../scene/Earth"),
     now = require("./../utils/now"),
