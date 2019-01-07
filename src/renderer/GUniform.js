@@ -1,15 +1,13 @@
 /**
- * @typedef {import("./GProgram")} GProgram
+ * @class
  */
-
-class GUniform{
-
+class GUniform {
     /**
-     * 
+     * @typedef {import("./GProgram")} GProgram
      * @param {GProgram} program 
      * @param {string} uniformName 
      */
-    constructor(program, uniformName){
+    constructor(program, uniformName) {
         /**
          * 
          */
@@ -35,34 +33,30 @@ class GUniform{
          */
         this._getLocationAndFunc();
     }
-
-    _getLocationAndFunc(){
+    /**
+     * 
+     */
+    _getLocationAndFunc() {
         //FLOAT_MAT4
         const gl = this._gl,
             uniformName = this._uniformName,
             program = this._program,
             uniform = program.ActivateUniforms[uniformName];
-        if(uniform.type === gl.FLOAT_MAT4)
+        if (uniform.type === gl.FLOAT_MAT4)
             this._funcName = "uniformMatrix4fv";
         this._location = uniform.location;
     }
-
-
     /**
      * 赋值操作
      * 1. 要求数值必须经过Normalized，由于shader精度问题，这里强制使用cpu计算
      * 2. 根据program uniform类型记录得到值
      */
-    assignValue(arr){
+    assignValue(arr) {
         const funcName = this._funcName,
             location = this._location,
             gl = this._gl;
-        if(!!funcName) 
-            gl[funcName].apply(gl,[location,false,arr]);
-        else
-            console.log("unkonwn unifrom type");
+        !funcName ? console.log("unkonwn unifrom type") : gl[funcName].apply(gl, [location, false, arr]);
     }
-
 }
 
 module.exports = GUniform;

@@ -8,8 +8,8 @@
 /**
  * 
  */
-const splitWords = require("./splitWords").splitWords;
-
+const splitWords = require("./splitWords").splitWords,
+    browser = require("./browser");
 /**
  * Check if event type of the dom is listened by the handler
  * @param {*} obj 
@@ -18,18 +18,17 @@ const splitWords = require("./splitWords").splitWords;
  * @returns {Number} -the handler's index in the listener chain, returns -1 if not.
  */
 const listensDomEvent = function (obj, type, handler) {
-    if (!obj || !obj['Z__' + type] || !handler) {
+    if (!obj || !obj["Z__" + type] || !handler) {
         return -1;
     }
-    const handlers = obj['Z__' + type];
+    const handlers = obj["Z__" + type];
     for (let i = 0, len = handlers.length; i < len; i++) {
         if (handlers[i].src === handler) {
             return i;
         }
     }
     return -1;
-}
-
+};
 /**
  * 
  * @param {*} obj 
@@ -55,27 +54,26 @@ const addDomEvent = function (obj, typeArr, handler, context) {
             continue;
         }
 
-        if (!obj['Z__' + type]) {
-            obj['Z__' + type] = [];
+        if (!obj["Z__" + type]) {
+            obj["Z__" + type] = [];
 
         }
         const hit = listensDomEvent(obj, type, handler);
         if (hit >= 0) {
             removeDomEvent(obj, type, handler);
         }
-        obj['Z__' + type].push({
+        obj["Z__" + type].push({
             callback: eventHandler,
             src: handler
         });
         //firefox
-        if (type === 'mousewheel' && Browser.gecko) {
-            type = 'DOMMouseScroll';
+        if (type === "mousewheel" && browser.gecko) {
+            type = "DOMMouseScroll";
         }
         obj.addEventListener(type, eventHandler, false);
     }
     return this;
-}
-
+};
 /**
  * Removes event listener from a dom element
  * @param {HTMLElement} obj         - dom element
@@ -85,8 +83,8 @@ const addDomEvent = function (obj, typeArr, handler, context) {
 const removeDomEvent = function (obj, typeArr, handler) {
     function doRemove(type, callback) {
         //mouse wheel in firefox
-        if (type === 'mousewheel' && Browser.gecko) {
-            type = 'DOMMouseScroll';
+        if (type === "mousewheel" && browser.gecko) {
+            type = "DOMMouseScroll";
         }
         obj.removeEventListener(type, callback, false);
     }
@@ -100,25 +98,24 @@ const removeDomEvent = function (obj, typeArr, handler) {
             continue;
         }
         //remove all the listeners if handler is not given.
-        if (!handler && obj['Z__' + type]) {
-            const handlers = obj['Z__' + type];
+        if (!handler && obj["Z__" + type]) {
+            const handlers = obj["Z__" + type];
             for (let j = 0, jlen = handlers.length; j < jlen; j++) {
                 doRemove(handlers[j].callback);
             }
-            delete obj['Z__' + type];
+            delete obj["Z__" + type];
             return this;
         }
         const hit = listensDomEvent(obj, type, handler);
         if (hit < 0) {
             return this;
         }
-        const hitHandler = obj['Z__' + type][hit];
+        const hitHandler = obj["Z__" + type][hit];
         doRemove(type, hitHandler.callback);
-        obj['Z__' + type].splice(hit, 1);
+        obj["Z__" + type].splice(hit, 1);
     }
     return this;
-}
-
+};
 /**
  * Prevent default behavior of the browser. <br/>
  * preventDefault Cancels the event if it is cancelable, without stopping further propagation of the event.
@@ -132,8 +129,7 @@ const preventDefault = function (event) {
         event.returnValue = false;
     }
     return this;
-}
-
+};
 /**
  * Stop browser event propagation
  * @param  {Event} e - browser event.
@@ -146,8 +142,7 @@ const stopPropagation = function (e) {
         e.cancelBubble = true;
     }
     return this;
-}
-
+};
 /**
  * 
  */
@@ -163,7 +158,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mousedown ' +
+    "mousedown " +
     /**
      * mouseup event
      * @event Map#mouseup
@@ -175,7 +170,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mouseup ' +
+    "mouseup " +
     /**
      * mouseover event
      * @event Map#mouseover
@@ -187,7 +182,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mouseover ' +
+    "mouseover " +
     /**
      * mouseout event
      * @event Map#mouseout
@@ -199,7 +194,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mouseout ' +
+    "mouseout " +
     /**
      * mouseenter event
      * @event Map#mouseenter
@@ -211,7 +206,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mouseenter ' +
+    "mouseenter " +
     /**
      * mouseleave event
      * @event Map#mouseleave
@@ -223,7 +218,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mouseleave ' +
+    "mouseleave " +
     /**
      * mousemove event
      * @event Map#mousemove
@@ -235,7 +230,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'mousemove ' +
+    "mousemove " +
     /**
      * click event
      * @event Map#click
@@ -247,7 +242,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'click ' +
+    "click " +
     /**
      * dblclick event
      * @event Map#dblclick
@@ -259,7 +254,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'dblclick ' +
+    "dblclick " +
     /**
      * contextmenu event
      * @event Map#contextmenu
@@ -271,7 +266,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'contextmenu ' +
+    "contextmenu " +
     /**
      * keypress event
      * @event Map#keypress
@@ -283,7 +278,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'keypress ' +
+    "keypress " +
     /**
      * touchstart event
      * @event Map#touchstart
@@ -295,7 +290,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'touchstart ' +
+    "touchstart " +
     /**
      * touchmove event
      * @event Map#touchmove
@@ -307,7 +302,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'touchmove ' +
+    "touchmove " +
     /**
      * touchend event
      * @event Map#touchend
@@ -319,8 +314,7 @@ const domEventNames =
      * @property {Point} viewPoint       - view point of the event
      * @property {Event} domEvent                 - dom event
      */
-    'touchend ';
-
+    "touchend ";
 
 module.exports = {
     addDomEvent,

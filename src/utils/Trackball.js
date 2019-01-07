@@ -231,6 +231,7 @@ class Trackball extends Event {
     mouseup(event) {
         this.off("mousemove", this.mousemove, this);
         this.off("mouseup", this.mouseup, this);
+        this.fire("dragEnd",event,true);
     }
 
     update() {

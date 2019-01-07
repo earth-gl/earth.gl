@@ -25,7 +25,7 @@ const merge = require("./../utils/merge"),
     Earth = require("./../scene/Earth"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
-    { addDomEvent, removeDomEvent, preventDefault, stopPropagation, domEventNames } = require("../utils/domEvent");
+    { addDomEvent, domEventNames } = require("../utils/domEvent");
 
 const CONTEXT_OPTIONS = {
     alpha: false,
@@ -64,7 +64,7 @@ class GScene extends Event {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = options.gl || this._canvas.getContext('webgl', contextOptions) || this._canvas.getContext('experimental-webgl', contextOptions);
+        this._gl = options.gl || this._canvas.getContext("webgl", this._contextOptions) || this._canvas.getContext("experimental-webgl", this._contextOptions);
         /**
          * @type {Number}
          */
@@ -144,37 +144,25 @@ class GScene extends Event {
         //dom event type
         const type = e.type;
         //ignore click lasted for more than 300ms.
-        if (type === 'mousedown' || (type === 'touchstart' && e.touches.length === 1)) {
+        if (type === "mousedown" || (type === "touchstart" && e.touches.length === 1)) {
             this._mouseDownTime = now();
             this._startContainerPoint = [e.x,e.y];
         } else if (type === "mousemove") {
-            const downTime = this._mouseDownTime,
-                endTime = now();
-            const deltaTime =!downTime?1:downTime - endTime;
-        }else if (type === 'click' || type === 'touchend' || type === "mouseup") {
+            // const downTime = this._mouseDownTime,
+            //     endTime = now();
+            // const deltaTime =!downTime?1:downTime - endTime;
+        }else if (type === "click" || type === "touchend" || type === "mouseup") {
             //mousedown | touchstart propogation is stopped
-            if (!this._mouseDownTime) return;
-            //
-            const downTime = this._mouseDownTime;
-            delete this._mouseDownTime;
-            const time = now();
+            // if (!this._mouseDownTime) return;
+            // const downTime = this._mouseDownTime;
+            // delete this._mouseDownTime;
+            // const time = now();
         }
         this.fire(type, e, true);
     }
 
     _getActualEvent(e) {
         return e.touches && e.touches.length > 0 ? e.touches[0] : e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e;
-    }
-
-    _parseEvent(e, type) {
-        if (!e) return null;
-        let eventParam = {
-            domEvent: e
-        };
-        if (type !== 'keypress') {
-            const actual = this._getActualEvent(e);
-            //get webgl rotate radius
-        }
     }
 
     render() {

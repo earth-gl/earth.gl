@@ -17,11 +17,6 @@ class WebGLRenderer{
         this._gl = options.gl;
     }
 
-    render(scene){
-        //
-        const gl = this._gl;
-    }
-
 }
 
 module.exports = WebGLRenderer;
