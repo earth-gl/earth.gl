@@ -110,7 +110,7 @@ class GScene extends Event {
             devicePixelRatio = this._devicePixelRatio,
             camera = this._camera,
             gl = this._gl;
-        camera.position = [0, 0, PHYSICAL_CONSTANT.EARTH_RADIUS_X * 3];
+        camera.position = [0, 0, PHYSICAL_CONSTANT.EARTH_RADIUS_X * 2.5];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);

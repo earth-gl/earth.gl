@@ -1,4 +1,5 @@
-const glslify = require("glslify"), 
+const glslify = require("glslify"),
+  isNode = require("./../utils/isNode"),
   { PHYSICAL_CONSTANT } = require("./../utils/util"),
   GProgram = require("./../renderer/GProgram"),
   GBuffer = require("./../renderer/GBuffer"),
@@ -6,8 +7,8 @@ const glslify = require("glslify"),
 /**
  * glsl resource
  */
-const fragText = glslify.file("./../shader/glsl-earth-gl-camera-fs.glsl");
-const vertText = glslify.file("./../shader/glsl-earth-gl-camera-vs.glsl");
+const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-camera-fs.glsl") : require("./../shader/glsl-earth-gl-camera-fs.glsl");
+const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-camera-vs.glsl") : require("./../shader/glsl-earth-gl-camera-vs.glsl");
 
 /**
  * 绘制全球
@@ -142,8 +143,8 @@ class Earth {
   render(camera) {
     const gl = this._gl,
       program = this._program;
-      // verticesBuffer = this._verticesBuffer,
-      // indexBuffer = this._indexBuffer;
+    // verticesBuffer = this._verticesBuffer,
+    // indexBuffer = this._indexBuffer;
     //use program
     program.useProgram();
     //bind 

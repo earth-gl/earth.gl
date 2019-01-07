@@ -141,7 +141,9 @@ class Trackball extends Event {
     }
 
     rotateCamera() {
-        const camera = this.camera,
+        const target = this.target,
+            camera = this.camera,
+            rotateSpeed = this.rotateSpeed,
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
@@ -151,17 +153,17 @@ class Trackball extends Event {
         );
         let angle = moveDirection.len();
         if (angle) {
-            this._eye = camera.position.clone().sub(this.target);
+            this._eye = camera.position.clone().sub(target);
             const eyeDirection = this._eye.clone().normalize();
             const objectUpDirection = camera.up.clone().normalize();
             const objectSidewaysDirection = objectUpDirection.clone().cross(eyeDirection).normalize();
             //
-            objectUpDirection.scale(moveCurr.value[1] - movePrev.value[1]);
-            objectSidewaysDirection.scale(moveCurr.value[0] - movePrev.value[0]);
-            //
-            moveDirection = objectUpDirection.clone().add(objectSidewaysDirection);
+            objectUpDirection.normalize().scale(movePrev.y - moveCurr.y);
+            objectSidewaysDirection.normalize().scale(movePrev.x - moveCurr.x);
+            objectUpDirection.add(objectSidewaysDirection);
+            moveDirection = objectUpDirection.clone();
             const axis = moveDirection.clone().cross(this._eye).normalize();
-            angle *= this.rotateSpeed;
+            angle *= rotateSpeed;
             //
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
@@ -171,11 +173,11 @@ class Trackball extends Event {
             this._lastAxis = axis.clone();
             this._lastAngle = angle;
         } else if (this._lastAngle) {
-            this._lastAngle *= Math.sqrt(1.0 - this.dynamicDampingFactor);
-            this._eye = camera.position.clone().sub(this.target);
-            const quaternion = new Quat().setAxisAngle(this._lastAxis, this._lastAngle);
-            this._eye.applyQuat(quaternion);
-            camera.up.applyQuat(quaternion);
+            // this._lastAngle *= Math.sqrt(1.0 - this.dynamicDampingFactor);
+            // this._eye = camera.position.clone().sub(target);
+            // const quaternion = new Quat().setAxisAngle(this._lastAxis, this._lastAngle);
+            // this._eye.applyQuat(quaternion);
+            // camera.up.applyQuat(quaternion);
         }
         //assign movePrev position
         this._movePrev = moveCurr.clone();
@@ -208,7 +210,7 @@ class Trackball extends Event {
         preventDefault(event);
         stopPropagation(event);
         //rotate
-        this._moveCurr = this.getMouseOnScreen(event.pageX, event.pageY);
+        this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
         this._movePrev = this._moveCurr.clone();
         //pan
         this._panStart = this.getMouseOnScreen(event.pageX, event.pageY);
@@ -221,7 +223,7 @@ class Trackball extends Event {
     mousemove(event) {
         //rotate
         this._movePrev = this._moveCurr.clone();
-        this._moveCurr = this.getMouseOnCircle(event.pageX,event.pageY);
+        this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
         //pan
         this._panEnd = this.getMouseOnScreen(event.pageX, event.pageY);
     }
