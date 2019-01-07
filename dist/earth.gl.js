@@ -1,25 +1,13 @@
 var earth = (function (exports) {
     'use strict';
 
-    var glslEarthGlStandardFs = "#define GLSLIFY 1\nvoid main() { gl_FragColor = vec4(1.0, 0.2, 0.4, 0.7); }"; // eslint-disable-line
-
-    var glslEarthGlStandardFs$1 = /*#__PURE__*/Object.freeze({
-        default: glslEarthGlStandardFs
-    });
-
-    var glslEarthGlStandardVs = "#define GLSLIFY 1\nattribute vec3 a_position;\n\nvoid main() { gl_Position = vec4(a_position, 1.0); }"; // eslint-disable-line
-
-    var glslEarthGlStandardVs$1 = /*#__PURE__*/Object.freeze({
-        default: glslEarthGlStandardVs
-    });
-
-    var glslEarthGlCameraFs = "#define GLSLIFY 1\nvoid main() { gl_FragColor = vec4(1.0, 0.2, 0.4, 0.7); }"; // eslint-disable-line
+    var glslEarthGlCameraFs = "#define GLSLIFY 1\nvarying vec4 v_color;\n\nvoid main() { \n    gl_FragColor = v_color; \n}"; // eslint-disable-line
 
     var glslEarthGlCameraFs$1 = /*#__PURE__*/Object.freeze({
         default: glslEarthGlCameraFs
     });
 
-    var glslEarthGlCameraVs = "#define GLSLIFY 1\n/**\n *  将目标物体投影到屏幕坐标\n */\n\nvec4 targetpos(mat4 u_projectionMatrix, mat4 u_viewMatrix, mat4 u_modelMatrix , vec3 a_position){\n    return u_projectionMatrix * u_viewMatrix * u_modelMatrix * vec4(a_position, 1.0);\n}\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_viewMatrix;\nuniform mat4 u_modelMatrix;\n\nattribute vec3 a_position;\n\nvoid main() { \n    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix, a_position);\n}"; // eslint-disable-line
+    var glslEarthGlCameraVs = "#define GLSLIFY 1\n/**\n *  将目标物体投影到屏幕坐标\n */\n\nvec4 targetpos(mat4 u_projectionMatrix, mat4 u_viewMatrix, mat4 u_modelMatrix , vec3 a_position){\n    return u_projectionMatrix * u_viewMatrix * u_modelMatrix * vec4(a_position, 1.0);\n}\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_viewMatrix;\nuniform mat4 u_modelMatrix;\n\n//物体位置\nattribute vec3 a_position;\n\nvarying vec4 v_color;\n\nvoid main() { \n\n    v_color = vec4(normalize(a_position),1.0);\n    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix, a_position);\n}"; // eslint-disable-line
 
     var glslEarthGlCameraVs$1 = /*#__PURE__*/Object.freeze({
         default: glslEarthGlCameraVs
@@ -623,6 +611,18 @@ var earth = (function (exports) {
             return this;
         };
         /**
+         * 
+         */
+        get x(){
+            return this._out[0];
+        }
+        /**
+         * 
+         */
+        get y(){
+            return this._out[1];
+        }
+        /**
          * adapter for webgl matrix
          * get the array directly
          * @memberof vec2
@@ -888,6 +888,24 @@ var earth = (function (exports) {
             this._out[2] = 0;
             return this;
         };
+        /**
+         * 
+         */
+        get x(){
+            return this._out[0];
+        }
+        /**
+         * 
+         */
+        get y(){
+            return this._out[1];
+        }
+        /**
+         * 
+         */
+        get z(){
+            return this._out[2];
+        }
         /**
          * adapter for webgl matrix
          * get the array directly
@@ -1278,6 +1296,28 @@ var earth = (function (exports) {
                 return Math.acos(cosine);
         };
         /**
+         * reference:
+         * https://github.com/mrdoob/three.js/blob/dev/src/math/Vector3.js
+         * @typedef {import("./Quat")} Quat 
+         * @param {Quat} quat
+         */
+        applyQuat(quat){
+            //
+            var x = this.x, y = this.y, z = this.z;
+            var qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+            // calculate quat * vector
+    		var ix = qw * x + qy * z - qz * y;
+    		var iy = qw * y + qz * x - qx * z;
+    		var iz = qw * z + qx * y - qy * x;
+    		var iw = - qx * x - qy * y - qz * z;
+    		// calculate result * inverse quat
+    		this._out[0] = ix * qw + iw * - qx + iy * - qz - iz * - qy;
+    		this._out[1] = iy * qw + iw * - qy + iz * - qx - ix * - qz;
+            this._out[2] = iz * qw + iw * - qz + ix * - qy - iy * - qx;
+            //
+            return this;
+        }
+        /**
          * Returns whether or not the vectors have approximately the same elements in the same position.
          */
         equals(vec) {
@@ -1317,6 +1357,30 @@ var earth = (function (exports) {
             this._out[2] = 0;
             this._out[3] = 0;
             return this;
+        }
+        /**
+         * 
+         */
+        get x(){
+            return this._out[0];
+        }
+        /**
+         * 
+         */
+        get y(){
+            return this._out[1];
+        }
+        /**
+         * 
+         */
+        get z(){
+            return this._out[2];
+        }
+        /**
+         * 
+         */
+        get w(){
+            return this._out[3];
         }
         /**
          * adapter for webgl matrix
@@ -1974,6 +2038,30 @@ var earth = (function (exports) {
             this._out[1] = 0;
             this._out[2] = 0;
             this._out[3] = 1;
+        }
+        /**
+         * 
+         */
+        get x(){
+            return this._out[0];
+        }
+        /**
+         * 
+         */
+        get y(){
+            return this._out[1];
+        }
+        /**
+         * 
+         */
+        get z(){
+            return this._out[2];
+        }
+        /**
+         * 
+         */
+        get w(){
+            return this._out[3];
         }
         /**
          * adapter for webgl matrix
@@ -3521,6 +3609,18 @@ var earth = (function (exports) {
           this._update();
         }
         /**
+         * @return {Vec3} position vec
+         */
+        ,
+        get: function get() {
+          return this._position;
+        }
+      }, {
+        key: "target",
+        get: function get() {
+          return this._target;
+        }
+        /**
          * 返回identityMatrix，一般用作没有指定的modelMatrix填充
          */
 
@@ -3537,6 +3637,15 @@ var earth = (function (exports) {
         key: "ProjectionMatrix",
         get: function get() {
           return this._projectionMatrix.value;
+        }
+        /**
+         * 
+         */
+
+      }, {
+        key: "up",
+        get: function get() {
+          return this._up;
         }
         /**
          * 返回视角矩阵
@@ -3567,10 +3676,6 @@ var earth = (function (exports) {
     	return n && n.default || n;
     }
 
-    var glsl_earth_gl_standard_fs = getCjsExportFromNamespace(glslEarthGlStandardFs$1);
-
-    var glsl_earth_gl_standard_vs = getCjsExportFromNamespace(glslEarthGlStandardVs$1);
-
     var glsl_earth_gl_camera_fs = getCjsExportFromNamespace(glslEarthGlCameraFs$1);
 
     var glsl_earth_gl_camera_vs = getCjsExportFromNamespace(glslEarthGlCameraVs$1);
@@ -3590,8 +3695,6 @@ var earth = (function (exports) {
           GUniform: GUniform_1
         },
         shader: {
-          glsl_earth_gl_standard_fs: glsl_earth_gl_standard_fs,
-          glsl_earth_gl_standard_vs: glsl_earth_gl_standard_vs,
           glsl_earth_gl_camera_fs: glsl_earth_gl_camera_fs,
           glsl_earth_gl_camera_vs: glsl_earth_gl_camera_vs
         }

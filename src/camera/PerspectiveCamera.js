@@ -54,6 +54,10 @@ class PerspectiveCamera extends Camera {
         return this._position;
     }
 
+    get target(){
+        return this._target;
+    }
+
     /**
      * 返回identityMatrix，一般用作没有指定的modelMatrix填充
      */

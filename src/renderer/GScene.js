@@ -19,6 +19,7 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require("./../utils/merge"),
+    Trackball = require("./../utils/Trackball"),
     { PHYSICAL_CONSTANT } = require("./../utils/util"),
     Event = require("./../utils/Event"),
     Earth = require("./../scene/Earth"),
@@ -77,6 +78,10 @@ class GScene extends Event {
          */
         this._devicePixelRatio = window.devicePixelRatio;
         /**
+         * @type {Trackball}
+         */
+        this._trackball = null;
+        /**
          * 
          */
         this._shadow = options.shadow || false;
@@ -120,8 +125,13 @@ class GScene extends Event {
     }
 
     _registerDomEvents() {
-        const dom = this._canvas;
+        const dom = this._canvas,
+            camera = this._camera;
         addDomEvent(dom, domEventNames, this._handleDomEvent, this);
+        this._trackball = new Trackball(camera);
+        const trackball = this._trackball;
+        trackball.update();
+        this.addEventPopNode(trackball);
     }
 
     /**
@@ -141,7 +151,6 @@ class GScene extends Event {
             const downTime = this._mouseDownTime,
                 endTime = now();
             const deltaTime =!downTime?1:downTime - endTime;
-
         }else if (type === 'click' || type === 'touchend' || type === "mouseup") {
             //mousedown | touchstart propogation is stopped
             if (!this._mouseDownTime) return;
@@ -150,7 +159,7 @@ class GScene extends Event {
             delete this._mouseDownTime;
             const time = now();
         }
-        this._fireDOMEvent(this, e, type);
+        this.fire(type, e, true);
     }
 
     _getActualEvent(e) {
@@ -168,18 +177,17 @@ class GScene extends Event {
         }
     }
 
-    _fireDOMEvent(target, e, type) {
-        this.fire(type)
-    }
-
     render() {
         const gl = this._gl,
+            trackball = this._trackball,
             camera = this._camera,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.clear(gl.COLOR_BUFFER_BIT);
+        //update camera
+        trackball.update();
         //render object
         earth.render(camera);
     }
