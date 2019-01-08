@@ -7,10 +7,10 @@
 *   @inheritable
 */
 
-const stamp = require('./stamp'),
-    splitWords = require('./splitWords').splitWords,
-    noop = require('./noop'),
-    merge = require('./merge');
+const stamp = require('./../utils/stamp'),
+    splitWords = require('./../utils/splitWords').splitWords,
+    noop = require('./../utils/noop'),
+    merge = require('./../utils/merge');
 /**
  * @class 
  */

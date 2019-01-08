@@ -1,14 +1,12 @@
 /**
  * earth.gl 核心操作交互
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
- * 
- * 
  */
 const Quat = require("kiwi.matrix").Quat,
     Vec2 = require("kiwi.matrix").Vec2,
     Vec3 = require("kiwi.matrix").Vec3;
 
-const { preventDefault, stopPropagation } = require("./domEvent"),
+const { preventDefault, stopPropagation } = require("../utils/domEvent"),
     Event = require("./Event");
 
 class Trackball extends Event {
@@ -247,7 +245,6 @@ class Trackball extends Event {
         //3. 
         camera._update();
     }
-
 }
 
 module.exports = Trackball;

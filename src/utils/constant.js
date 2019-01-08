@@ -30,5 +30,5 @@ const PHYSICAL_CONSTANT = {
 };
 
 module.exports = {
-    PHYSICAL_CONSTANT: PHYSICAL_CONSTANT
+    PHYSICAL_CONSTANT
 };

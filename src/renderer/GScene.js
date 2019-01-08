@@ -19,10 +19,10 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require("./../utils/merge"),
-    Trackball = require("./../utils/Trackball"),
-    { PHYSICAL_CONSTANT } = require("./../utils/util"),
-    Event = require("./../utils/Event"),
-    Earth = require("./../scene/Earth"),
+    Trackball = require("./../core/Trackball"),
+    { PHYSICAL_CONSTANT } = require("./../utils/constant"),
+    Event = require("./../core/Event"),
+    GGlobal = require("./GGlobal"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
     { addDomEvent, domEventNames } = require("../utils/domEvent");
@@ -121,7 +121,7 @@ class GScene extends Event {
      */
     _initComponents() {
         const gl = this._gl;
-        this._earth = new Earth(gl);
+        this._earth = new GGlobal(gl);
     }
 
     _registerDomEvents() {

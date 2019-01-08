@@ -1,9 +1,9 @@
 const glslify = require("glslify"),
-  isNode = require("./../utils/isNode"),
-  { PHYSICAL_CONSTANT } = require("./../utils/util"),
-  GProgram = require("./../renderer/GProgram"),
-  GBuffer = require("./../renderer/GBuffer"),
-  GUniform = require("./../renderer/GUniform");
+  isNode = require("../utils/isNode"),
+  { PHYSICAL_CONSTANT } = require("../utils/constant"),
+  GProgram = require("./GProgram"),
+  GBuffer = require("./GBuffer"),
+  GUniform = require("./GUniform");
 /**
  * glsl resource
  */
@@ -15,7 +15,7 @@ const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-camera-vs.glsl
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Scene/Globe.js
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/22dce1d9aaf480b0cbea6148b05a4c482ce80f00/Source/Core/Ellipsoid.js
  */
-class Earth {
+class GGlobal {
   /**
    *
    * @param {WebGLRenderingContext} gl
@@ -160,4 +160,4 @@ class Earth {
 
 }
 
-module.exports = Earth;
+module.exports = GGlobal;
