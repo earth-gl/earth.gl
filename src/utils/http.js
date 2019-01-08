@@ -2,7 +2,10 @@
  * @description promise/A标准的http对象，支持json,jsonp方法
  * @module http
  */
-const noop = require('./noop');
+const noop = require("./noop"),
+    isNode = require("./isNode"),
+    XMLHttpRequest = isNode ? require("xmlhttprequest").XMLHttpRequest : XMLHttpRequest,
+    setTimeout = require("./setTimeout");
 
 const _parseData = function (data) {
     var ret = "";
@@ -32,6 +35,11 @@ const _removeElem = function (elem) {
         parent.removeChild(elem);
     }
 };
+
+const _setHeader = function(xhr,header){
+    for(var key in header)
+        xhr.setRequestHeader(key, header[key]);
+}
 /**
  * @class
  */
@@ -43,7 +51,7 @@ class ajax {
      * @param {*} success 
      * @param {*} fail 
      */
-    static getBinary(url, data, success, fail) {
+    static getBinary(url, data, header, success, fail) {
         let _url = url || "",
             _data = data || {},
             _success = success || noop,
@@ -60,6 +68,7 @@ class ajax {
             success(xmlHttp.response);
         }
         xhr.open('GET', _url, true);
+        _setHeader(xhr,header);
         xhr.send(null);
     }
     /**
@@ -69,15 +78,16 @@ class ajax {
      * @param {any} success
      * @param {any} fail
      */
-    static get(url, data, success, fail) {
+    static get(url, data, header, success, fail) {
         var _url = url || "",
             _data = data || {},
             _success = success || noop,
             _fail = fail || noop;
         //ajax-get请求
         var xhr = new XMLHttpRequest();
+        xhr.responseType = 'arraybuffer';
         _url = _url + (_url.indexOf("?") === -1 ? "?" : "&") + _parseData(data);
-        var failTick = setTimeout(10000, function () {
+        var failTick = setTimeout(30000, function () {
             _fail('请求超时');
         });
         //ajax状态改变
@@ -89,6 +99,7 @@ class ajax {
             }
         };
         xhr.open('GET', _url, true);
+        _setHeader(xhr,header);
         xhr.send(null);
     }
     /**
@@ -193,15 +204,21 @@ class http {
      * @param {String} [type] 可选参数，支持 json和jsonp
      * @returns {Promise} promise对象
      */
-    static get(url, args, type = 'json') {
+    static get(url, args, type = 'json', header = {}) {
         return new Promise(function (resolve, reject) {
-            if (type === 'json') {//jsonp形式
-                ajax.get(url, args, function (data) {
+            if (type === "terrain") {//terrain方法
+                ajax.get(url, args, header, function (data) {
                     resolve(data);
                 }, function (err) {
                     reject(err);
                 });
-            } else if (type === 'jsonp') {
+            } else if (type === 'json') {//json方法
+                ajax.get(url, args, header, function (data) {
+                    resolve(data);
+                }, function (err) {
+                    reject(err);
+                });
+            } else if (type === 'jsonp') {//jsonp形式
                 jsonp.get(url, args, function (data) {
                     resolve(data);
                 }, function (err) {
@@ -217,7 +234,7 @@ class http {
      */
     static getBinary(url, args) {
         return new Promise(function (resolve, reject) {
-            ajax.getBinary(url, args||{}, function (data) {
+            ajax.getBinary(url, args || {}, function (data) {
                 resolve(data);
             }, function (data) {
                 reject(data);
