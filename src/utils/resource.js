@@ -69,7 +69,7 @@ const makeRequest = function(options){
                 }
             }else if( (browserResponseType ===""||browserResponseType ==="doucment") && xhr.responseXML){
                 resolve(xhr.responseXML);
-            }else if((browserResponseType === '' || browserResponseType === 'text') && xhr.responseText){
+            }else if((browserResponseType === responseType || browserResponseType === 'text') && xhr.responseText){
                 resolve(xhr.responseText);
             }else{
                 reject('Invalid XMLHttpRequest response type.');
@@ -91,7 +91,7 @@ const fetch = function(options){
 };
 
 const fetchArrayBuffer = function(url, headers, token){
-    headers.Accept = headers.Accept&&token? headers.Accept + ';'+ "access_token "+token:headers.Accept;
+    headers.Accept = headers.Accept&&token? headers.Accept + ';'+ "access_token="+token:headers.Accept;
     return fetch({
         url:url,
         headers :headers,
