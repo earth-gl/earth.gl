@@ -13,8 +13,9 @@ class TerrainTile{
 
 module.exports = TerrainTile;
 
-// const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyOGIyNDc5Yi03NGMyLTQ0ZmEtODJiNi0zNTEyNjcyMTdmYmIiLCJpZCI6MjU5LCJhc3NldHMiOnsiMSI6eyJ0eXBlIjoiVEVSUkFJTiIsImV4dGVuc2lvbnMiOlt0cnVlLHRydWUsdHJ1ZV0sInB1bGxBcGFydFRlcnJhaW4iOnRydWV9fSwic3JjIjoiYjBkYzNkMWItODgzNi00MzAxLThiZjktZjQ5ZGNkNjYxODI3IiwiaWF0IjoxNTQ2OTU3OTUyLCJleHAiOjE1NDY5NjE1NTJ9.Z2hPJQ314J-gj17x3Jg3tretqaHk_FG8eqE5S-uMN-k";
-// const url = "https://assets.cesium.com/1/13/12148/5370.terrain";
+// const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDBiNjk2Zi1lNDljLTRjZTQtYjg2Ny0yMTAzMjdmNDE3MWQiLCJpZCI6NjYwMSwiYXNzZXRzIjp7IjEiOnsidHlwZSI6IlRFUlJBSU4iLCJleHRlbnNpb25zIjpbdHJ1ZSx0cnVlLHRydWVdLCJwdWxsQXBhcnRUZXJyYWluIjp0cnVlfX0sInNyYyI6IjZjYjk4MzM2LTJiYzEtNDVhZC04MWU0LWVmMjc4YTI0MGY1OSIsImlhdCI6MTU0NzAxODUxMywiZXhwIjoxNTQ3MDIyMTEzfQ.Vu6WIIziod4RvBGGKp_oBCbX4jND3KTr_ECW5W71yEQ';
+// const url = "https://assets.cesium.com/1/9/789/370.terrain";
+// //url格式：https://assets.cesium.com/{assertId}/{z}/{x}/{y}.terrain
 // const header = {
 //     Accept: "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*"
 // };

@@ -1,5 +1,4 @@
 const { gl, screen, document, requestAnimationFrame } = require("./common");
-
 /**
  * --------------------------------------------------------------------------
  */
