@@ -4,6 +4,12 @@
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/c36e4d37f9a55993781922887d6acd2ed7f7b54c/Source/Scene/SceneTransforms.js#L71
  * https://blog.csdn.net/popy007/article/details/1797121
  * 
+ * https://stackoverflow.com/questions/33237064/get-current-zoom-in-cesium
+ * https://gis.stackexchange.com/questions/129903/cesium-3d-determining-the-map-scale-of-the-viewed-globe/144496#144496
+ * 
+ * computeViewRectangle ：
+ * https://github.com/AnalyticalGraphicsInc/cesium/blob/15d5cdeb3331d84b896821b04eefd5ba199994c6/Source/Scene/Camera.js#L3122
+ * 
  * 流程：
  * 1. Ray picking
  *  计算相机位置到lookat中心的射线与wgs84椭球，first insert position location,得到视野中心点 position (x,y,z) 
