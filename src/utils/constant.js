@@ -29,6 +29,29 @@ const PHYSICAL_CONSTANT = {
     TWO_PI: 2.0 * Math.PI,
 };
 
+/**
+ * This enumerated type is used in determining where, relative to the frustum, an
+ * object is located. The object can either be fully contained within the frustum (INSIDE),
+ * partially inside the frustum and partially outside (INTERSECTING), or somwhere entirely
+ * outside of the frustum's 6 planes (OUTSIDE).
+ *
+ */
+const INTERSECT_CONSTANT = {
+    /**
+     * Represents that an object is not contained within the frustum.
+     */
+    OUTSIDE: -1,
+    /**
+     * Represents that an object intersects one of the frustum's planes.
+     */
+    INTERSECTING: 0,
+    /**
+     * Represents that an object is fully within the frustum.
+     */
+    INSIDE: 1
+};
+
 module.exports = {
-    PHYSICAL_CONSTANT
+    PHYSICAL_CONSTANT,
+    INTERSECT_CONSTANT
 };

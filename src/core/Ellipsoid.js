@@ -1,11 +1,15 @@
 const Vec3 = require("kiwi.matrix").Vec3,
     { PHYSICAL_CONSTANT } = require("./../utils/constant"),
-
 /**
- * @author
+ * @class
  */
 class Ellipsoid {
-
+    /**
+     * 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} z 
+     */
     constructor(x, y, z) {
         /**
          * @type {Number}
@@ -23,12 +27,26 @@ class Ellipsoid {
          * @type {Vec3}
          */
         this._radii = new Vec3().set(x, y, z);
+        /**
+         * 
+         */
+        this._oneOverRadii = new Vec3.set(1/x,1/y,1/z);
     }
-
+    /**
+     * @type {Vec3}
+     */
     get radii() {
         return this._radii;
     }
-
+    /**
+     * @type {Vec3}
+     */
+    get oneOverRadii(){
+        return this._oneOverRadii;
+    }
+    /**
+     * @type {Number}
+     */
     get maximumRadius() {
         return Math.max(this.x, this.y, this.z);
     }

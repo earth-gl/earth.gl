@@ -88,7 +88,7 @@ class GScene extends Event {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width / this._height, 0.01, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
+        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
         /**
          * initialization
          */

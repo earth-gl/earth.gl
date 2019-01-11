@@ -10,4 +10,6 @@ const createTypedArray = function (numberOfVertices, indicesLengthOrArray) {
         return new Uint16Array(indicesLengthOrArray);
 };
 
-module.exports = createTypedArray;
+module.exports = {
+    createTypedArray
+};

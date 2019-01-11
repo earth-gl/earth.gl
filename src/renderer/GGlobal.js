@@ -70,15 +70,17 @@ class GGlobal {
      */
     this._initComponents();
   }
-
   /**
    * 计算geometry资源
    */
   _geometryData() {
-    const latitudeBands = 64, longitudeBands = 64, radiusX = this._radiusX,
-      radiusY = this._radiusY, radiusZ = this._radiusZ,
-      vertexPositionData = [], indexData = [];
-
+    const latitudeBands = 64, 
+    longitudeBands = 64, 
+    radiusX = this._radiusX,
+    radiusY = this._radiusY, 
+    radiusZ = this._radiusZ,
+    vertexPositionData = [], 
+    indexData = [];
     for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
       var theta = latNumber * Math.PI / latitudeBands;
       var sinTheta = Math.sin(theta);
@@ -109,7 +111,6 @@ class GGlobal {
     //
     this._indexs = indexData;
   }
-
   /**
    * 构造资源
    */
@@ -120,8 +121,7 @@ class GGlobal {
     //
     program.useProgram();
     //
-    const verticesBuffer = this._verticesBuffer = new GBuffer(
-      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
+    const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
     // transform data
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData(new Float32Array(this._vertices));
@@ -135,7 +135,6 @@ class GGlobal {
     this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
     this._u_modelMatrix = new GUniform(program, "u_modelMatrix");
   }
-
   /**
    * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
    * @param {PerspectiveCamera} camera
@@ -157,7 +156,6 @@ class GGlobal {
     //
     gl.drawElements(gl.TRIANGLES, this._indexs.length, gl.UNSIGNED_SHORT, 0);
   }
-
 }
 
 module.exports = GGlobal;
