@@ -241,7 +241,7 @@ class PerspectiveCamera extends Camera {
         var r = this.pick
     }
 
-    computeViewRectangle(canvasWith, canvasHeight) {
+    computeViewRectangle() {
         const position = this.position.clone(),
             direction = this.target.clone(),
             up = this.up.clone();
@@ -250,8 +250,8 @@ class PerspectiveCamera extends Camera {
         const visibility = cullingVolume.computeVisibility(boundingSphere);
         if(visibility === Intersect.OUTSIDE)
             return undefined;
-        var width = canvasWith,
-            height = canvasHeight;
+        var width = this._width,
+            height = this._height;
         var computedHorizonQuad  = this.computeHorizonQuad();
 
     }
