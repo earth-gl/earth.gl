@@ -37,7 +37,6 @@ class BoundingSphere {
         else
             return INTERSECT_CONSTANT.INSIDE;
     }
-
 }
 
 module.exports = BoundingSphere;

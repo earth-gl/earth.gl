@@ -25,7 +25,7 @@ class CullingVolume {
             const plane = planes[k];
             var result = boundingSphere.intersectPlane(plane);
             if (result === INTERSECT_CONSTANT.OUTSIDE) {
-                return Intersect.OUTSIDE;
+                return INTERSECT_CONSTANT.OUTSIDE;
             } else if (result === INTERSECT_CONSTANT.INTERSECTING) {
                 intersecting = true;
             }

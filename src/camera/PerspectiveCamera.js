@@ -1,12 +1,13 @@
 /**
  *
  */
-const merge = require('./../utils/merge'), 
-    Camera = require('./Camera'),
-    {Mat4,Vec2,Vec3,Vec4} = require('kiwi.matrix'),
-    GLMatrix = require('kiwi.matrix').GLMatrix;
-    
-const PerspectiveFrustum = require("./../core/PerspectiveFrustum");
+const Camera = require("./Camera"),
+    { Mat4, Vec3, GLMatrix } = require("kiwi.matrix");
+
+const {INTERSECT_CONSTANT} = require("./../utils/constant"),
+    BoundingSphere = require("./../core/BoundingSphere"), 
+    PerspectiveFrustum = require("./../core/PerspectiveFrustum"),
+    ellipsoid = require("./../core/Ellipsoid").WGS84;
 /**
  * const viewProjectionMatrix = projectionMatrix * viewMatrix * [objectMatrix]
  * @class
@@ -44,7 +45,7 @@ class PerspectiveCamera extends Camera {
         /**
          * @type {Number}
          */
-        this._aspect = width&&height ? width/height : 1.0;
+        this._aspect = width && height ? width / height : 1.0;
         /**
          * @type {Vec3}
          */
@@ -154,8 +155,7 @@ class PerspectiveCamera extends Camera {
         /**
          *
          */
-        this._viewProjectionMatrix =
-            this._projectionMatrix.clone().multiply(this._viewMatrix);
+        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
         /**
          *
          */
@@ -166,7 +166,7 @@ class PerspectiveCamera extends Camera {
      */
     _updateViewFrustrum() {
         const _aspectRatio = this._aspect, _fov = this._fov,
-            _fovy = _fov < 1.0 ?_fov :Math.atan(Math.tan(_fov * 0.5) / _aspectRatio) * 2.0,
+            _fovy = _fov < 1.0 ? _fov : Math.atan(Math.tan(_fov * 0.5) / _aspectRatio) * 2.0,
             _near = this._near, _far = this._far;
         const f = this._viewFrustum;
         f.top = _near * Math.tan(0.5 * _fovy);
@@ -180,7 +180,7 @@ class PerspectiveCamera extends Camera {
      * 计算参考椭球与frustrum的四个交点，得到 view rectangle
      * https://github.com/AnalyticalGraphicsInc/cesium/blob/15d5cdeb3331d84b896821b04eefd5ba199994c6/Source/Scene/Camera.js#L3050
      */
-    computeHorizonQuad(){
+    computeHorizonQuad() {
         const horizonPoints = [];
         const radii = ellipsoid.radii,
             p = this.position.clone();
@@ -191,18 +191,18 @@ class PerspectiveCamera extends Camera {
         //
         let eUnit, nUnit;
         //
-        if(qUnit.equals(new Vec3(0,0,1))){
-            eUnit = new Vec3().set(0,1,0);
-            nUnit = new Vec3().set(0,0,1);
-        }else{
-            eUnit = new Vec3().set(0,0,1).cross(qUnit).normalize();
+        if (qUnit.equals(new Vec3(0, 0, 1))) {
+            eUnit = new Vec3().set(0, 1, 0);
+            nUnit = new Vec3().set(0, 0, 1);
+        } else {
+            eUnit = new Vec3().set(0, 0, 1).cross(qUnit).normalize();
             nUnit = qUnit.clone().cross(eUnit).normalize();
         }
         // Determine the radius of the 'limb' of the ellipsoid.
-        const wMagnitude  = Math.sqrt(q.len()*q.len()-1);
+        const wMagnitude = Math.sqrt(q.len() * q.len() - 1);
         // Compute the center and offsets.
-        const center = qUnit.clone().scale(1.0/qMangitude);
-        const scalar = wMagnitude/qMangitude;
+        const center = qUnit.clone().scale(1.0 / qMangitude);
+        const scalar = wMagnitude / qMangitude;
         const eastOffset = eUnit.scale(scalar);
         const northOffset = nUnit.scale(scalar);
         //A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
@@ -210,10 +210,10 @@ class PerspectiveCamera extends Camera {
         horizonPoints[0] = upperLeft;
         upperLeft = radii.clone().multiply(upperLeft);
         var lowerLeft = center.clone().sub(northOffset);
-        horizonPoints[1]=lowerLeft;
+        horizonPoints[1] = lowerLeft;
         lowerLeft = radii.clone().multiply(lowerLeft);
         var lowerRight = center.clone().sub(northOffset);
-        horizonPoints[2]=lowerRight;
+        horizonPoints[2] = lowerRight;
         lowerRight = radii.clone().cross(lowerRight);
         var upperRight = center.clone().add(northOffset);
         horizonPoints[3] = upperRight;
@@ -227,32 +227,28 @@ class PerspectiveCamera extends Camera {
      * @param {Vec2} windowPosition 
      * @returns {Ray}
      */
-    getPickRayPerspective(windowPosition){
+    // getPickRayPerspective(windowPosition) {
 
-    }
+    // }
 
-    pickEllipsoid(windowPostion){
+    // pickEllipsoid(windowPostion) {
 
-    }
-
-
-    addToResult(x, y, index, computedHorizonQuad){
-        const scratchPickCartesian2 = new Vec2().set(x,y);
-        var r = this.pick
-    }
-
+    // }
+    // addToResult(x, y, index, computedHorizonQuad) {
+    //     const scratchPickCartesian2 = new Vec2().set(x, y);
+    //     // var r = this.pick
+    // }
     computeViewRectangle() {
         const position = this.position.clone(),
-            direction = this.target.clone(),
+            direction = this.target.clone().sub(position).normalize(),
             up = this.up.clone();
-        const cullingVolume = this._viewFrustum.computeCullingVolume(position, direction, this.up);
+        const cullingVolume = this._viewFrustum.computeCullingVolume(position, direction, up);
         const boundingSphere = new BoundingSphere(new Vec3(), ellipsoid.maximumRadius);
         const visibility = cullingVolume.computeVisibility(boundingSphere);
-        if(visibility === Intersect.OUTSIDE)
-            return undefined;
-        var width = this._width,
-            height = this._height;
-        var computedHorizonQuad  = this.computeHorizonQuad();
+        if (visibility === INTERSECT_CONSTANT.OUTSIDE) return undefined;
+        // var width = this._width,
+        //     height = this._height;
+        //var computedHorizonQuad = this.computeHorizonQuad();
 
     }
 

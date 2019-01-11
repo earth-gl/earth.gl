@@ -31,6 +31,14 @@ Plane.fromVec4 = function (v4) {
     const v3 = new Vec3().set(v4.x, v4.y, v4.z);
     const distance = v4.w;
     return new Plane(v3, distance);
-}
+};
+/**
+ * 
+ */
+Plane.from4 = function(x,y,z,w){
+    const v3 = new Vec3().set(x,y,z);
+    const distance = w;
+    return new Plane(v3,distance);
+};
 
 module.exports = Plane;

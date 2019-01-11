@@ -1,5 +1,5 @@
-const Vec3 = require("kiwi.matrix").Vec3,
-    { PHYSICAL_CONSTANT } = require("./../utils/constant"),
+const { Vec3 } = require("kiwi.matrix"),
+    { PHYSICAL_CONSTANT } = require("./../utils/constant");
 /**
  * @class
  */
@@ -30,7 +30,7 @@ class Ellipsoid {
         /**
          * 
          */
-        this._oneOverRadii = new Vec3.set(1/x,1/y,1/z);
+        this._oneOverRadii = new Vec3().set(1 / x, 1 / y, 1 / z);
     }
     /**
      * @type {Vec3}
@@ -41,7 +41,7 @@ class Ellipsoid {
     /**
      * @type {Vec3}
      */
-    get oneOverRadii(){
+    get oneOverRadii() {
         return this._oneOverRadii;
     }
     /**
