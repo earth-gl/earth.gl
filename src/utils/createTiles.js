@@ -35,7 +35,8 @@ const { PHYSICAL_CONSTANT } = require("./constant"),
     northeast = unproject(rectangleNortheastInMeters.x, rectangleNortheastInMeters.y),
     rectangle = createRectangle(southwest.lng, southwest.lat, northeast.lng, northeast.lat),
     numberOfLevelZeroTilesX = 1,
-    numberOfLevelZeroTilesY = 1;
+    numberOfLevelZeroTilesY = 1,
+    ellipsoid = require("./../core/Ellipsoid").WGS84;
 
 const getNumberOfXTilesAtLevel = function (level) {
     return numberOfLevelZeroTilesX << level;
@@ -57,4 +58,25 @@ const rectangleToNativeRectangle = function (rectangle) {
     return createRectangle(nativeSouthwest.x, nativeSouthwest.y, nativeNortheast.x, nativeNortheast.y)
 };
 
+/**
+ * 
+ * @param {Vec3} position 
+ * @param {Vec3} direction 
+ * @param {Vec3} up 
+ */
+const computeCullingVolume  = function(position,direction,up){
+    var t = this.top;
+    var b = this.bottom;
+    var r = this.right;
+    var l = this.left;
+    var n = 1.0;
+    var f =  500000000.0;
+}
 
+/**
+ * @typedef {import ("./../core/Ellipsoid")} Ellipsoid
+ * @param {Ellipsoid} ellipsoid 
+ */
+const computeViewRectangle  = function(){
+    
+};
