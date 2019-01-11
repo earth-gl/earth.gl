@@ -17,11 +17,9 @@ const project = function (lat, lng) {
     else
         c = Math.log(Math.tan((90 + lat) * rad / 2)) / rad;
     return { x: lng * metersPerDegree, y: c * metersPerDegree, };
-}
+};
 
 const unproject = function (x, y) {
-    rad = this.rad,
-        metersPerDegree = this.metersPerDegree;
     let c;
     if (y === 0) {
         c = 0;
@@ -29,10 +27,10 @@ const unproject = function (x, y) {
         c = y / metersPerDegree;
         c = (2 * Math.atan(Math.exp(c * rad)) - Math.PI / 2) / rad;
     }
-    return { lng: x / metersPerDegree, lat: c }
-}
+    return { lng: x / metersPerDegree, lat: c };
+};
 
 module.exports = {
     project,
     unproject
-}
+};
