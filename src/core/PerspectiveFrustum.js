@@ -57,22 +57,25 @@ class PerspectiveFrustum {
      * @returns {CullingVolume}
      */
     computeCullingVolume(position, direction, up) {
+        //planes
+        const planes = this._cullingVolume.planes;
         // parmaters assign
         var t = this.top, 
             b = this.bottom, 
             r = this.right, 
             l = this.left,
             n = this.near, 
-            f = 1000000000.0;
+            f = 10000000000.0,
+            d = 0.0;
+            //f = this.far;
+        //right direction
+        const right = direction.clone().cross(up);
         // near center
         const nearCenter = direction.clone().scale(n);
         nearCenter.add(position);
         // farCenter
         const farCenter = direction.clone().scale(f);
         farCenter.add(position);
-        //planes
-        const planes = this._cullingVolume.planes;
-        const right = direction.clone().cross(up);
         // Left plane computation
         let normal = right.clone().scale(l);
         normal.add(nearCenter);
@@ -80,34 +83,40 @@ class PerspectiveFrustum {
         normal.normalize();
         normal.cross(up);
         normal.normalize();
-        planes[0] = Plane.from4(normal.x, normal.y, normal.z, -normal.clone().dot(position));
+        d = -normal.clone().dot(position);
+        planes[0] = Plane.from4(normal.x, normal.y, normal.z, d);
         //Right plane computation
         normal = right.clone().scale(r);
         normal.add(nearCenter);
         normal.sub(position);
         normal = up.clone().cross(normal);
         normal.normalize();
-        planes[1] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
+        d = -normal.clone().dot(position);
+        planes[1] = Plane.from4(normal.x, normal.y, normal.z, d);
         //bottom plane computation
         normal = up.clone().scale(b);
         normal.add(nearCenter);
         normal.sub(position);
         normal = right.clone().cross(normal);
         normal.normalize();
-        planes[2] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
+        d = -normal.clone().dot(position);
+        planes[2] = Plane.from4(normal.x, normal.y, normal.z, d);
         //top plane computation
         normal = up.clone().scale(t);
         normal.add(nearCenter);
         normal.sub(position);
         normal.cross(right);
         normal.normalize();
-        planes[3] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
+        d = -normal.clone().dot(position);
+        planes[3] = Plane.from4(normal.x, normal.y, normal.z, d);
         //Near plane computation
         normal = direction.clone();
-        planes[4] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(nearCenter));
+        d = -normal.clone().dot(nearCenter);
+        planes[4] = Plane.from4(normal.x, normal.y, normal.z, d);
         //Far plane compution
         normal = direction.clone().negate();
-        planes[5] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(farCenter));
+        d = -normal.clone().dot(farCenter);
+        planes[5] = Plane.from4(normal.x, normal.y, normal.z, d);
         //return volume
         return this._cullingVolume;
     }

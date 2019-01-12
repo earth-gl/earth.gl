@@ -20,7 +20,7 @@
  */
 const merge = require("./../utils/merge"),
     Trackball = require("./../core/Trackball"),
-    { PHYSICAL_CONSTANT } = require("./../utils/constant"),
+    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
     now = require("./../utils/now"),
@@ -89,7 +89,7 @@ class GScene extends Event {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
+        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, maximumRadius);
         /**
          * initialization
          */
@@ -113,7 +113,7 @@ class GScene extends Event {
             devicePixelRatio = this._devicePixelRatio,
             camera = this._camera,
             gl = this._gl;
-        camera.position = [0, 0, PHYSICAL_CONSTANT.EARTH_RADIUS_X * 2.2];
+        camera.position = [0, 0, maximumRadius * 3];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);

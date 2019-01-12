@@ -240,12 +240,12 @@ class PerspectiveCamera extends Camera {
     // }
     computeViewRectangle() {
         const position = this.position.clone(),
+            //direction = position.clone().sub(this.target).normalize(),
             direction = this.target.clone().sub(position).normalize(),
             up = this.up.clone();
         const cullingVolume = this._viewFrustum.computeCullingVolume(position, direction, up);
         const boundingSphere = new BoundingSphere(new Vec3(), ellipsoid.maximumRadius);
         const visibility = cullingVolume.computeVisibility(boundingSphere);
-        console.log(visibility);
         if (visibility === INTERSECT_CONSTANT.OUTSIDE) return undefined;
         // var width = this._width,
         //     height = this._height;

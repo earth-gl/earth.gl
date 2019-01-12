@@ -30,7 +30,7 @@ class BoundingSphere {
             distance = plane.distance,
             normal = plane.normal;
         const distanceToPlane = normal.clone().dot(center) + distance;
-        if (distanceToPlane < - radius)
+        if (distanceToPlane < -radius)
             return INTERSECT_CONSTANT.OUTSIDE;
         else if (distanceToPlane < radius)
             return INTERSECT_CONSTANT.INTERSECTING;
