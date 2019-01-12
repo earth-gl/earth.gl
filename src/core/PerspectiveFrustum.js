@@ -1,6 +1,7 @@
 
 const merge = require("./../utils/merge"),
     Plane = require("./Plane"),
+    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     CullingVolume = require("./CullingVolume");
 /**
  * reference:
@@ -40,7 +41,7 @@ class PerspectiveFrustum {
         /**
          * 
          */
-        this.far = options.far || 500000000.0;
+        this.far = options.far || 10000000000.0;
         /**
          * 
          */
@@ -62,23 +63,23 @@ class PerspectiveFrustum {
             r = this.right, 
             l = this.left,
             n = this.near, 
-            f = this.far;
+            f = 1000000000.0;
         // near center
         const nearCenter = direction.clone().scale(n);
         nearCenter.add(position);
         // farCenter
         const farCenter = direction.clone().scale(f);
         farCenter.add(position);
-        // Left plane computation, right
+        //planes
+        const planes = this._cullingVolume.planes;
         const right = direction.clone().cross(up);
+        // Left plane computation
         let normal = right.clone().scale(l);
         normal.add(nearCenter);
         normal.sub(position);
         normal.normalize();
         normal.cross(up);
         normal.normalize();
-        const planes = this._cullingVolume.planes;
-        //plane0
         planes[0] = Plane.from4(normal.x, normal.y, normal.z, -normal.clone().dot(position));
         //Right plane computation
         normal = right.clone().scale(r);
@@ -86,15 +87,13 @@ class PerspectiveFrustum {
         normal.sub(position);
         normal = up.clone().cross(normal);
         normal.normalize();
-        //plane1
         planes[1] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
-        //bootom plane computation
+        //bottom plane computation
         normal = up.clone().scale(b);
         normal.add(nearCenter);
         normal.sub(position);
         normal = right.clone().cross(normal);
         normal.normalize();
-        //plane2
         planes[2] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
         //top plane computation
         normal = up.clone().scale(t);
@@ -102,14 +101,12 @@ class PerspectiveFrustum {
         normal.sub(position);
         normal.cross(right);
         normal.normalize();
-        //plane3
         planes[3] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(position));
-        //plane4
         //Near plane computation
-        planes[4] = Plane.from4(normal.x, normal.y, normal.z,-direction.clone().dot(nearCenter));
+        normal = direction.clone();
+        planes[4] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(nearCenter));
         //Far plane compution
-        normal = direction.negate();
-        //plane5
+        normal = direction.clone().negate();
         planes[5] = Plane.from4(normal.x, normal.y, normal.z,-normal.clone().dot(farCenter));
         //return volume
         return this._cullingVolume;

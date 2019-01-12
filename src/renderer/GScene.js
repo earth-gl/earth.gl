@@ -26,7 +26,9 @@ const merge = require("./../utils/merge"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
     { addDomEvent, domEventNames } = require("../utils/domEvent");
-
+/**
+ * 
+ */
 const CONTEXT_OPTIONS = {
     alpha: false,
     depth: true,
@@ -36,7 +38,6 @@ const CONTEXT_OPTIONS = {
     preserveDrawingBuffer: false,
     failIfMajorPerformanceCaveat: false
 };
-
 /**
  * @class Scene
  */
@@ -88,7 +89,7 @@ class GScene extends Event {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
+        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
         /**
          * initialization
          */
@@ -102,7 +103,9 @@ class GScene extends Event {
          */
         this._registerDomEvents();
     }
-
+    /**
+     * 
+     */
     _initialize() {
         //gl context
         const width = this._width,
@@ -110,12 +113,11 @@ class GScene extends Event {
             devicePixelRatio = this._devicePixelRatio,
             camera = this._camera,
             gl = this._gl;
-        camera.position = [0, 0, PHYSICAL_CONSTANT.EARTH_RADIUS_X * 2.5];
+        camera.position = [0, 0, PHYSICAL_CONSTANT.EARTH_RADIUS_X * 2.2];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
-
     /**
      * 
      */
@@ -123,7 +125,9 @@ class GScene extends Event {
         const gl = this._gl;
         this._earth = new GGlobal(gl);
     }
-
+    /**
+     * 
+     */
     _registerDomEvents() {
         const dom = this._canvas,
             camera = this._camera;
@@ -133,12 +137,11 @@ class GScene extends Event {
         trackball.update();
         this.addEventPopNode(trackball);
     }
-
     /**
      * refrenece:
      * https://github.com/maptalks/maptalks.js/blob/169cbed69f3e0db1801d559511dad6646a227224/src/map/Map.DomEvents.js#L191
      * handle dom events
-     * @param {} e 
+     * @param {Event} e 
      */
     _handleDomEvent(e) {
         //dom event type
@@ -160,11 +163,16 @@ class GScene extends Event {
         }
         this.fire(type, e, true);
     }
-
+    /**
+     * 
+     * @param {Event} e 
+     */
     _getActualEvent(e) {
         return e.touches && e.touches.length > 0 ? e.touches[0] : e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e;
     }
-
+    /**
+     * 
+     */
     render() {
         const gl = this._gl,
             trackball = this._trackball,
@@ -181,7 +189,6 @@ class GScene extends Event {
         //render object
         earth.render(camera);
     }
-
 }
 
 module.exports = GScene;

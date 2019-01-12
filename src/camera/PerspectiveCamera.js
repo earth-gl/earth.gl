@@ -3,6 +3,8 @@
  */
 const Camera = require("./Camera"),
     { Mat4, Vec3, GLMatrix } = require("kiwi.matrix");
+//solve pricision
+GLMatrix.setMatrixArrayType(Array);
 
 const {INTERSECT_CONSTANT} = require("./../utils/constant"),
     BoundingSphere = require("./../core/BoundingSphere"), 
@@ -33,7 +35,7 @@ class PerspectiveCamera extends Camera {
         /**
          * @type {Number}
          */
-        this._fov = fov ? fov : 50;
+        this._fov = GLMatrix.toRadian(fov);
         /**
          * @type {Number}
          */
@@ -135,7 +137,7 @@ class PerspectiveCamera extends Camera {
      * 更新投影矩阵
      */
     _updateProjectionMatrix() {
-        this._projectionMatrix = Mat4.perspective(GLMatrix.toRadian(this._fov), this._aspect, this._near, this._far);
+        this._projectionMatrix = Mat4.perspective(this._fov, this._aspect, this._near, this._far);
         this._update();
     }
     /**
@@ -156,18 +158,16 @@ class PerspectiveCamera extends Camera {
          *
          */
         this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
-        /**
-         *
-         */
-        this._updateViewFrustrum();
     }
     /**
      * 
      */
     _updateViewFrustrum() {
-        const _aspectRatio = this._aspect, _fov = this._fov,
+        const _aspectRatio = this._aspect, 
+            _fov = this._fov,
             _fovy = _fov < 1.0 ? _fov : Math.atan(Math.tan(_fov * 0.5) / _aspectRatio) * 2.0,
-            _near = this._near, _far = this._far;
+            _near = this._near, 
+            _far = this._far;
         const f = this._viewFrustum;
         f.top = _near * Math.tan(0.5 * _fovy);
         f.bottom = -f.top;
@@ -245,6 +245,7 @@ class PerspectiveCamera extends Camera {
         const cullingVolume = this._viewFrustum.computeCullingVolume(position, direction, up);
         const boundingSphere = new BoundingSphere(new Vec3(), ellipsoid.maximumRadius);
         const visibility = cullingVolume.computeVisibility(boundingSphere);
+        console.log(visibility);
         if (visibility === INTERSECT_CONSTANT.OUTSIDE) return undefined;
         // var width = this._width,
         //     height = this._height;
