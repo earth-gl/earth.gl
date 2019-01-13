@@ -1,11 +1,12 @@
-const TWO_PI = 2 * PI,
+const TWO_PI = 2 * Math.PI,
+    PI_OVER_TWO = Math.PI/2,
     EPSILON14 = 0.00000000000001;
 /**
  * 
  * @param {Number} m 
  * @param {Number} n 
  */
-const mod = function (m, n) {
+const modValue = function (m, n) {
     return ((m % n) + n) % n;
 };
 /**
@@ -13,7 +14,7 @@ const mod = function (m, n) {
  * @param {Number} angle 
  */
 const zeroToTwoPi = function (angle) {
-    var mod = mod(angle, TWO_PI);
+    var mod = modValue(angle, TWO_PI);
     if (Math.abs(mod) < EPSILON14 && Math.abs(angle) > EPSILON14) {
         return TWO_PI;
     }
@@ -72,6 +73,24 @@ class Rectangle {
         return north - south;
     }
     /**
+     * Computes the width of a rectangle in radians.
+     * @type {Number}
+     */
+    get width(){
+        const east = this.east,
+            west = this.west;
+        return east<west? east+Math.PI*2 - west:east -west;
+    }
+    /**
+     * Computes the height of a rectangle in radians.
+     * @type {Number}
+     */
+    get height(){
+        const north = this.north,
+            south = this.south;
+        return north-south;
+    }
+    /**
      * 
      */
     get southwest() {
@@ -79,7 +98,7 @@ class Rectangle {
             longitude: this.west,
             latitude: this.south,
             height: 0.0
-        }
+        };
     }
     /**
      * 
@@ -89,7 +108,7 @@ class Rectangle {
             longitude: this.west,
             latitude: this.north,
             height: 0.0
-        }
+        };
     }
     /**
      * 
@@ -99,7 +118,7 @@ class Rectangle {
             longitude: this.east,
             latitude: this.north,
             height: 0.0
-        }
+        };
     }
     /**
      * 
@@ -109,7 +128,7 @@ class Rectangle {
             longitude: this.east,
             latitude: this.south,
             height: 0.0
-        }
+        };
     }
     /**
      * 
@@ -127,8 +146,13 @@ class Rectangle {
             longitude: longitude,
             latitude: latitude,
             height: 0.0
-        }
+        };
     }
 }
+
+/**
+ * The largest possible rectangle.
+ */
+Rectangle.MAX_VALUE = new Rectangle(-Math.PI, -PI_OVER_TWO, Math.PI, PI_OVER_TWO);
 
 module.exports = Rectangle;

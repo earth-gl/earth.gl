@@ -23,6 +23,8 @@ const merge = require("./../utils/merge"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
+    Quadtree = require("./../core/Quadtree"),
+    QuadtreeTile = require("./../core/QuadtreeTile"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
     { addDomEvent, domEventNames } = require("../utils/domEvent");
@@ -90,6 +92,10 @@ class GScene extends Event {
          * 
          */
         this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, maximumRadius);
+        /**
+         * @type {Quadtree}
+         */
+        this._quadtree = new Quadtree(this._camera);
         /**
          * initialization
          */
@@ -177,6 +183,7 @@ class GScene extends Event {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
+            quadtree = this._quadtree,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -184,6 +191,12 @@ class GScene extends Event {
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
         trackball.update();
+        //calcute err, for tile update
+        quadtree.spaceError(new QuadtreeTile({
+            x:1,
+            y:0,
+            level:0
+        }));    
         //render object
         earth.render(camera);
     }

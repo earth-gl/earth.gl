@@ -173,5 +173,4 @@ class PerspectiveCamera extends Camera {
     }
 }
 
-
 module.exports = PerspectiveCamera;
