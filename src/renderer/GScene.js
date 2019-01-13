@@ -184,8 +184,6 @@ class GScene extends Event {
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
         trackball.update();
-        //get viewRectangle
-        camera.computeViewRectangle();
         //render object
         earth.render(camera);
     }
