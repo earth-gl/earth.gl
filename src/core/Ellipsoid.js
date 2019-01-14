@@ -1,6 +1,7 @@
 const { Vec3 } = require("kiwi.matrix"),
     EPSILON1 = 0.1,
     EPSILON12 = 0.000000000001,
+    Geographic = require("./Geographic"),
     { PHYSICAL_CONSTANT } = require("./../utils/constant");
 /**
  * @class
@@ -137,7 +138,6 @@ class Ellipsoid {
         //
         return new Vec3().set(positionX * xMultiplier, positionY * yMultiplier, positionZ * zMultiplier);
     }
-
     /**
      * Scales the provided Cartesian position 
      * along the geodetic surface normal so 
@@ -148,19 +148,15 @@ class Ellipsoid {
      * cartographicPosition = WGS84.cartesianToCartographic(position);
      * 
      */
-    cartesianToCartographic(cartesian) {
+    vec3ToGeographic(cartesian) {
         const p = this.scaleToGeodeticSurface(cartesian);
         const n = this.geodeticSurfaceNormal(p);
         const h = cartesian.clone().sub(p);
         var longitude = Math.atan2(n.y, n.x);
-        var latitude = Math.asin(n.z);//弧度
+        var latitude = Math.asin(n.z);//resprent value in radian 
         var height = Math.sign(h.clone().dot(cartesian)) * h.len();
-
-        return {
-            longitude:longitude,
-            latitude :latitude,
-            height :height
-        }
+        //
+        return new Geographic(longitude,latitude,height);
     }
 
 }
