@@ -151,9 +151,9 @@ class Ellipsoid {
     cartesianToCartographic(cartesian) {
         const p = this.scaleToGeodeticSurface(cartesian);
         const n = this.geodeticSurfaceNormal(p);
-        const h = position.clone().sub(p);
+        const h = cartesian.clone().sub(p);
         var longitude = Math.atan2(n.y, n.x);
-        var latitude = Math.asin(n.z);
+        var latitude = Math.asin(n.z);//弧度
         var height = Math.sign(h.clone().dot(cartesian)) * h.len();
 
         return {
