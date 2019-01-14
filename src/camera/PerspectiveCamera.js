@@ -129,7 +129,6 @@ class PerspectiveCamera extends Camera {
     get sseDenominator(){
         return this._sseDenominator;
     }
-
     /**
      * 更新投影矩阵
      */
