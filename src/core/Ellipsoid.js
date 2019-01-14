@@ -37,10 +37,6 @@ class Ellipsoid {
          * 
          */
         this._oneOverRadiiSquared = new Vec3().set(1 / (x * x), 1 / (y * y), 1 / (z * z));
-        /**
-         * 
-         */
-        this._centerToleranceSquared = ;
     }
     /**
      * @type {Vec3}
@@ -61,17 +57,13 @@ class Ellipsoid {
         return Math.max(this.x, this.y, this.z);
     }
     /**
-     * @param {Object} lnglat
+     * @param {Vec3} cartesian
      * @returns {Vec3}
      */
-    geodeticSurfaceNormal(lnglat){
-        var longitude = lnglat.longitude;
-        var latitude = lnglat.latitude; 
-        var cosLatitude = Math.cos(latitude);
-        var x = cosLatitude * Math.cos(longitude);
-        var y = cosLatitude * Math.sin(longitude);
-        var z = Math.sin(latitude);
-        return new Vec3().set(x,y,z);
+    geodeticSurfaceNormal(cartesian){
+        const oneOverRadiiSquared = this._oneOverRadiiSquared;
+        const result = cartesian.clone().multiply(oneOverRadiiSquared);
+        return result.normalize();
     }
     /**
      * @type {Vec3} position
@@ -82,6 +74,7 @@ class Ellipsoid {
         var positionY = position.y;
         var positionZ = position.z;
         //
+        const oneOverRadii = this._oneOverRadii;
         var oneOverRadiiX = oneOverRadii.x;
         var oneOverRadiiY = oneOverRadii.y;
         var oneOverRadiiZ = oneOverRadii.z;
@@ -98,17 +91,19 @@ class Ellipsoid {
         if (squaredNorm < EPSILON1) {
             return !isFinite(ratio) ? undefined : intersection.clone();
         }
+        const oneOverRadiiSquared = this._oneOverRadiiSquared;
         var oneOverRadiiSquaredX = oneOverRadiiSquared.x;
         var oneOverRadiiSquaredY = oneOverRadiiSquared.y;
         var oneOverRadiiSquaredZ = oneOverRadiiSquared.z;
         // Use the gradient at the intersection point in place of the true unit normal.
         // The difference in magnitude will be absorbed in the multiplier.
-        var gradient = scaleToGeodeticSurfaceGradient;
-        gradient.x = intersection.x * oneOverRadiiSquaredX * 2.0;
-        gradient.y = intersection.y * oneOverRadiiSquaredY * 2.0;
-        gradient.z = intersection.z * oneOverRadiiSquaredZ * 2.0;
+        var gradient = new Vec3().set(
+            intersection.x * oneOverRadiiSquaredX * 2.0,
+            intersection.y * oneOverRadiiSquaredY * 2.0,
+            intersection.z * oneOverRadiiSquaredZ * 2.0
+        );
         // Compute the initial guess at the normal vector multiplier, lambda.
-        var lambda = (1.0 - ratio) * Cartesian3.magnitude(cartesian) / (0.5 * Cartesian3.magnitude(gradient));
+        var lambda = (1.0 - ratio) * position.len() / (0.5 * gradient.len());
         var correction = 0.0;
         var func;
         var denominator;
@@ -150,7 +145,7 @@ class Ellipsoid {
      * If the position is at the center of the 
      * ellipsoid, this function returns undefined.
      * position = new Vec3().set(17832.12, 83234.52, 952313.73);
-     * cartographicPosition 
+     * cartographicPosition = WGS84.cartesianToCartographic(position);
      * 
      */
     cartesianToCartographic(cartesian) {
@@ -160,6 +155,7 @@ class Ellipsoid {
         var longitude = Math.atan2(n.y, n.x);
         var latitude = Math.asin(n.z);
         var height = Math.sign(h.clone().dot(cartesian)) * h.len();
+
         return {
             longitude:longitude,
             latitude :latitude,
