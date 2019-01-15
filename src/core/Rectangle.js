@@ -1,5 +1,6 @@
 const TWO_PI = 2 * Math.PI,
-    PI_OVER_TWO = Math.PI/2,
+    PI_OVER_TWO = Math.PI / 2,
+    Geographic = require("./Geographic"),
     EPSILON14 = 0.00000000000001;
 /**
  * 
@@ -76,77 +77,56 @@ class Rectangle {
      * Computes the width of a rectangle in radians.
      * @type {Number}
      */
-    get width(){
+    get width() {
         const east = this.east,
             west = this.west;
-        return east<west? east+Math.PI*2 - west:east -west;
+        return east < west ? east + Math.PI * 2 - west : east - west;
     }
     /**
      * Computes the height of a rectangle in radians.
      * @type {Number}
      */
-    get height(){
+    get height() {
         const north = this.north,
             south = this.south;
-        return north-south;
+        return north - south;
     }
     /**
-     * 
+     * get southwets in radians
      */
     get southwest() {
-        return {
-            longitude: this.west,
-            latitude: this.south,
-            height: 0.0
-        };
+        return new Geographic(this.west,this.south,0.0);
     }
     /**
-     * 
+     * get north west in radians
      */
     get northwest() {
-        return {
-            longitude: this.west,
-            latitude: this.north,
-            height: 0.0
-        };
+        return new Geographic(this.west,this.north,0.0);
     }
     /**
-     * 
+     * get northeast in radians
      */
     get northeast() {
-        return {
-            longitude: this.east,
-            latitude: this.north,
-            height: 0.0
-        };
+        return new Geographic(this.east,this.north,0.0);
     }
     /**
-     * 
+     * get sourheast in radians
      */
     get southeast() {
-        return {
-            longitude: this.east,
-            latitude: this.south,
-            height: 0.0
-        };
+        return new Geographic(this.east,this.south,0.0);
     }
     /**
      * 
      */
     get center() {
-        var east = this.east,
+        let east = this.east,
             west = this.west,
             south = this.south,
             north = this.north;
-        //
         east = east < west ? east + TWO_PI : east;
         const longitude = negativePiToPi((west + east) * 0.5);
         const latitude = (south + north) * 0.5;
-        return {
-            longitude: longitude,
-            latitude: latitude,
-            height: 0.0
-        };
+        return new Geographic(longitude,latitude,0.0);
     }
 }
 

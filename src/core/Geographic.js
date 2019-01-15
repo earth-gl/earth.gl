@@ -6,12 +6,12 @@ const GLMatrix = require("kiwi.matrix").GLMatrix;
 class Geographic{
     /**
      * 
-     * @param {Number} lng 
-     * @param {Number} lat 
-     * @param {Number} h 
+     * @param {Number} lng ,represent in radians
+     * @param {Number} lat ,represent in radians
+     * @param {Number} h ,represent in meters
      * @param {Boolean} parseRadian , defale true, parse lat ,lng value to degree
      */
-    constructor(lng,lat,h, parseRadian = true){
+    constructor(lng,lat,h, parseRadian = false){
         this._lng = parseRadian?GLMatrix.toDegree(lng):lng;
         this._lat = parseRadian?GLMatrix.toDegree(lat):lat;
         this._h = h;

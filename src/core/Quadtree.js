@@ -61,7 +61,7 @@ class Quadtree {
         var index = 0;
         for (var y = 0; y < numberOfLevelZeroTilesY; ++y)
             for (var x = 0; x < numberOfLevelZeroTilesX; ++x)
-                zeroLevelTiles[index] = new QuadtreeTile({ x: x, y: y, level: 0 });
+                zeroLevelTiles[index++] = new QuadtreeTile({ x: x, y: y, level: 0 });
         return zeroLevelTiles;
     }
     /**
@@ -76,10 +76,13 @@ class Quadtree {
      * @type {QuadtreeTile} quadtreeTile
      */
     spaceError(quadtreeTile) {
-        //摄像机位置与瓦片中心的距离
+        //摄像机位置与瓦片中心的距离,距离由两部分构成
+        //1.相机在椭球体上的投影点
         const center = quadtreeTile.boundary.center;
+        //2.投影点与目标tile的球面距离+相机距离球面距离
         const distance = center.scale(maximumRadius);
     }
+    
 }
 
 module.exports = Quadtree;

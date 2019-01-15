@@ -2,6 +2,7 @@ const { Vec3 } = require("kiwi.matrix"),
     EPSILON1 = 0.1,
     EPSILON12 = 0.000000000001,
     Geographic = require("./Geographic"),
+    {sin,cos} = require("./../utils/revise"),
     { PHYSICAL_CONSTANT } = require("./../utils/constant");
 /**
  * @class
@@ -31,6 +32,10 @@ class Ellipsoid {
          */
         this._radii = new Vec3().set(x, y, z);
         /**
+         * @type {Vec3}
+         */
+        this._radiiSquared = new Vec3().set(x * x, y * y, z * z);
+        /**
          * 
          */
         this._oneOverRadii = new Vec3().set(1 / x, 1 / y, 1 / z);
@@ -58,17 +63,31 @@ class Ellipsoid {
         return Math.max(this.x, this.y, this.z);
     }
     /**
+     * 地理坐标转化
+     * @type {Geographic}
+     */
+    geodeticSurfaceNormalCartographic(cartographic) {
+        const longitude = cartographic.longitude,
+            latitude = cartographic.latitude,
+            cosLatitude = cos(latitude);
+        const x = cosLatitude * cos(longitude),
+            y = cosLatitude * sin(longitude),
+            z = sin(latitude);
+        return new Vec3().set(x, y, z);
+    }
+    /**
      * @param {Vec3} cartesian
      * @returns {Vec3}
      */
-    geodeticSurfaceNormal(cartesian){
+    geodeticSurfaceNormal(cartesian) {
         const oneOverRadiiSquared = this._oneOverRadiiSquared;
         const result = cartesian.clone().multiply(oneOverRadiiSquared);
         return result.normalize();
     }
     /**
+     * 将空间坐标，按照比例缩放到椭球体上
      * @type {Vec3} position
-     */ 
+     */
     scaleToGeodeticSurface(position) {
         //
         var positionX = position.x;
@@ -145,20 +164,32 @@ class Ellipsoid {
      * If the position is at the center of the 
      * ellipsoid, this function returns undefined.
      * position = new Vec3().set(17832.12, 83234.52, 952313.73);
-     * cartographicPosition = WGS84.cartesianToCartographic(position);
+     * cartographicPosition = WGS84.spaceToGeographic(position);
      * 
      */
-    vec3ToGeographic(cartesian) {
-        const p = this.scaleToGeodeticSurface(cartesian);
+    spaceToGeographic(spaceCoord) {
+        const p = this.scaleToGeodeticSurface(spaceCoord);
         const n = this.geodeticSurfaceNormal(p);
-        const h = cartesian.clone().sub(p);
+        const h = spaceCoord.clone().sub(p);
         var longitude = Math.atan2(n.y, n.x);
         var latitude = Math.asin(n.z);//resprent value in radian 
-        var height = Math.sign(h.clone().dot(cartesian)) * h.len();
+        var height = Math.sign(h.clone().dot(spaceCoord)) * h.len();
         //
-        return new Geographic(longitude,latitude,height);
+        return new Geographic(longitude, latitude, height);
     }
-
+    /**
+     * 
+     * @param {Geographic} geographic 
+     */
+    geographicToSpace(geographic) {
+        const radiiSquared = this._radiiSquared,
+            n = this.geodeticSurfaceNormalCartographic(geographic),
+            k = radiiSquared.clone().multiply(n);
+        const gamma = Math.sqrt(n.clone().dot(k));
+        k.scale(1/gamma);
+        n.scale(geographic.height);
+        return k.add(n);
+    }
 }
 
 /**
