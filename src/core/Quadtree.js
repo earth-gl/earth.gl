@@ -72,7 +72,7 @@ class Quadtree {
     }
     /**
      * @type {Vec3}
-     * @returns {QuadtreeTile} tile
+     * @returns {QuadtreeTile[]} tiles
      */
     pickZeroLevelQuadtreeTiles(cameraSpacePosition){
         //zero
@@ -90,7 +90,7 @@ class Quadtree {
     }
     /**
      * @typedef {import("./QuadtreeTile")} QuadtreeTile
-     * @type {QuadtreeTile} quadtreeTile
+     * @type {quadtreeTile} quadtreeTile
      */
     _spaceError(quadtreeTile) {
         //摄像机位置与瓦片中心的距离,距离由两部分构成

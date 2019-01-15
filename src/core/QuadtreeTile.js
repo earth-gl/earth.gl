@@ -77,6 +77,7 @@ class QuadtreeTile {
             level: this.level + 1,
             parent: this
         });
+        return this._southwestChild;
     }
     /**
      * 
