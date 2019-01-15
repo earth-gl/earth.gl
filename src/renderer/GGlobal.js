@@ -127,7 +127,7 @@ class GGlobal {
     verticesBuffer.bufferData(new Float32Array(this._vertices));
     verticesBuffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
     // transform index data
-    const indexBuffer = this._indexBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
+    const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
     indexBuffer.bindBuffer();
     indexBuffer.bufferData(new Uint16Array(this._indices));
     //
@@ -141,14 +141,14 @@ class GGlobal {
    */
   render(camera) {
     const gl = this._gl,
-      program = this._program;
-    // verticesBuffer = this._verticesBuffer,
-    // indexBuffer = this._indexBuffer;
+      program = this._program,
+      verticesBuffer = this._verticesBuffer,
+      indicesBuffer = this._indicesBuffer;
     //use program
     program.useProgram();
     //bind 
-    // verticesBuffer.bindBuffer();
-    // indexBuffer.bindBuffer();
+    verticesBuffer.bindBuffer();
+    indicesBuffer.bindBuffer();
     //set camera
     this._u_projectionMatrix.assignValue(camera.ProjectionMatrix);
     this._u_viewMatrix.assignValue(camera.ViewMatrix);

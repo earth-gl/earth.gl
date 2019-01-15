@@ -121,7 +121,7 @@ class GScene extends Event {
             camera = this._camera,
             gl = this._gl;
         //setting camera position at 2*raduis
-        camera.position = [0, 0, maximumRadius * 2];
+        camera.position = [0, 0, maximumRadius * 1.5];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
@@ -206,10 +206,10 @@ class GScene extends Event {
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
         trackball.update();   
-        //render earth
-        //earth.render(camera);
         //render surface (terrain)
         surface.render(camera);
+        //render earth
+        //earth.render(camera);
     }
 }
 
