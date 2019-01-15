@@ -1,4 +1,5 @@
 const QuadtreeTile = require("./QuadtreeTile"),
+    ellipsoid = require("./Ellipsoid").WGS84,
     maximumRadius = require("./Ellipsoid").WGS84.maximumRadius,
     terrainTileSchema = require("./QuadtreeTileSchema").CESIUM_TERRAIN;
 /**
@@ -20,6 +21,11 @@ class Quadtree {
          * @type {PerspectiveCamera}
          */
         this._camera = camera;
+        /**
+         * if less then maximumScreenSpaceError, the tile should be load
+         * @type {Number}
+         */
+        this._maximumScreenSpaceError = 2;
         /**
          * get maxiumu geometric error at level 0
          */
@@ -47,8 +53,8 @@ class Quadtree {
      * 
      */
     _computeMaximumGeometricError(level) {
-        const zeroMaximumGeometricError = maximumRadius * 2 * Math.PI * 0.25 / (65 * terrainTileSchema.getNumberOfXTilesAtLevel(level));
-        return zeroMaximumGeometricError;
+        const maximumGeometricError = maximumRadius * 2 * Math.PI * 0.25 / (65 * terrainTileSchema.getNumberOfXTilesAtLevel(level));
+        return maximumGeometricError;
     }
     /**
      * 
@@ -75,12 +81,22 @@ class Quadtree {
      * @typedef {import("./QuadtreeTile")} QuadtreeTile
      * @type {QuadtreeTile} quadtreeTile
      */
-    spaceError(quadtreeTile) {
+    _spaceError(quadtreeTile) {
         //摄像机位置与瓦片中心的距离,距离由两部分构成
         //1.相机在椭球体上的投影点
-        const center = quadtreeTile.boundary.center;
+        const level = quadtreeTile.level,
+            camera = this._camera,
+            maxGeometricError = this._geometricError[level],
+            sseDenominator = camera.sseDenominator,
+            height = camera.height,
+            cameraSpacePosition = camera.position,
+            center = quadtreeTile.boundary.center;
         //2.投影点与目标tile的球面距离+相机距离球面距离
-        const distance = center.scale(maximumRadius);
+        const spacePostion = ellipsoid.geographicToSpace(center);
+        const distance = cameraSpacePosition.clone().sub(spacePostion).len();
+        //3.计算error
+        const error = (maxGeometricError * height) / (distance * sseDenominator);
+        return error;
     }
     
 }

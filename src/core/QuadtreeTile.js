@@ -48,6 +48,12 @@ class QuadtreeTile {
         return this._boundary;
     }
     /**
+     * @type {Number}
+     */
+    get level(){
+        return this._level;
+    }
+    /**
      * 
      * @param {*} x 
      * @param {*} y 

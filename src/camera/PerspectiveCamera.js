@@ -130,6 +130,18 @@ class PerspectiveCamera extends Camera {
         return this._sseDenominator;
     }
     /**
+     * 
+     */
+    get width(){
+        return this._width;
+    }
+    /**
+     * 
+     */
+    get height(){
+        return this._height;
+    }
+    /**
      * 更新投影矩阵
      */
     _updateProjectionMatrix() {
