@@ -8,8 +8,8 @@ const glslify = require("glslify"),
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
     { fetchArrayBuffer } = require("./../utils/resource");
-const storedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzY2UzNzJlYy1iZDQ0LTRlMDItOGRmYi0xNDYyZTBjNDBlZDEiLCJpZCI6NjYwMSwiYXNzZXRzIjp7IjEiOnsidHlwZSI6IlRFUlJBSU4iLCJleHRlbnNpb25zIjpbdHJ1ZSx0cnVlLHRydWVdLCJwdWxsQXBhcnRUZXJyYWluIjp0cnVlfX0sInNyYyI6IjZjYjk4MzM2LTJiYzEtNDVhZC04MWU0LWVmMjc4YTI0MGY1OSIsImlhdCI6MTU0NzU1NjIzMywiZXhwIjoxNTQ3NTU5ODMzfQ.dcqrEG5gVhZbN5qtlntJiRPsbDmMa5K5rfpZ-EaYiCM",
-    storedUrl = "https://assets.cesium.com/1/9/789/370.terrain",
+const storedToken ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhZjI5MmJlNS01YWJhLTQzMWYtODM1NS0xMDFmMGQyOGEwNDMiLCJpZCI6NjYwMSwiYXNzZXRzIjp7IjEiOnsidHlwZSI6IlRFUlJBSU4iLCJleHRlbnNpb25zIjpbdHJ1ZSx0cnVlLHRydWVdLCJwdWxsQXBhcnRUZXJyYWluIjp0cnVlfX0sInNyYyI6IjZjYjk4MzM2LTJiYzEtNDVhZC04MWU0LWVmMjc4YTI0MGY1OSIsImlhdCI6MTU0NzU2MDUzNiwiZXhwIjoxNTQ3NTY0MTM2fQ.ieiDS7Swb_w3UisRLfXdRuRExnzUNtKBh3UUY6BOFlc",
+    storedUrl = "https://assets.cesium.com/1/2/7/1.terrain",
     //storedUrl = "https://assets.cesium.com/{assertId}/{z}/{x}/{y}.terrain",
     storedHeader = {
         Accept: "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*"

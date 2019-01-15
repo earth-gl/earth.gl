@@ -18,27 +18,27 @@ const xhrBlobSupported = (function () {
     }
 })();
 
-const setXhrHeader = function(xhr,headers){
-    for(var key in headers)
-        if(headers.hasOwnProperty(key))
+const setXhrHeader = function (xhr, headers) {
+    for (var key in headers)
+        if (headers.hasOwnProperty(key))
             xhr.setRequestHeader(key, headers[key]);
 }
 
-const makeRequest = function(options){
+const makeRequest = function (options) {
     const responseType = options.responseType,
         headers = merge(options.headers),
-        overrideMimeType  = options.overrideMimeType,
+        overrideMimeType = options.overrideMimeType,
         method = options.method,
         url = options.url,
         data = options.data;
     const promise = new Promise(function (resolve, reject) {
         const xhr = new XMLHttpRequest();
-        xhr.open(method,url,true);
-        overrideMimeType?   xhr.overrideMimeType(overrideMimeType):null;
-        setXhrHeader(xhr,headers);
+        xhr.open(method, url, true);
+        overrideMimeType ? xhr.overrideMimeType(overrideMimeType) : null;
+        setXhrHeader(xhr, headers);
         xhr.responseType = responseType;
-        xhr.onload = function(){
-            if ((xhr.status < 200 || xhr.status >= 300)&&xhr.status === 0) {
+        xhr.onload = function () {
+            if ((xhr.status < 200 || xhr.status >= 300) && xhr.status === 0) {
                 reject("error");
                 return;
             }
@@ -56,26 +56,26 @@ const makeRequest = function(options){
                 resolve(responseHeaders);
                 return;
             }
-            if(xhr.status === 204){
+            if (xhr.status === 204) {
                 //accpet no content
                 resolve();
-            }else if (response&&responseType){
+            } else if (response && responseType) {
                 resolve(response);
-            }else if (responseType  === 'json'&&response ==='string'){
+            } else if (responseType === 'json' && response === 'string') {
                 try {
                     resolve(JSON.parse(response));
                 } catch (e) {
                     reject(e);
                 }
-            }else if( (browserResponseType ===""||browserResponseType ==="doucment") && xhr.responseXML){
+            } else if ((browserResponseType === "" || browserResponseType === "doucment") && xhr.responseXML) {
                 resolve(xhr.responseXML);
-            }else if((browserResponseType === responseType || browserResponseType === 'text') && xhr.responseText){
+            } else if ((browserResponseType === "" || browserResponseType === 'text') && xhr.responseText) {
                 resolve(xhr.responseText);
-            }else{
+            } else {
                 reject('Invalid XMLHttpRequest response type.');
             }
         }
-        xhr.onerror = function(e){
+        xhr.onerror = function (e) {
             reject("Invalid request");
         }
         xhr.send(data);
@@ -84,18 +84,18 @@ const makeRequest = function(options){
     return promise;
 }
 
-const fetch = function(options){
+const fetch = function (options) {
     options = options || {};
     options.method = "GET";
     return makeRequest(options);
 };
 
-const fetchArrayBuffer = function(url, headers, token){
-    headers.Accept = headers.Accept&&token? headers.Accept + ';'+ "access_token="+token:headers.Accept;
+const fetchArrayBuffer = function (url, headers, token) {
+    headers.Accept = headers.Accept && token ? headers.Accept + ';' + "access_token=" + token : headers.Accept;
     return fetch({
-        url:url,
-        headers :headers,
-        responseType : 'arraybuffer'
+        url: url,
+        headers: headers,
+        responseType: 'arraybuffer'
     });
 };
 
