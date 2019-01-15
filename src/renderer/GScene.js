@@ -190,13 +190,7 @@ class GScene extends Event {
         gl.enable(gl.DEPTH_TEST);
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
-        trackball.update();
-        //calcute err, for tile update
-        quadtree.spaceError(new QuadtreeTile({
-            x:1,
-            y:0,
-            level:0
-        }));    
+        trackball.update();   
         //render object
         earth.render(camera);
     }

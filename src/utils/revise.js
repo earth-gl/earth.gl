@@ -10,4 +10,10 @@ const cos = function (x) {
     return Math.cos(x) + 8 - 8;
 };
 
-module.exports = { sin, cos };
+const EPSILON14 = 0.00000000000001;
+
+const equal14 = function (a, b) {
+    return Math.abs(a - b) < 0.00000000000001;
+}
+
+module.exports = { sin, cos, equal14, EPSILON14 };

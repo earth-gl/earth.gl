@@ -23,35 +23,23 @@ class QuadtreeTile {
         /**
          * @type {Number}
          */
-        this._x = options.x;
+        this.x = options.x;
         /**
          * @type {Number}
          */
-        this._y = options.y;
+        this.y = options.y;
         /**
          * @type {Number}
          */
-        this._level = options.level;
+        this.level = options.level;
         /**
          * @type {QuadtreeTile}
          */
-        this._parent = options.parent;
+        this.parent = options.parent;
         /**
          * @type {Rectangle}
          */
-        this._boundary = this._calcuteBoundary(this._x, this._y, this._level);
-    }
-    /**
-     * @type {Rectangle}
-     */
-    get boundary(){
-        return this._boundary;
-    }
-    /**
-     * @type {Number}
-     */
-    get level(){
-        return this._level;
+        this.boundary = this._calcuteBoundary(this.x, this.y, this.level);
     }
     /**
      * 
@@ -72,6 +60,63 @@ class QuadtreeTile {
             north = rectangle.north - y * yTileHeight,
             south = rectangle.north - (y + 1) * yTileHeight;
         return new Rectangle(west, south, east, north);
+    }
+    /**
+     * 
+     */
+    get children(){
+        return [this.northwestChild, this.northeastChild, this.southwestChild, this.southeastChild];
+    }
+    /**
+     * foreach quard tree(southwets child)
+     */
+    get southwestChild() {
+        this._southwestChild = this._southwestChild || new QuadtreeTile({
+            x: this.x * 2,
+            y: this.y * 2 + 1,
+            level: this.level + 1,
+            parent: this
+        });
+    }
+    /**
+     * 
+     */
+    get southeastChild() {
+        this._southeastChild = this._southeastChild || new QuadtreeTile({
+            x: this.x * 2 + 1,
+            y: this.y * 2 + 1,
+            level: this.level + 1,
+            parent: this
+        });
+        return this._southeastChild;
+    }
+    /**
+     * Gets the northwest child tile.
+     * @memberof QuadtreeTile.prototype
+     * @type {QuadtreeTile}
+     */
+    get northwestChild() {
+        this._northwestChild = this._northwestChild || new QuadtreeTile({
+            x: this.x * 2,
+            y: this.y * 2,
+            level: this.level + 1,
+            parent: this
+        });
+        return this._northwestChild;
+    }
+    /**
+     * Gets the northeast child tile.
+     * @memberof QuadtreeTile.prototype
+     * @type {QuadtreeTile}
+     */
+    get northeastChild() {
+        this._northeastChild = this._northeastChild || new QuadtreeTile({
+            x: this.x * 2 + 1,
+            y: this.y * 2,
+            level: this.level + 1,
+            parent: this
+        });
+        return this._northeastChild;
     }
 }
 

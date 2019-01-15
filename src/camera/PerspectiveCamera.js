@@ -171,6 +171,7 @@ class PerspectiveCamera extends Camera {
      * 
      */
     _updateViewFrustrum() {
+        //Math.atan(Math.tan(frustum.fov * 0.5) / frustum.aspectRatio) * 2.0
         const _aspectRatio = this._aspect, 
             _fov = this._fov,
             _fovy = _fov < 1.0 ? _fov : Math.atan(Math.tan(_fov * 0.5) / _aspectRatio) * 2.0,

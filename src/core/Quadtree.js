@@ -71,12 +71,23 @@ class Quadtree {
         return zeroLevelTiles;
     }
     /**
-     * 
+     * @type {Vec3}
+     * @returns {QuadtreeTile} tile
      */
-    contains(){
-        
+    pickZeroLevelQuadtreeTiles(cameraSpacePosition){
+        //zero
+        const zeroLevelTiles = this._zeroLevelTiles,
+            pickedZeroLevelTiles = [];
+        //1.转化camera 到椭球体
+        const geographic = ellipsoid.spaceToGeographic(cameraSpacePosition);
+        //2.计算tile rectangle与 geo coord 相交
+        for(var i=0,len = zeroLevelTiles.length; i<len;i++){
+            const quadtreeTile = zeroLevelTiles[i];
+            //3.返回tile
+            quadtreeTile.boundary.contain(geographic)?pickedZeroLevelTiles.push(quadtreeTile):null;
+        }
+        return pickedZeroLevelTiles;
     }
-
     /**
      * @typedef {import("./QuadtreeTile")} QuadtreeTile
      * @type {QuadtreeTile} quadtreeTile
