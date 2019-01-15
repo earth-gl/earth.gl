@@ -25,6 +25,7 @@ const merge = require("./../utils/merge"),
     GGlobal = require("./GGlobal"),
     Quadtree = require("./../core/Quadtree"),
     QuadtreeTile = require("./../core/QuadtreeTile"),
+    GSurface = require("./GSurface"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
     { addDomEvent, domEventNames } = require("../utils/domEvent");
@@ -129,8 +130,20 @@ class GScene extends Event {
      * 
      */
     _initComponents() {
+        /**
+         * @type {WebGLRenderingContext}
+         */
         const gl = this._gl;
+        /**
+         * create earth
+         */
         this._earth = new GGlobal(gl);
+        /**
+         * create surface
+         */
+        this._surface = new GSurface(gl);
+        //
+        this._surface.update();
     }
     /**
      * 
@@ -185,6 +198,7 @@ class GScene extends Event {
             trackball = this._trackball,
             camera = this._camera,
             quadtree = this._quadtree,
+            surface = this._surface,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -192,8 +206,10 @@ class GScene extends Event {
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
         trackball.update();   
-        //render object
-        earth.render(camera);
+        //render earth
+        //earth.render(camera);
+        //render surface (terrain)
+        surface.render(camera);
     }
 }
 

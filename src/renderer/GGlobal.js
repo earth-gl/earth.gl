@@ -44,7 +44,7 @@ class GGlobal {
     /**
      *
      */
-    this._indexs = [];
+    this._indices = [];
     /**
      * 
      */
@@ -106,10 +106,10 @@ class GGlobal {
         indexData.push(first + 1);
       }
     }
-    //
+    //vertex data
     this._vertices = vertexPositionData;
-    //
-    this._indexs = indexData;
+    //vertex index
+    this._indices = indexData;
   }
   /**
    * 构造资源
@@ -129,7 +129,7 @@ class GGlobal {
     // transform index data
     const indexBuffer = this._indexBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
     indexBuffer.bindBuffer();
-    indexBuffer.bufferData(new Uint16Array(this._indexs));
+    indexBuffer.bufferData(new Uint16Array(this._indices));
     //
     this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
     this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
@@ -154,7 +154,7 @@ class GGlobal {
     this._u_viewMatrix.assignValue(camera.ViewMatrix);
     this._u_modelMatrix.assignValue(camera.IdentityMatrix);
     //
-    gl.drawElements(gl.TRIANGLES, this._indexs.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, this._indices.length, gl.UNSIGNED_SHORT, 0);
   }
 }
 
