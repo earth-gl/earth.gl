@@ -24,7 +24,6 @@ const merge = require("./../utils/merge"),
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
     Quadtree = require("./../core/Quadtree"),
-    QuadtreeTile = require("./../core/QuadtreeTile"),
     GSurface = require("./GSurface"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
@@ -121,7 +120,7 @@ class GScene extends Event {
             camera = this._camera,
             gl = this._gl;
         //setting camera position at 2*raduis
-        camera.position = [0, 0, maximumRadius * 1.5];
+        camera.position = [0, 0, maximumRadius * 2];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
@@ -197,8 +196,8 @@ class GScene extends Event {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
-            quadtree = this._quadtree,
-            surface = this._surface,
+            //quadtree = this._quadtree,
+            //surface = this._surface,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -207,9 +206,9 @@ class GScene extends Event {
         //update camera
         trackball.update();   
         //render surface (terrain)
-        surface.render(camera);
+        //surface.render(camera);
         //render earth
-        //earth.render(camera);
+        earth.render(camera);
     }
 }
 

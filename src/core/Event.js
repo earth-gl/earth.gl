@@ -7,10 +7,10 @@
 *   @inheritable
 */
 
-const stamp = require('./../utils/stamp'),
-    splitWords = require('./../utils/splitWords').splitWords,
-    noop = require('./../utils/noop'),
-    merge = require('./../utils/merge');
+const stamp = require("./../utils/stamp"),
+    splitWords = require("./../utils/splitWords").splitWords,
+    noop = require("./../utils/noop"),
+    merge = require("./../utils/merge");
 /**
  * @class 
  */
@@ -25,10 +25,10 @@ class Event {
         var events = this._events,
             contextId = context && context !== this && stamp(context);
         if (contextId) {
-            var indexKey = type + '_idx',
-                indexLenKey = type + '_len',
+            var indexKey = type + "_idx",
+                indexLenKey = type + "_len",
                 typeIndex = events[indexKey] = events[indexKey] || {},
-                id = stamp(fn) + '_' + contextId;
+                id = stamp(fn) + "_" + contextId;
             if (!typeIndex[id]) {
                 typeIndex[id] = { fn: fn, ctx: context };
                 events[indexLenKey] = events[indexLenKey] || 0;
@@ -42,8 +42,8 @@ class Event {
 
     _off(type, fn, context) {
         var events = this._events,
-            indexKey = type + '_idx',
-            indexLenKey = type + '_len';
+            indexKey = type + "_idx",
+            indexLenKey = type + "_len";
         if (!events) {
             return;
         }
@@ -56,7 +56,7 @@ class Event {
         var contextId = context && context !== this && stamp(context),
             listeners, i, len, listener, id;
         if (contextId) {
-            id = stamp(fn) + '_' + contextId;
+            id = stamp(fn) + "_" + contextId;
             listeners = events[indexKey];
             if (listeners && listeners[id]) {
                 listener = listeners[id];
@@ -80,21 +80,8 @@ class Event {
         }
     }
 
-    once(types, fn, context) {
-        if (typeof types === 'object') {
-            for (var type in types) {
-                this.once(type, types[type], fn);
-            }
-            return this;
-        }
-        var handler = bind(function () {
-            this.off(types, fn, context).off(types, handler, context);
-        }, this);
-        return this.on(types, fn, context).on(types, handler, context);
-    }
-
     on(types, fn, context) {
-        if (typeof types === 'object') {
+        if (typeof types === "object") {
             for (var type in types) {
                 this._on(type, types[type], fn);
             }
@@ -119,7 +106,7 @@ class Event {
     off(types, fn, context) {
         if (!types) {
             delete this._events;
-        } else if (typeof types === 'object') {
+        } else if (typeof types === "object") {
             for (var type in types) {
                 this._off(type, types[type], fn);
             }
@@ -136,7 +123,7 @@ class Event {
         if (!this.listens(type, propagate)) { return this; }
         var event = merge({}, data, { type: type, target: this }),
             events = this._events;
-        var typeIndex = events[type + '_idx'],
+        var typeIndex = events[type + "_idx"],
             i, len, listeners, id;
         if (events[type]) {
             listeners = events[type].slice();
@@ -155,7 +142,7 @@ class Event {
 
     listens(type, propagate) {
         var events = this._events;
-        if (events[type] || events[type + '_len']) {
+        if (events[type] || events[type + "_len"]) {
             return true;
         }
         if (propagate) {
@@ -172,7 +159,7 @@ class Event {
     }
 
     removeEventPopNode(obj) {
-        if (!!this._eventPopNodes[stamp(obj)]) {
+        if (this._eventPopNodes[stamp(obj)]) {
             delete this._eventPopNodes[stamp(obj)];
         }
         return this;
