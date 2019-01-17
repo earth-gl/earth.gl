@@ -12,5 +12,5 @@ varying vec4 v_color;
 void main() {
     v_color = vec4(normalize(a_position),1.0);
     gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix, a_position);
-    gl_PointSize = 10.0;
+    gl_PointSize = 5.0;
 }
