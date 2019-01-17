@@ -18,6 +18,5 @@ const update = function () {
     screen.draw();
 };
 
-
 update();
 

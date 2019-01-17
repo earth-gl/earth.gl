@@ -89,6 +89,10 @@ class GScene extends Event {
          */
         this._shadow = options.shadow || false;
         /**
+         * @type {Array}
+         */
+        this._primitives = [];
+        /**
          * 
          */
         this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, maximumRadius);
@@ -192,12 +196,19 @@ class GScene extends Event {
     /**
      * 
      */
+    get primitives(){
+        return this._primitives;
+    }
+    /**
+     * 
+     */
     render() {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
             //quadtree = this._quadtree,
             surface = this._surface,
+            primitives = this._primitives,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -209,7 +220,8 @@ class GScene extends Event {
         earth.render(camera);
         //render surface (terrain)
         //surface.render(camera);
-
+        for(var i = 0,len = primitives;i<len;i++)
+            primitives[i].render(camera);
     }
 }
 

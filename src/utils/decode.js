@@ -1,111 +1,276 @@
+const QUANTIZED_MESH_HEADER = new Map([
+    ['centerX', Float64Array.BYTES_PER_ELEMENT],
+    ['centerY', Float64Array.BYTES_PER_ELEMENT],
+    ['centerZ', Float64Array.BYTES_PER_ELEMENT],
 
-const inRange = function (a, min, max) {
-    return min <= a && a <= max;
-};
+    ['minHeight', Float32Array.BYTES_PER_ELEMENT],
+    ['maxHeight', Float32Array.BYTES_PER_ELEMENT],
 
-const utf8Handler = function (utfBytes) {
-    var codePoint = 0;
-    var bytesSeen = 0;
-    var bytesNeeded = 0;
-    var lowerBoundary = 0x80;
-    var upperBoundary = 0xBF;
-    var codePoints = [];
-    var length = utfBytes.length;
-    for (var i = 0; i < length; ++i) {
-        var currentByte = utfBytes[i];
-        // If bytesNeeded = 0, then we are starting a new character
-        if (bytesNeeded === 0) {
-            // 1 Byte Ascii character
-            if (inRange(currentByte, 0x00, 0x7F)) {
-                // Return a code point whose value is byte.
-                codePoints.push(currentByte);
-                continue;
-            }
-            // 2 Byte character
-            if (inRange(currentByte, 0xC2, 0xDF)) {
-                bytesNeeded = 1;
-                codePoint = currentByte & 0x1F;
-                continue;
-            }
-            // 3 Byte character
-            if (inRange(currentByte, 0xE0, 0xEF)) {
-                // If byte is 0xE0, set utf-8 lower boundary to 0xA0.
-                if (currentByte === 0xE0) {
-                    lowerBoundary = 0xA0;
-                }
-                // If byte is 0xED, set utf-8 upper boundary to 0x9F.
-                if (currentByte === 0xED) {
-                    upperBoundary = 0x9F;
-                }
+    ['boundingSphereCenterX', Float64Array.BYTES_PER_ELEMENT],
+    ['boundingSphereCenterY', Float64Array.BYTES_PER_ELEMENT],
+    ['boundingSphereCenterZ', Float64Array.BYTES_PER_ELEMENT],
+    ['boundingSphereRadius', Float64Array.BYTES_PER_ELEMENT],
 
-                bytesNeeded = 2;
-                codePoint = currentByte & 0xF;
-                continue;
-            }
+    ['horizonOcclusionPointX', Float64Array.BYTES_PER_ELEMENT],
+    ['horizonOcclusionPointY', Float64Array.BYTES_PER_ELEMENT],
+    ['horizonOcclusionPointZ', Float64Array.BYTES_PER_ELEMENT]
+])
 
-            // 4 Byte character
-            if (inRange(currentByte, 0xF0, 0xF4)) {
-                // If byte is 0xF0, set utf-8 lower boundary to 0x90.
-                if (currentByte === 0xF0) {
-                    lowerBoundary = 0x90;
-                }
-                // If byte is 0xF4, set utf-8 upper boundary to 0x8F.
-                if (currentByte === 0xF4) {
-                    upperBoundary = 0x8F;
-                }
-
-                bytesNeeded = 3;
-                codePoint = currentByte & 0x7;
-                continue;
-            }
-            throw new RuntimeError('String decoding failed.');
-        }
-        // Out of range, so ignore the first part(s) of the character and continue with this byte on its own
-        if (!inRange(currentByte, lowerBoundary, upperBoundary)) {
-            codePoint = bytesNeeded = bytesSeen = 0;
-            lowerBoundary = 0x80;
-            upperBoundary = 0xBF;
-            --i;
-            continue;
-        }
-        // Set appropriate boundaries, since we've now checked byte 2 of a potential longer character
-        lowerBoundary = 0x80;
-        upperBoundary = 0xBF;
-        // Add byte to code point
-        codePoint = (codePoint << 6) | (currentByte & 0x3F);
-        // We have the correct number of bytes, so push and reset for next character
-        ++bytesSeen;
-        if (bytesSeen === bytesNeeded) {
-            codePoints.push(codePoint);
-            codePoint = bytesNeeded = bytesSeen = 0;
-        }
-    }
-    return codePoints;
+const decodeZigZag = function (value) {
+    return (value >> 1) ^ (-(value & 1))
 }
 
-const decodeWithTextDecoder = function (view) {
-    var decoder = new TextDecoder('utf-8');
-    return decoder.decode(view);
-};
+const decodeHeader = function (dataView) {
+    let position = 0
+    const header = {}
 
-const decodeWithFromCharCode = function (view) {
-    var result = '';
-    var codePoints = utf8Handler(view);
-    var length = codePoints.length;
-    for (var i = 0; i < length; ++i) {
-        var cp = codePoints[i];
-        if (cp <= 0xFFFF) {
-            result += String.fromCharCode(cp);
-        } else {
-            cp -= 0x10000;
-            result += String.fromCharCode((cp >> 10) + 0xD800,
-                (cp & 0x3FF) + 0xDC00);
-        }
+    for (let [key, bytesCount] of QUANTIZED_MESH_HEADER) {
+        const getter = bytesCount === 8 ? dataView.getFloat64 : dataView.getFloat32
 
+        header[key] = getter.call(dataView, position, true)
+        position += bytesCount
     }
-    return result;
+
+    return { header, headerEndPosition: position }
 }
 
-const decode = typeof TextDecoder !== "undefined" ? decodeWithTextDecoder : decodeWithFromCharCode;
+const decodeVertexData = function (dataView, headerEndPosition) {
+    let position = headerEndPosition
+    const elementsPerVertex = 3
+    const vertexCount = dataView.getUint32(position, true)
+    const vertexData = new Uint16Array(vertexCount * elementsPerVertex)
+
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const bytesPerArrayElement = Uint16Array.BYTES_PER_ELEMENT
+    const elementArrayLength = vertexCount * bytesPerArrayElement
+    const uArrayStartPosition = position
+    const vArrayStartPosition = uArrayStartPosition + elementArrayLength
+    const heightArrayStartPosition = vArrayStartPosition + elementArrayLength
+
+    let u = 0
+    let v = 0
+    let height = 0
+
+    for (let i = 0; i < vertexCount; i++) {
+        u += decodeZigZag(dataView.getUint16(uArrayStartPosition + bytesPerArrayElement * i, true))
+        v += decodeZigZag(dataView.getUint16(vArrayStartPosition + bytesPerArrayElement * i, true))
+        height += decodeZigZag(dataView.getUint16(heightArrayStartPosition + bytesPerArrayElement * i, true))
+
+        vertexData[i] = u
+        vertexData[i + vertexCount] = v
+        vertexData[i + vertexCount * 2] = height
+    }
+
+    position += elementArrayLength * 3
+
+    return { vertexData, vertexDataEndPosition: position }
+}
+
+const decodeIndex = function (buffer, position, indicesCount, bytesPerIndex, encoded = true) {
+    let indices
+
+    if (bytesPerIndex === 2) {
+        indices = new Uint16Array(buffer, position, indicesCount)
+    } else {
+        indices = new Uint32Array(buffer, position, indicesCount)
+    }
+
+    if (!encoded) {
+        return indices
+    }
+
+    let highest = 0
+
+    for (let i = 0; i < indices.length; ++i) {
+        let code = indices[i]
+
+        indices[i] = highest - code
+
+        if (code === 0) {
+            ++highest
+        }
+    }
+
+    return indices
+}
+
+const decodeTriangleIndices = function (dataView, vertexData, vertexDataEndPosition) {
+    let position = vertexDataEndPosition
+    const elementsPerVertex = 3
+    const vertexCount = vertexData.length / elementsPerVertex
+    const bytesPerIndex = vertexCount > 65536
+        ? Uint32Array.BYTES_PER_ELEMENT
+        : Uint16Array.BYTES_PER_ELEMENT
+
+    if (position % bytesPerIndex !== 0) {
+        position += bytesPerIndex - (position % bytesPerIndex)
+    }
+
+    const triangleCount = dataView.getUint32(position, true)
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const triangleIndicesCount = triangleCount * 3
+    const triangleIndices = decodeIndex(
+        dataView.buffer,
+        position,
+        triangleIndicesCount,
+        bytesPerIndex
+    )
+    position += triangleIndicesCount * bytesPerIndex
+
+    return {
+        triangleIndicesEndPosition: position,
+        triangleIndices
+    }
+}
+
+const decodeEdgeIndices = function (dataView, vertexData, triangleIndicesEndPosition) {
+    let position = triangleIndicesEndPosition
+    const elementsPerVertex = 3
+    const vertexCount = vertexData.length / elementsPerVertex
+    const bytesPerIndex = vertexCount > 65536
+        ? Uint32Array.BYTES_PER_ELEMENT
+        : Uint16Array.BYTES_PER_ELEMENT
+
+    const westVertexCount = dataView.getUint32(position, true)
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const westIndices = decodeIndex(dataView.buffer, position, westVertexCount, bytesPerIndex, false)
+    position += westVertexCount * bytesPerIndex
+
+    const southVertexCount = dataView.getUint32(position, true)
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const southIndices = decodeIndex(dataView.buffer, position, southVertexCount, bytesPerIndex, false)
+    position += southVertexCount * bytesPerIndex
+
+    const eastVertexCount = dataView.getUint32(position, true)
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const eastIndices = decodeIndex(dataView.buffer, position, eastVertexCount, bytesPerIndex, false)
+    position += eastVertexCount * bytesPerIndex
+
+    const northVertexCount = dataView.getUint32(position, true)
+    position += Uint32Array.BYTES_PER_ELEMENT
+
+    const northIndices = decodeIndex(dataView.buffer, position, northVertexCount, bytesPerIndex, false)
+    position += northVertexCount * bytesPerIndex
+
+    return {
+        edgeIndicesEndPosition: position,
+        westIndices,
+        southIndices,
+        eastIndices,
+        northIndices
+    }
+}
+
+const decodeVertexNormalsExtension = function (extensionDataView) {
+    return new Uint8Array(
+        extensionDataView.buffer, extensionDataView.byteOffset, extensionDataView.byteLength
+    )
+}
+
+const decodeWaterMaskExtension = function (extensionDataView) {
+    return extensionDataView.buffer.slice(
+        extensionDataView.byteOffset,
+        extensionDataView.byteOffset + extensionDataView.byteLength
+    )
+}
+
+const decodeExtensions = function (dataView, indicesEndPosition) {
+    const extensions = {}
+    if (dataView.byteLength <= indicesEndPosition) {
+        return { extensions, extensionsEndPosition: indicesEndPosition }
+    }
+    let position = indicesEndPosition
+    while (position < dataView.byteLength) {
+        const extensionId = dataView.getUint8(position, true)
+        position += Uint8Array.BYTES_PER_ELEMENT
+        const extensionLength = dataView.getUint32(position, true)
+        position += Uint32Array.BYTES_PER_ELEMENT
+        const extensionView = new DataView(dataView.buffer, position, extensionLength)
+        switch (extensionId) {
+            case 1: {
+                extensions.vertexNormals = decodeVertexNormalsExtension(extensionView)
+
+                break
+            }
+            case 2: {
+                extensions.waterMask = decodeWaterMaskExtension(extensionView)
+
+                break
+            }
+            default: {
+                console.warn(`Unknown extension with id ${extensionId}`)
+            }
+        }
+        position += extensionLength
+    }
+    return { extensions, extensionsEndPosition: position }
+}
+
+const DECODING_STEPS = {
+    header: 0,
+    vertices: 1,
+    triangleIndices: 2,
+    edgeIndices: 3,
+    extensions: 4
+}
+
+const DEFAULT_OPTIONS = {
+    maxDecodingStep: DECODING_STEPS.extensions
+}
+
+const decode = function (data, userOptions) {
+    const options = Object.assign({}, DEFAULT_OPTIONS, userOptions)
+    const view = new DataView(data)
+    const { header, headerEndPosition } = decodeHeader(view)
+    if (options.maxDecodingStep < DECODING_STEPS.vertices) {
+        return { header }
+    }
+    const { vertexData, vertexDataEndPosition } = decodeVertexData(view, headerEndPosition)
+    if (options.maxDecodingStep < DECODING_STEPS.triangleIndices) {
+        return { header, vertexData }
+    }
+    const {
+        triangleIndices,
+        triangleIndicesEndPosition
+    } = decodeTriangleIndices(view, vertexData, vertexDataEndPosition)
+    if (options.maxDecodingStep < DECODING_STEPS.edgeIndices) {
+        return { header, vertexData, triangleIndices }
+    }
+    const {
+        westIndices,
+        southIndices,
+        eastIndices,
+        northIndices,
+        edgeIndicesEndPosition
+    } = decodeEdgeIndices(view, vertexData, triangleIndicesEndPosition)
+    if (options.maxDecodingStep < DECODING_STEPS.extensions) {
+        return {
+            header,
+            vertexData,
+            triangleIndices,
+            westIndices,
+            northIndices,
+            eastIndices,
+            southIndices
+        }
+    }
+    const { extensions } = decodeExtensions(view, edgeIndicesEndPosition)
+    return {
+        header,
+        vertexData,
+        triangleIndices,
+        westIndices,
+        northIndices,
+        eastIndices,
+        southIndices,
+        extensions
+    }
+};
+
 
 module.exports = decode;

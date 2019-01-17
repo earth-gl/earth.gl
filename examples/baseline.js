@@ -5,8 +5,8 @@
     // Quadtree = require("../src/core/Quadtree"),
     // maximumRadius = ellipsoid.maximumRadius;
     const fetch = require('node-fetch');
-    //const url = "http://127.0.0.1:8002/tilesets/cut_n00e090_wgs84_tiles/0/0/0.terrain?v=1.0.0";
-    const url = "https://assets.cesium.com/1/2/5/1.terrain?v=1.1.0"
+    const url = "http://127.0.0.1:8002/tilesets/terrain/0/0/0.terrain?v=1.0.0";
+   // const url = "https://assets.cesium.com/1/2/5/1.terrain?v=1.1.0"
     fetch(url,{
         method:"GET",
         headers:{

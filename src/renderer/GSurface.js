@@ -4,6 +4,7 @@ const glslify = require("glslify"),
     BoundingSphere = require("./../core/BoundingSphere"),
     { createTypedArrayFromArrayBuffer, getStringFromTypedArray } = require("./../utils/typedArray"),
     { Vec3 } = require("kiwi.matrix"),
+    decode = require("./../utils/decode"),
     GUniform = require("./GUniform"),
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
@@ -14,7 +15,8 @@ const fetch = require('node-fetch'),
     zigZagDeltaDecode = require("./../utils/zigZagDeltaDecode");
 
 //const url = "https://assets.cesium.com/1/4/22/10.terrain?extensions=octvertexnormals-watermask&v=1.1.0";
-const url = "http://127.0.0.1:8002/tilesets/cut_n00e090_wgs84_tiles/0/0/0.terrain?v=1.0.0";
+const url = "http://localhost:8002/tilesets/test/0/0/0.terrain";
+//const  url = "http://139.129.7.130/terrain/0.terrain";
 
 const QuantizedMeshExtensionIds = {
     /**
@@ -81,12 +83,13 @@ class GSurface {
         fetch(url, {
             method: "GET",
             headers: {
-                'Accept': 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxMDU4MDAwNy00MzYzLTQ5NGUtYmEyMy1jOTUyZjRjMjIwNDEiLCJpZCI6MjU5LCJhc3NldHMiOnsiMSI6eyJ0eXBlIjoiVEVSUkFJTiIsImV4dGVuc2lvbnMiOlt0cnVlLHRydWUsdHJ1ZV0sInB1bGxBcGFydFRlcnJhaW4iOnRydWV9fSwic3JjIjoiYjBkYzNkMWItODgzNi00MzAxLThiZjktZjQ5ZGNkNjYxODI3IiwiaWF0IjoxNTQ3NzEzMjIwLCJleHAiOjE1NDc3MTY4MjB9.-mwl_QoyYP9E6Q-lhz73KiR2JpXg8miQffKXVv89OyQ',
+                'Accept': 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*',
             },
             responseType: "arraybuffer",
         }).then(function (res) {
             return res.arrayBuffer();
         }).then(function (buffer) {
+            const b = decode(buffer);
             // var pos = 0;
             // var cartesian3Elements = 3;
             // var boundingSphereElements = cartesian3Elements + 1;
