@@ -78,13 +78,12 @@ class GBuffer {
      * 制定数据输入方式和输入管道
      * 关联缓冲区对象和position变量
      */
-    linkPointerAndPosition(size, type, normalize, stride, offset) {
+    linkAndEnableAttribPointer(size, type, normalize, stride, offset) {
         const gl = this._gl,
             attribLocation = this._attribLocation;
         gl.vertexAttribPointer(attribLocation, size, type, normalize, stride, offset);
         gl.enableVertexAttribArray(attribLocation);
     }
-
     /**
      * 
      */

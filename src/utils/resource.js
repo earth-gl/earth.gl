@@ -90,8 +90,8 @@ const fetch = function (options) {
     return makeRequest(options);
 };
 
-const fetchArrayBuffer = function (url, headers, token) {
-    headers.Accept = headers.Accept && token ? headers.Accept + ';' + "access_token=" + token : headers.Accept;
+const fetchArrayBuffer = function (url, headers) {
+    headers.Accept = headers.Accept;
     return fetch({
         url: url,
         headers: headers,

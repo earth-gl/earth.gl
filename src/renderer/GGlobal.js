@@ -74,13 +74,13 @@ class GGlobal {
    * 计算geometry资源
    */
   _geometryData() {
-    const latitudeBands = 64, 
-    longitudeBands = 64, 
-    radiusX = this._radiusX,
-    radiusY = this._radiusY, 
-    radiusZ = this._radiusZ,
-    vertexPositionData = [], 
-    indexData = [];
+    const latitudeBands = 64,
+      longitudeBands = 64,
+      radiusX = this._radiusX,
+      radiusY = this._radiusY,
+      radiusZ = this._radiusZ,
+      vertexPositionData = [],
+      indexData = [];
     for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
       var theta = latNumber * Math.PI / latitudeBands;
       var sinTheta = Math.sin(theta);
@@ -125,7 +125,7 @@ class GGlobal {
     // transform data
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData(new Float32Array(this._vertices));
-    verticesBuffer.linkPointerAndPosition(3, gl.FLOAT, false, 0, 0);
+    verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
     // transform index data
     const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
     indexBuffer.bindBuffer();
@@ -146,13 +146,14 @@ class GGlobal {
       indicesBuffer = this._indicesBuffer;
     //use program
     program.useProgram();
-    //bind 
-    verticesBuffer.bindBuffer();
-    indicesBuffer.bindBuffer();
     //set camera
     this._u_projectionMatrix.assignValue(camera.ProjectionMatrix);
     this._u_viewMatrix.assignValue(camera.ViewMatrix);
     this._u_modelMatrix.assignValue(camera.IdentityMatrix);
+    //
+    verticesBuffer.bindBuffer();
+    verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
+    indicesBuffer.bindBuffer();
     //
     gl.drawElements(gl.TRIANGLES, this._indices.length, gl.UNSIGNED_SHORT, 0);
   }

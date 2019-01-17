@@ -145,6 +145,8 @@ class Trackball extends Event {
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
+            //movePrev.x - moveCurr.x,
+            //movePrev.y - moveCurr.y,
             moveCurr.x - movePrev.x,
             moveCurr.y - movePrev.y,
             0

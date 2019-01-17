@@ -120,7 +120,7 @@ class GScene extends Event {
             camera = this._camera,
             gl = this._gl;
         //setting camera position at 2*raduis
-        camera.position = [0, 0, maximumRadius * 2];
+        camera.position = [0, 0, maximumRadius * 3];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
@@ -168,12 +168,12 @@ class GScene extends Event {
         //ignore click lasted for more than 300ms.
         if (type === "mousedown" || (type === "touchstart" && e.touches.length === 1)) {
             this._mouseDownTime = now();
-            this._startContainerPoint = [e.x,e.y];
+            this._startContainerPoint = [e.x, e.y];
         } else if (type === "mousemove") {
             // const downTime = this._mouseDownTime,
             //     endTime = now();
             // const deltaTime =!downTime?1:downTime - endTime;
-        }else if (type === "click" || type === "touchend" || type === "mouseup") {
+        } else if (type === "click" || type === "touchend" || type === "mouseup") {
             //mousedown | touchstart propogation is stopped
             // if (!this._mouseDownTime) return;
             // const downTime = this._mouseDownTime;
@@ -197,18 +197,19 @@ class GScene extends Event {
             trackball = this._trackball,
             camera = this._camera,
             //quadtree = this._quadtree,
-            //surface = this._surface,
+            surface = this._surface,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.clear(gl.COLOR_BUFFER_BIT);
         //update camera
-        trackball.update();   
-        //render surface (terrain)
-        //surface.render(camera);
+        trackball.update();
         //render earth
         earth.render(camera);
+        //render surface (terrain)
+        //surface.render(camera);
+
     }
 }
 
