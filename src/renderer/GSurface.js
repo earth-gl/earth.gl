@@ -7,17 +7,14 @@ const PI_OVER_TWO = Math.PI / 2,
     equal14 = require("./../utils/revise").equal14,
     BoundingSphere = require("./../core/BoundingSphere"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
-    { createTypedArrayFromArrayBuffer, getStringFromTypedArray } = require("./../utils/typedArray"),
     { Vec3, Mat4, Vec2} = require("kiwi.matrix"),
     decode = require("./../utils/decode"),
     clamp = require("./../utils/clamp"),
     GUniform = require("./GUniform"),
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
-    { fetchArrayBuffer } = require("./../utils/resource");
-const fetch = require('node-fetch');
-// const url = "http://127.0.0.1:8002/tilesets/test1/12/6185/2047.terrain";
-const url = "http://127.0.0.1:8002/tilesets/test1/2/6/1.terrain";
+    fetch = require('node-fetch');
+
 //
 const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-fs.glsl") : require("./../shader/glsl-earth-gl-terrain-fs.glsl");
 const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-vs.glsl") : require("./../shader/glsl-earth-gl-terrain-vs.glsl");
@@ -62,15 +59,7 @@ class GSurface {
         }).then(function (res) {
             return res.arrayBuffer();
         }).then(function (buffer) {
-            const width = height = 65
-            const heightBufferLenght = width * height;
-            const heightBuffer = new Uint16Array(buffer, 0, heightBufferLenght);
-            const childTileMask = new Uint8Array(buffer, heightBufferLenght, 1)[0];
-            const waterMask = new Uint8Array(buffer, heightBufferLenght + 1, buffer.byteLength - heightBufferLenght - 1);
-            const isGeographic = true;
-            const relativeToCenter = new Vec3();
-            const exaggeration = 1.0;
-         
+            //}{debug 
         });
     }
     /**

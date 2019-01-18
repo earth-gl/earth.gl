@@ -1,6 +1,6 @@
 
 const { Vec3, Mat3, Mat4 } = require("kiwi.matrix"),
-    clamp= require("../utils/clamp");
+    clamp= require("../src/utils/clamp");
 
 const TerrainQuantization = {
     /**

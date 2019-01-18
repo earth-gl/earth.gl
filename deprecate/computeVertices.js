@@ -1,9 +1,9 @@
-const ellipsoid_wgs84 = require("./../core/Ellipsoid").WGS84,
+const ellipsoid_wgs84 = require("../src/core/Ellipsoid").WGS84,
     TerrainEncoding = require("./../core/TerrainEncoding"),
-    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
-    QuadtreeTile = require("./../core/QuadtreeTile"),
-    equal14 = require("./revise").equal14,
-    clamp = require("./clamp"),
+    maximumRadius = require("../src/core/Ellipsoid").WGS84.maximumRadius,
+    QuadtreeTile = require("../src/core/QuadtreeTile"),
+    equal14 = require("../src/utils/revise").equal14,
+    clamp = require("../src/utils/clamp"),
     { Vec2, Vec3, Mat4 } = require("kiwi.matrix");
 
 var degeneratePositionLocalFrame = {
