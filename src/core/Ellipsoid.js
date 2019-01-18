@@ -47,6 +47,12 @@ class Ellipsoid {
     /**
      * @type {Vec3}
      */
+    get radiiSquared(){
+        return this._radiiSquared;
+    }
+    /**
+     * @type {Vec3}
+     */
     get radii() {
         return this._radii;
     }

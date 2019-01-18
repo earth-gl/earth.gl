@@ -35,7 +35,7 @@
     "babel-preset-env": "^1.7.0",
     "filereader": "^0.10.3",
     "glslify": "^7.0.0",
-    "kiwi.matrix": "^0.3.1",
+    "kiwi.matrix": "^0.3.4",
     "node-fetch": "^2.3.0",
     "pako": "^1.0.7",
     "rollup": "^1.0.0",

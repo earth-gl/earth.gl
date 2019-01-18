@@ -10,7 +10,7 @@
     fetch(url,{
         method:"GET",
         headers:{
-            'Accept': 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNWVjMmIxNS1kMmY2LTQ5ZTctODVlYS1iNzRhOGNlZTE3YjUiLCJpZCI6MjU5LCJhc3NldHMiOnsiMSI6eyJ0eXBlIjoiVEVSUkFJTiIsImV4dGVuc2lvbnMiOlt0cnVlLHRydWUsdHJ1ZV0sInB1bGxBcGFydFRlcnJhaW4iOnRydWV9fSwic3JjIjoiYjBkYzNkMWItODgzNi00MzAxLThiZjktZjQ5ZGNkNjYxODI3IiwiaWF0IjoxNTQ3NzExMDYxLCJleHAiOjE1NDc3MTQ2NjF9.KSNNqyUjxOTnxvt-Z9ewNNnQM9Q0kxxjnXlUn_5YqVo',
+            'Accept': 'application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;',
         },
         responseType:"arraybuffer",
     }).then(function(res){

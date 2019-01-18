@@ -1,3 +1,6 @@
+/**
+ * solve small terrain data (cesium format)
+ */
 const QUANTIZED_MESH_HEADER = new Map([
     ['centerX', Float64Array.BYTES_PER_ELEMENT],
     ['centerY', Float64Array.BYTES_PER_ELEMENT],

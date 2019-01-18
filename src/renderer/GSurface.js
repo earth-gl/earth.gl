@@ -1,52 +1,24 @@
 
-const glslify = require("glslify"),
+const PI_OVER_TWO = Math.PI / 2,
+    glslify = require("glslify"),
     isNode = require("./../utils/isNode"),
+    QuadtreeTile = require("./../core/QuadtreeTile"),
+    ellipsoid_wgs84 = require("./../core/Ellipsoid").WGS84,
+    equal14 = require("./../utils/revise").equal14,
     BoundingSphere = require("./../core/BoundingSphere"),
+    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     { createTypedArrayFromArrayBuffer, getStringFromTypedArray } = require("./../utils/typedArray"),
-    { Vec3 } = require("kiwi.matrix"),
+    { Vec3, Mat4, Vec2} = require("kiwi.matrix"),
     decode = require("./../utils/decode"),
+    clamp = require("./../utils/clamp"),
     GUniform = require("./GUniform"),
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
-    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     { fetchArrayBuffer } = require("./../utils/resource");
-
 const fetch = require('node-fetch');
-    
-
-//const url = "https://assets.cesium.com/1/4/22/10.terrain?extensions=octvertexnormals-watermask&v=1.1.0";
-const url = "https://assets.cesium.com/1/0/0/0.terrain?v=1.1.0";
-//const  url = "http://139.129.7.130/terrain/0.terrain";
-
-const QuantizedMeshExtensionIds = {
-    /**
-     * Oct-Encoded Per-Vertex Normals are included as an extension to the tile mesh
-     *
-     * @type {Number}
-     * @constant
-     * @default 1
-     */
-    OCT_VERTEX_NORMALS: 1,
-    /**
-     * A watermask is included as an extension to the tile mesh
-     *
-     * @type {Number}
-     * @constant
-     * @default 2
-     */
-    WATER_MASK: 2,
-    /**
-     * A json object contain metadata about the tile
-     *
-     * @type {Number}
-     * @constant
-     * @default 4
-     */
-    METADATA: 4
-};
-/**
- * glsl
- */
+// const url = "http://127.0.0.1:8002/tilesets/test1/12/6185/2047.terrain";
+const url = "http://127.0.0.1:8002/tilesets/test1/2/6/1.terrain";
+//
 const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-fs.glsl") : require("./../shader/glsl-earth-gl-terrain-fs.glsl");
 const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-vs.glsl") : require("./../shader/glsl-earth-gl-terrain-vs.glsl");
 /**
@@ -78,29 +50,27 @@ class GSurface {
      * @param {*} tile 
      */
     _request(tile) {
-        const that = this,
+        const quadtreeTile = new QuadtreeTile({ x: 6, y: 1, level: 2 }),
+            that = this,
             surfaces = this._surfaces;
         fetch(url, {
             method: "GET",
             headers: {
-                "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjMWUzZmM0Ny1jM2U0LTQ5NDYtOGZmOS00ZTkzNjcwODIyZDkiLCJpZCI6NjYwMSwiYXNzZXRzIjp7IjEiOnsidHlwZSI6IlRFUlJBSU4iLCJleHRlbnNpb25zIjpbdHJ1ZSx0cnVlLHRydWVdLCJwdWxsQXBhcnRUZXJyYWluIjp0cnVlfX0sInNyYyI6IjZjYjk4MzM2LTJiYzEtNDVhZC04MWU0LWVmMjc4YTI0MGY1OSIsImlhdCI6MTU0NzczNzg4MCwiZXhwIjoxNTQ3NzQxNDgwfQ.4ze1qGzDe0m5Yht4lFRS6MTYUBEYUtx-gqScsWrrBg0",
+                "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;",
             },
             responseType: "arraybuffer",
         }).then(function (res) {
             return res.arrayBuffer();
         }).then(function (buffer) {
-            const rawMesh = decode(buffer);
-            //https://github.com/AnalyticalGraphicsInc/cesium/blob/22dce1d9aaf480b0cbea6148b05a4c482ce80f00/Source/Workers/createVerticesFromQuantizedTerrainMesh.js#L48
-            const vertexCount = rawMesh.vertexData.length/3
-                +rawMesh.westIndices.length
-                +rawMesh.southIndices.length
-                +rawMesh.eastIndices.length
-                +rawMesh.northIndices.length;
-            var indices = createTypedArrayFromArrayBuffer(vertexCount,rawMesh.triangleIndices);
-            var vertices = new Float32Array(rawMesh.vertexData);
-            //
-            const surfaceElement = that._createSufraceElement.call(that,vertices, indices);
-            surfaces.push(surfaceElement);
+            const width = height = 65
+            const heightBufferLenght = width * height;
+            const heightBuffer = new Uint16Array(buffer, 0, heightBufferLenght);
+            const childTileMask = new Uint8Array(buffer, heightBufferLenght, 1)[0];
+            const waterMask = new Uint8Array(buffer, heightBufferLenght + 1, buffer.byteLength - heightBufferLenght - 1);
+            const isGeographic = true;
+            const relativeToCenter = new Vec3();
+            const exaggeration = 1.0;
+         
         });
     }
     /**
