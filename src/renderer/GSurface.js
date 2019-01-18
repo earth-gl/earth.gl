@@ -14,7 +14,6 @@ const PI_OVER_TWO = Math.PI / 2,
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
     fetch = require('node-fetch');
-
 //
 const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-fs.glsl") : require("./../shader/glsl-earth-gl-terrain-fs.glsl");
 const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-terrain-vs.glsl") : require("./../shader/glsl-earth-gl-terrain-vs.glsl");
@@ -47,20 +46,20 @@ class GSurface {
      * @param {*} tile 
      */
     _request(tile) {
-        const quadtreeTile = new QuadtreeTile({ x: 6, y: 1, level: 2 }),
-            that = this,
-            surfaces = this._surfaces;
-        fetch(url, {
-            method: "GET",
-            headers: {
-                "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;",
-            },
-            responseType: "arraybuffer",
-        }).then(function (res) {
-            return res.arrayBuffer();
-        }).then(function (buffer) {
-            //}{debug 
-        });
+        // const quadtreeTile = new QuadtreeTile({ x: 6, y: 1, level: 2 }),
+        //     that = this,
+        //     surfaces = this._surfaces;
+        // fetch(url, {
+        //     method: "GET",
+        //     headers: {
+        //         "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;",
+        //     },
+        //     responseType: "arraybuffer",
+        // }).then(function (res) {
+        //     return res.arrayBuffer();
+        // }).then(function (buffer) {
+        //     //}{debug 
+        // });
     }
     /**
      * 
