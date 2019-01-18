@@ -134,7 +134,7 @@ class Rectangle {
      * @param {Geographic} geograpihc 
      */
     contain(geograpihc) {
-        const longitude = geograpihc.longitude,
+        let longitude = geograpihc.longitude,
             latitude = geograpihc.latitude;
         let west = this.west,
             south = this.south,

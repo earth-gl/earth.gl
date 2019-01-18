@@ -19,7 +19,7 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require("./../utils/merge"),
-    Trackball = require("./../core/Trackball"),
+    TrackballController = require("../core/TrackballController"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
@@ -155,7 +155,7 @@ class GScene extends Event {
         const dom = this._canvas,
             camera = this._camera;
         addDomEvent(dom, domEventNames, this._handleDomEvent, this);
-        this._trackball = new Trackball(camera);
+        this._trackball = new TrackballController(camera);
         const trackball = this._trackball;
         trackball.update();
         this.addEventPopNode(trackball);
@@ -207,8 +207,8 @@ class GScene extends Event {
             trackball = this._trackball,
             camera = this._camera,
             //quadtree = this._quadtree,
-            surface = this._surface,
-            primitives = this._primitives,
+            // surface = this._surface,
+            // primitives = this._primitives,
             earth = this._earth;
         //
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
