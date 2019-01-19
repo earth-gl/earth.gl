@@ -1,5 +1,7 @@
 /**
  * solve small terrain data (cesium format)
+ * 读取 cesium terrain buffer
+ * terrainBufferReader
  */
 const QUANTIZED_MESH_HEADER = new Map([
     ['centerX', Float64Array.BYTES_PER_ELEMENT],
