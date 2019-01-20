@@ -12,8 +12,8 @@ const request = function (url, cb) {
         canvas.height = image.height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(image, 0, 0, image.width, image.height);
-        let imgData = ctx.getImageData(0, 0, image.width, image.height);
-        cb(null, new Uint8Array(imgData.data));
+        //}{ use image-raub for testing, the ctx._data typedArray, and type is Uint8Array
+        cb(null, ctx._data);
     };
     image.onerror = function (err) {
         cb(err);

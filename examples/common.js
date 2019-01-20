@@ -1,8 +1,9 @@
-const glslify = require("glslify");
 const node3d = require("3d-core-raub");
+const { Screen, Image } = node3d;
+//map global object
 global.document = global.window = node3d.doc;
+global.Image = Image;
 const requestAnimationFrame = window.requestAnimationFrame;
-const { Screen } = node3d;
 /**
  * @type {WebGLRenderingContext}
  */
@@ -13,5 +14,6 @@ module.exports = {
     gl,
     screen,
     document,
-    requestAnimationFrame
+    requestAnimationFrame,
+    Image
 };
