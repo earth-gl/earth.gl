@@ -1,4 +1,5 @@
-const Accessor = require("./../bufferReader/Accessor");
+const defined = require("./../../utils/defined"), 
+    Accessor = require("./../bufferReader/Accessor");
 /**
  * @class
  */
@@ -101,13 +102,13 @@ class GLTFV2 {
             promises.push(this._getPbrMetallicRoughness(pbrMetallicRoughness));
         }
         if (normalTextureInfo) {
-            promises.push(this._getTextureInfo(normalTextureInfo, 'normalTexture'));
+            promises.push(this._getTextureInfo(normalTextureInfo, "normalTexture"));
         }
         if (occlusionTextureInfo) {
-            promises.push(this._getTextureInfo(occlusionTextureInfo, 'occlusionTexture'));
+            promises.push(this._getTextureInfo(occlusionTextureInfo, "occlusionTexture"));
         }
         if (emissiveTextureInfo) {
-            promises.push(this._getTextureInfo(emissiveTextureInfo, 'emissiveTexture'));
+            promises.push(this._getTextureInfo(emissiveTextureInfo, "emissiveTexture"));
         }
         return new Promise((resolve) => {
             Promise.all(promises).then(assets => {
@@ -127,13 +128,13 @@ class GLTFV2 {
     _getPbrMetallicRoughness(pbrMetallicRoughness) {
         const baseColorTexture = pbrMetallicRoughness.baseColorTexture;
         const metallicRoughnessTexture = pbrMetallicRoughness.metallicRoughnessTexture;
-        pbrMetallicRoughness.name = 'pbrMetallicRoughness';
+        pbrMetallicRoughness.name = "pbrMetallicRoughness";
         let promises = [];
         if (baseColorTexture) {
-            promises.push(this._getTextureInfo(baseColorTexture, 'baseColorTexture'));
+            promises.push(this._getTextureInfo(baseColorTexture, "baseColorTexture"));
         }
         if (metallicRoughnessTexture) {
-            promises.push(this._getTextureInfo(metallicRoughnessTexture, 'metallicRoughnessTexture'));
+            promises.push(this._getTextureInfo(metallicRoughnessTexture, "metallicRoughnessTexture"));
         }
         return new Promise(resolve => {
             Promise.all(promises).then(assets => {
@@ -205,7 +206,7 @@ class GLTFV2 {
         } else {
             //load from external uri
             const file = source.uri;
-            let url = file.indexOf('data:image/') === 0 ? file : this.rootPath + '/' + file;
+            let url = file.indexOf("data:image/") === 0 ? file : this.rootPath + "/" + file;
             if (this.requests[url]) {
                 // a promise already created
                 return this.requests[url].then(() => {
@@ -250,8 +251,8 @@ class GLTFV2 {
         for (let i = 0; i < samplers.length; i++) {
             if (!defined(samplers[i].input) && !defined(samplers[i].output))
                 continue;
-            promises.push(this.accessor._requestData('input', samplers[i].input));
-            promises.push(this.accessor._requestData('output', samplers[i].output));
+            promises.push(this.accessor._requestData("input", samplers[i].input));
+            promises.push(this.accessor._requestData("output", samplers[i].output));
         }
         return Promise.all(promises).then(assets => {
             for (let i = 0; i < assets.length / 2; i++) {
@@ -259,7 +260,7 @@ class GLTFV2 {
                 samplers[i].output = assets[i * 2 + 1];
                 //sampler's default interpolation is 'LINEAR'
                 if (!samplers[i].interpolation) {
-                    samplers[i].interpolation = 'LINEAR';
+                    samplers[i].interpolation = "LINEAR";
                 }
             }
             return samplers;

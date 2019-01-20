@@ -1,4 +1,6 @@
-const GLBReader = require("./bufferReader/GLBReader"),
+const defined = require("./../utils/defined"),
+    fetch = require("./../utils/fetch"),
+    GLBReader = require("./bufferReader/GLBReader"),
     GLTFV1 = require("./adapters/GLTFV1"),
     GLTFV2 = require("./adapters/GLTFV2"),
     Accessor = require("./bufferReader/Accessor");
@@ -63,7 +65,7 @@ class GLTFLoader {
         this.requests = {};
         this.accessor = new Accessor(rootPath, gltf, glbBuffer);
         this.options.requestImage = this.options.requestImage || requestImage;
-        this._imageCanvas = document.createElement('canvas');
+        this._imageCanvas = document.createElement("canvas");
         if (this.version === 2) {
             this.adapter = new GLTFV2(rootPath, gltf, glbBuffer, this.options.requestImage);
         } else {
@@ -176,7 +178,7 @@ class GLTFLoader {
         }
 
         if (defined(primJSON.indices)) {
-            const promise = this.accessor._requestData('indices', primJSON.indices);
+            const promise = this.accessor._requestData("indices", primJSON.indices);
             if (promise) {
                 promises.push(promise);
             }
@@ -196,7 +198,7 @@ class GLTFLoader {
                         });
                     }
                 } else {
-                    if (currentValue.name === 'indices') {
+                    if (currentValue.name === "indices") {
                         indices = currentValue.array;
                     } else {
                         accumulator[currentValue.name] = {
@@ -257,8 +259,8 @@ class GLTFLoader {
             if (material.name) result.name = material.name;
             if (material.extensions) result.extensions = material.extensions;
             if (result.extensions) {
-                delete result.extensions['KHR_binary_glTF'];
-                delete result.extensions['binary_glTF'];
+                delete result.extensions["KHR_binary_glTF"];
+                delete result.extensions["binary_glTF"];
                 if (Object.keys(result.extensions).length === 0) {
                     delete result.extensions;
                 }
@@ -272,8 +274,8 @@ class GLTFLoader {
     }
 
     _loadImage(source) {
-        if (source.bufferView || source.extensions && (source.extensions['KHR_binary_glTF'] || source.extensions['binary_glTF'])) {
-            const binary = source.bufferView ? source : source.extensions['KHR_binary_glTF'] || source.extensions['binary_glTF'];
+        if (source.bufferView || source.extensions && (source.extensions["KHR_binary_glTF"] || source.extensions["binary_glTF"])) {
+            const binary = source.bufferView ? source : source.extensions["KHR_binary_glTF"] || source.extensions["binary_glTF"];
             if (source.extensions) {
                 source.mimeType = binary.mimeType;
                 source.width = binary.width;
@@ -287,15 +289,18 @@ class GLTFLoader {
         } else {
             //load from external uri
             const bin = source.uri;
-            const url = this.rootPath + '/' + bin;
+            const url = this.rootPath + "/" + bin;
             if (this.requests[url]) {
                 // a promise already created
                 return this.requests[url].then(() => {
                     return new Uint8Array(this.buffers[url]);
                 });
             }
-            const promise = this.requests[url] = Ajax.getArrayBuffer(url, null).then(response => {
-                const buffer = response.data;
+            //use fetch, https://www.w3cschool.cn/fetch_api/fetch_api-5uen2ll8.html
+            const promise = this.requests[url] = fetch(url,{
+                responseType: "arraybuffer"
+            }).then(response=>{
+                const buffer = response.arrayBuffer();
                 this.buffers[url] = buffer;
                 return new Uint8Array(buffer);
             });
