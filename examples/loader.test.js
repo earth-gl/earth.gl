@@ -23,11 +23,14 @@ const request = function (url, cb) {
 
 fetch(root + "DamagedHelmet.gltf", {
     responseType: "json"
-}).then(response => 
-    response.json()
-).then(json => {
+}).then(response => {
+    return response.json();
+}).then(json => {
     const loader = new GLTFLoader(root, json, {requestImage : request});
     loader.load().then(gltf => {
         const name = gltf.scenes[gltf.scene].name;
+        const nodes = gltf.scenes[gltf.scene].nodes;
+        const mesh = nodes[0].meshes[0][0];
+        const material = mesh.material;
     });
 });

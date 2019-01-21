@@ -41,8 +41,11 @@ class Accessor {
             }
             const promise = this.requests[url] = fetch(url,{
                 responseType:"arraybuffer"
-            }).then(response=>{
-                const buffer = response.arrayBuffer();
+            }).
+            then(response=>{
+               return response.arrayBuffer();
+            }).
+            then(buffer=>{
                 this.buffers[url] = buffer;
                 const { array, itemSize } = this._toTypedArray(accessorName, buffer);
                 return {
