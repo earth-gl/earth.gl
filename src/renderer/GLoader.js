@@ -10,28 +10,6 @@ const fetch = require("./../utils/fetch"),
 const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-fs.glsl") : require("./../shader/glsl-earth-gl-gltf-fs.glsl");
 const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-vs.glsl") : require("./../shader/glsl-earth-gl-gltf-vs.glsl");
 /**
- * https://github.com/shrekshao/minimal-gltf-loader/blob/21a758c0ebc8f62e053682344610392a39012a36/src/minimal-gltf-loader.js#L1106
- * polyfill for node
- * @param {String} url 
- * @param {Function} cb 
- */
-const request = function (url, cb) {
-    const image = new Image();
-    image.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = image.width;
-        canvas.height = image.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0, image.width, image.height);
-        //}{ use image-raub for testing, the ctx._data typedArray, and type is Uint8Array
-        cb(null, ctx._data);
-    };
-    image.onerror = function (err) {
-        cb(err);
-    };
-    image.src = url;
-};
-/**
  * @class
  */
 class GLoader {
@@ -64,7 +42,7 @@ class GLoader {
         /**
          * gltf nodes
          */
-        this._nodes = null;
+        this._nodes = [];
         /**
          * gltf extensions
          */
@@ -100,13 +78,20 @@ class GLoader {
         }).then(response => {
             return response.json();
         }).then(json => {
-            const loader = new GLTFLoader(root, json, { requestImage: request });
+            const uri = root + modelFilename;
+            const loader = new GLTFLoader(json,{
+                uri:uri
+            });
             loader.load().then(gltf => {
-                that._scene = gltf.scenes[gltf.scene];
-                that._nodes = that._scene.nodes;
-                that._initComponents();
+            //     that._scene = gltf.scenes[gltf.scene];
+            //     that._nodes = that._scene.nodes;
+            //     that._initComponents();
             });
         });
+    }
+
+    _extractMesh(){
+
     }
     /**
      * 
@@ -118,13 +103,18 @@ class GLoader {
         const program = this._program = new GProgram(gl, vertText, fragText);
         program.useProgram();
         //
-        for (var i = 0, leni = nodes.length || 0; i < leni; i++)
-            for (var j = 0, lenj = nodes[i].meshes.length || 0; j < lenj; j++) {
-                var mesh = nodes[i].meshes[j];
-                for (var k = 0, lenk = mesh.length; k < lenk; k++) {
-                    var Object3D = mesh[k];
-                }
-            }
+        nodes.forEach((node)=>{
+            if(!node.meshes && !node.chidren) return;
+            const meshes = node.children?this._extractMesh(node.chidren):node.meshes;
+            meshes.forEach(mesh=>{
+                mesh.primitives.forEach(primitive=>{
+                    const attributes = {};
+                    for(const attr in primitive.attributes){
+                        attributes[attr] = primitive.attributes[attr].array;
+                    }
+                });
+            });
+        });
         //
         const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
         // transform data
