@@ -141,8 +141,8 @@ class GScene extends Event {
         this._surface = new GSurface(gl);
         this._surface.update();
         //create test gltfloader
-        this._gltf = new GLoader();
-        this._gltf.init(gl);
+        //this._gltf = new GLoader();
+        //this._gltf.init(gl);
     }
     /**
      * 
@@ -202,7 +202,7 @@ class GScene extends Event {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
-            gltf = this._gltf,
+            //gltf = this._gltf,
             //quadtree = this._quadtree,
             // surface = this._surface,
             // primitives = this._primitives,
@@ -214,8 +214,8 @@ class GScene extends Event {
         //update camera
         trackball.update();
         //render earth
-        gltf.render(camera);
-        //earth.render(camera);
+        //gltf.render(camera);
+        earth.render(camera);
         //render surface (terrain)
         //surface.render(camera);
         // for(var i = 0,len = primitives;i<len;i++)

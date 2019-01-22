@@ -182,16 +182,16 @@ class GLTFLoader {
         // bufferviews
         if (glTF.bufferViews) {
             for (i = 0, len = glTF.bufferViews.length; i < len; i++) {
-                const bufferViewJson = glTF.json.bufferViews[i];
-                this.glTF.bufferViews[i] = new GBuffer(program, bufferViewJson.target, gl.STATIC_DRAW, this._buffers[bufferViewJson.buffer]);
+                const bufferViewJson = glTF.bufferViews[i];
+                this.bufferViews[i] = new GBuffer(program, bufferViewJson.target, gl.STATIC_DRAW, this._buffers[bufferViewJson.buffer]);
             }
         }
         //accessors
         if(glTF.accessors){
             for (i = 0, len = glTF.accessors.length; i < len; i++) {
-                const bufferView = glTF.bufferViews[this.glTF.json.accessors[i].bufferView];
-                const accessorsJson = glTF.json.accessors[i];
-                this.glTF.accessors[i] = new GAccessor(accessorsJson.componentType,accessorsJson.byteOffset,accessorsJson.normalized,accessorsJson.count,accessorsJson.type,bufferView);
+                const bufferView = this.bufferViews[this.glTF.json.accessors[i].bufferView];
+                const accessorsJson = glTF.accessors[i];
+                this.accessors[i] = new GAccessor(accessorsJson.componentType,accessorsJson.byteOffset,accessorsJson.normalized,accessorsJson.count,accessorsJson.type,bufferView);
             }
         }
     }

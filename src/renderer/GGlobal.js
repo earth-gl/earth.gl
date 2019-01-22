@@ -122,17 +122,23 @@ class GGlobal {
     //
     program.useProgram();
     //
-    const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,new Float32Array(this._vertices), "a_position");
+    const verticesBuffer = this._verticesBuffer = new GBuffer(
+      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
+      new Float32Array(this._vertices),
+      this._vertices.length, 0, 0);
     // transform data
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData();
     // accessor attrib
-    const verticesAccessor = new GAccessor(3,0,false,this._vertices.length,);
-    verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
+    const verticesAccessor = this._verticesAccessor = new GAccessor(gl.FLOAT, 0, false, this._vertices.length, "VEC3", verticesBuffer);
+    verticesAccessor.link("a_position");
     // transform index data
-    const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
+    const indexBuffer = this._indicesBuffer = new GBuffer(
+      program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
+      new Uint16Array(this._indices),
+      this._indices.length, 0, 0);
     indexBuffer.bindBuffer();
-    indexBuffer.bufferData(new Uint16Array(this._indices));
+    indexBuffer.bufferData();
     //
     this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
     this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
@@ -145,6 +151,7 @@ class GGlobal {
   render(camera) {
     const gl = this._gl,
       program = this._program,
+      verticesAccessor = this._verticesAccessor,
       verticesBuffer = this._verticesBuffer,
       indicesBuffer = this._indicesBuffer;
     //use program
@@ -155,8 +162,9 @@ class GGlobal {
     this._u_modelMatrix.assignValue(camera.IdentityMatrix);
     //
     verticesBuffer.bindBuffer();
-    verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
+    verticesAccessor.relink();
     indicesBuffer.bindBuffer();
+
     //
     gl.drawElements(gl.TRIANGLES, this._indices.length, gl.UNSIGNED_SHORT, 0);
   }
