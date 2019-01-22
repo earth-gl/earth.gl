@@ -5,7 +5,7 @@ const fetch = require("./../utils/fetch"),
     GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
     GUniform = require("./GUniform"),
-    GLTFLoader = require("./../loader/GLTFLoader");
+    GLTFLoader = require("./../loaders/GLTFLoader");
 //shaders 
 const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-fs.glsl") : require("./../shader/glsl-earth-gl-gltf-fs.glsl");
 const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-vs.glsl") : require("./../shader/glsl-earth-gl-gltf-vs.glsl");
