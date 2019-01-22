@@ -14,6 +14,7 @@
 class GBuffer {
     /**
      * Creates an instance of Buffer.
+     * 与GAccessor搭配使用
      * @param {GProgram} program 
      * @param {Number} bufferType gl.ARRAY_BUFFER
      * @param {number} drawType gl.STATIC_DRAW 
@@ -44,15 +45,15 @@ class GBuffer {
         /**
          * 
          */
-        this._byteLength = byteLength;
+        this.byteLength = byteLength;
         /**
          * 
          */
-        this._stride = byteStride;
+        this.byteStride = byteStride;
         /**
          * 
          */
-        this._offset = byteOffset;
+        this.byteOffset = byteOffset;
         /**
          * @type {TypedArray}
          * typedArrayBufferData.slice(this._offset,this._offset+this._byteLength);
@@ -80,47 +81,6 @@ class GBuffer {
             drawType = this._drawType;
         const typedArrayBufferData = this._data || arr;
         gl.bufferData(bufferType, typedArrayBufferData, drawType);
-    }
-    /**
-     * turn on the attribute
-     * 制定数据输入方式和输入管道
-     * 关联缓冲区对象和position变量
-     * 
-     * @param {Number} size 
-     * @param {Number} type 
-     * @param {Boolean} normalize 
-     * @param {Number} stride 
-     * @param {Number} offset 
-     * @param {String} attribName 
-     */
-    setlink(size, type, normalize, stride, offset, attribName) {
-        const gl = this._gl,
-            program = this.program,
-            attribLocation = program.ActivateAttributes[attribName];
-        gl.vertexAttribPointer(attribLocation, size, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(attribLocation);
-        //store buffer attributes
-        this._size = size;
-        this._type = type;
-        this._normalize = normalize;
-        this._stride = stride;
-        this._offset = offset;
-        this._attribName = attribName;
-        this._attribLocation = attribLocation;
-    }
-    /**
-     * 
-     */
-    relink() {
-        const gl = this._gl,
-            attribLocation = this._attribLocation,
-            size = this._size,
-            type = this._type,
-            normalize = this._normalize,
-            stride = this._stride,
-            offset = this._offset;
-        gl.vertexAttribPointer(attribLocation, size, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(attribLocation);
     }
     /**
      * 

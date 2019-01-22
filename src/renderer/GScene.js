@@ -134,22 +134,13 @@ class GScene extends Event {
      * 
      */
     _initComponents() {
-        /**
-         * @type {WebGLRenderingContext}
-         */
         const gl = this._gl;
-        /**
-         * create earth
-         */
+        //create earth
         this._earth = new GGlobal(gl);
-        /**
-         * create surface
-         */
+        //create surface
         this._surface = new GSurface(gl);
         this._surface.update();
-        /**
-         * 
-         */
+        //create test gltfloader
         this._gltf = new GLoader();
         this._gltf.init(gl);
     }

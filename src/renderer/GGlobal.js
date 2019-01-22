@@ -3,6 +3,7 @@ const glslify = require("glslify"),
   { PHYSICAL_CONSTANT } = require("../utils/constant"),
   GProgram = require("./GProgram"),
   GBuffer = require("./GBuffer"),
+  GAccessor = require("./GAccessor"),
   GUniform = require("./GUniform");
 /**
  * glsl resource
@@ -121,10 +122,12 @@ class GGlobal {
     //
     program.useProgram();
     //
-    const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
+    const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,new Float32Array(this._vertices), "a_position");
     // transform data
     verticesBuffer.bindBuffer();
-    verticesBuffer.bufferData(new Float32Array(this._vertices));
+    verticesBuffer.bufferData();
+    // accessor attrib
+    const verticesAccessor = new GAccessor(3,0,false,this._vertices.length,);
     verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
     // transform index data
     const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);

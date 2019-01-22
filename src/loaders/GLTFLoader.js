@@ -2,6 +2,7 @@ const requestImage = require("./../utils/requestImage"),
     fetch = require("./../utils/fetch");
 
 const Camera = require("./../camera/Camera"),
+    GAccessor = require("./../renderer/GAccessor"),
     GBuffer = require("./../renderer/GBuffer");
 /**
  * @class
@@ -12,7 +13,6 @@ class GLTFLoader {
      * @param {*} gltf 
      * @param {Object} [options]
      * @param {Function} [options.requestImage] 
-     * @param {GProgram} options.gProgram
      * @param {String} options.uri
      */
     constructor(gltf, options = {}) {
@@ -182,12 +182,18 @@ class GLTFLoader {
         // bufferviews
         if (glTF.bufferViews) {
             for (i = 0, len = glTF.bufferViews.length; i < len; i++) {
-                const bufferView = glTF.json.bufferViews[i];
-                this.glTF.bufferViews[i] = new GBuffer(program, bufferView.target, gl.STATIC_DRAW, this._buffers[this.glTF.json.bufferViews[i].buffer]);
+                const bufferViewJson = glTF.json.bufferViews[i];
+                this.glTF.bufferViews[i] = new GBuffer(program, bufferViewJson.target, gl.STATIC_DRAW, this._buffers[bufferViewJson.buffer]);
             }
         }
         //accessors
-
+        if(glTF.accessors){
+            for (i = 0, len = glTF.accessors.length; i < len; i++) {
+                const bufferView = glTF.bufferViews[this.glTF.json.accessors[i].bufferView];
+                const accessorsJson = glTF.json.accessors[i];
+                this.glTF.accessors[i] = new GAccessor(accessorsJson.componentType,accessorsJson.byteOffset,accessorsJson.normalized,accessorsJson.count,accessorsJson.type,bufferView);
+            }
+        }
     }
 }
 

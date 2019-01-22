@@ -62,6 +62,10 @@ class GLoader {
          */
         this._gl = gl;
         /**
+         * 
+         */
+        this._program = new GProgram(gl, vertText, fragText);
+        /**
          * initial request
          */
         this._initialRequest();
@@ -72,6 +76,7 @@ class GLoader {
     _initialRequest() {
         const that = this,
             root = this.root,
+            program = this._program,
             modelFilename = this.modelFilename;
         fetch(root + modelFilename, {
             responseType: "json"
@@ -82,7 +87,7 @@ class GLoader {
             const loader = new GLTFLoader(json,{
                 uri:uri
             });
-            loader.load().then(gltf => {
+            loader.load(program).then(gltf => {
             //     that._scene = gltf.scenes[gltf.scene];
             //     that._nodes = that._scene.nodes;
             //     that._initComponents();

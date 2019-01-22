@@ -83,7 +83,6 @@ class GProgram {
             program = this._program;
         gl.useProgram(program);
     }
-
     /**
      * 
      * @param {number} type 
@@ -98,7 +97,6 @@ class GProgram {
         if (options.debug) console.log(gl.getShaderInfoLog(shader));
         return shader;
     }
-
     /**
      * 
      */
@@ -114,7 +112,6 @@ class GProgram {
         if (options.debug)  console.log(gl.getProgramInfoLog(program));
         return program;
     }
-
     /**
      * reference:
      * https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getActiveAttrib
@@ -136,7 +133,6 @@ class GProgram {
             this._uniforms[info.name] = { location: gl.getUniformLocation(program,info.name) , type: info.type, size: info.size };
         }
     }
-
 }
 
 module.exports = GProgram;
