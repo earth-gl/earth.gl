@@ -23,6 +23,7 @@ const merge = require("./../utils/merge"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
+    GLoader = require("./GLoader"),
     Quadtree = require("./../core/Quadtree"),
     GSurface = require("./GSurface"),
     now = require("./../utils/now"),
@@ -145,8 +146,12 @@ class GScene extends Event {
          * create surface
          */
         this._surface = new GSurface(gl);
-        //
         this._surface.update();
+        /**
+         * 
+         */
+        this._gltf = new GLoader();
+        this._gltf.init(gl);
     }
     /**
      * 
@@ -206,6 +211,7 @@ class GScene extends Event {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
+            gltf = this._gltf,
             //quadtree = this._quadtree,
             // surface = this._surface,
             // primitives = this._primitives,
@@ -217,7 +223,8 @@ class GScene extends Event {
         //update camera
         trackball.update();
         //render earth
-        earth.render(camera);
+        gltf.render(camera);
+        //earth.render(camera);
         //render surface (terrain)
         //surface.render(camera);
         // for(var i = 0,len = primitives;i<len;i++)
