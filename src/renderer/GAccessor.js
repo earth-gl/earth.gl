@@ -13,15 +13,20 @@ const Type2NumOfComponent = {
  */
 class Accessor {
     /**
-     * 
-     * @param {*} componentType 
-     * @param {*} byteOffset 
-     * @param {*} normalized 
-     * @param {*} count 
-     * @param {*} type 
+     * @example
+     * const verticesAccessor = this._verticesAccessor = 
+     * new GAccessor(
+     *   gl.FLOAT, 0, false, 
+     *   this._vertices.length, 
+     *   "VEC3", verticesBuffer);
+     * @param {Number} componentType 
+     * @param {Number} byteOffset 
+     * @param {Boolean} normalized 
+     * @param {Number} count 
+     * @param {String} type 
      * @param {GBuffer} gBuffer 
      */
-    constructor(componentType, byteOffset, normalized, count, type, gBuffer) {
+    constructor(componentType, byteOffset, normalized, count, type, gBuffer, min, max) {
         /**
          * @type {GBuffer}
          */
@@ -33,21 +38,21 @@ class Accessor {
         /**
          * @type {Number}
          */
-        this.byteOffset = byteOffset;
+        this.byteOffset = byteOffset!==undefined? byteOffset :0;
         /**
          * @type {Number}
          */
         this.byteStride = gBuffer.byteStride;
         /**
-         * 
+         * @type {Boolean}
          */
-        this.normalized = normalized;
+        this.normalized = normalized!==undefined?normalized:false;
         /**
-         * 
+         * required
          */
         this.count = count;
         /**
-         * 
+         * required
          */
         this.type = type;
         /**
@@ -58,6 +63,14 @@ class Accessor {
          * 
          */
         this.location = null;
+        /**
+         * 
+         */
+        this.min = min;
+        /**
+         * 
+         */
+        this.max = max;
     }
     /**
      * 

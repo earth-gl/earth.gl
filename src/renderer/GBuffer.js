@@ -16,9 +16,12 @@ class GBuffer {
      * Creates an instance of Buffer.
      * 与GAccessor搭配使用
      * @param {GProgram} program 
-     * @param {Number} bufferType gl.ARRAY_BUFFER
-     * @param {number} drawType gl.STATIC_DRAW 
-     * @param {Array} typedArrayBufferData "a_position"
+     * @param {Number} bufferType gl.ARRAY_BUFFER gl.ELEMENT_BUFFER
+     * @param {number} drawType gl.STATIC_DRAW gl.DYNAMIC_DRAW
+     * @param {Array} typedArrayBufferData
+     * @param {Number} byteLength
+     * @param {Number} [byteOffset] default 0
+     * @param {Number} [byteStride] default 0
      * @memberof Buffer
      */
     constructor(program, bufferType, drawType, typedArrayBufferData, byteLength, byteOffset, byteStride) {
@@ -36,6 +39,7 @@ class GBuffer {
         this._buffer = this._createBuffer();
         /**
          * @type {Number}
+         * traget, gl.ARRAY_BUFFER, gl.ELEMENT_BUFFER
          */
         this._bufferType = bufferType;
         /**
@@ -43,22 +47,22 @@ class GBuffer {
          */
         this._drawType = drawType;
         /**
-         * 
+         * required
          */
-        this.byteLength = byteLength;
+        this.byteLength = byteLength !== undefined ? byteLength : 0;
         /**
          * 
          */
-        this.byteStride = byteStride;
+        this.byteStride = byteStride !== undefined ? byteStride : 0;
         /**
          * 
          */
-        this.byteOffset = byteOffset;
+        this.byteOffset = byteOffset !== undefined ? byteOffset : 0;
         /**
          * @type {TypedArray}
-         * typedArrayBufferData.slice(this._offset,this._offset+this._byteLength);
+         * 
          */
-        this._data = typedArrayBufferData;
+        this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
     }
 
     /**
@@ -75,11 +79,11 @@ class GBuffer {
      * 
      * @param {Array} arr , mat4,vec3...
      */
-    bufferData(arr) {
+    bufferData() {
         const gl = this._gl,
             bufferType = this._bufferType,
             drawType = this._drawType;
-        const typedArrayBufferData = this._data || arr;
+        const typedArrayBufferData = this._data;
         gl.bufferData(bufferType, typedArrayBufferData, drawType);
     }
     /**

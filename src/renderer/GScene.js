@@ -141,8 +141,8 @@ class GScene extends Event {
         this._surface = new GSurface(gl);
         this._surface.update();
         //create test gltfloader
-        //this._gltf = new GLoader();
-        //this._gltf.init(gl);
+        this._gltf = new GLoader();
+        this._gltf.init(gl);
     }
     /**
      * 

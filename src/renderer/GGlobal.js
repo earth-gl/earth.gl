@@ -130,7 +130,10 @@ class GGlobal {
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData();
     // accessor attrib
-    const verticesAccessor = this._verticesAccessor = new GAccessor(gl.FLOAT, 0, false, this._vertices.length, "VEC3", verticesBuffer);
+    const verticesAccessor = this._verticesAccessor = new GAccessor(
+      gl.FLOAT, 0, false, 
+      this._vertices.length, 
+      "VEC3", verticesBuffer);
     verticesAccessor.link("a_position");
     // transform index data
     const indexBuffer = this._indicesBuffer = new GBuffer(
@@ -151,21 +154,23 @@ class GGlobal {
   render(camera) {
     const gl = this._gl,
       program = this._program,
-      verticesAccessor = this._verticesAccessor,
-      verticesBuffer = this._verticesBuffer,
-      indicesBuffer = this._indicesBuffer;
+      aBuffer = this._verticesAccessor,
+      vBuffer = this._verticesBuffer,
+      iBuffer = this._indicesBuffer,
+      u_projectionMatrix = this._u_projectionMatrix,
+      u_viewMatrix = this._u_viewMatrix,
+      u_modelMatrix = this._u_modelMatrix;
     //use program
     program.useProgram();
     //set camera
-    this._u_projectionMatrix.assignValue(camera.ProjectionMatrix);
-    this._u_viewMatrix.assignValue(camera.ViewMatrix);
-    this._u_modelMatrix.assignValue(camera.IdentityMatrix);
-    //
-    verticesBuffer.bindBuffer();
-    verticesAccessor.relink();
-    indicesBuffer.bindBuffer();
-
-    //
+    u_projectionMatrix.assignValue(camera.ProjectionMatrix);
+    u_viewMatrix.assignValue(camera.ViewMatrix);
+    u_modelMatrix.assignValue(camera.IdentityMatrix);
+    //bind buffer
+    vBuffer.bindBuffer();
+    iBuffer.bindBuffer();
+    aBuffer.relink();
+    //draw elements
     gl.drawElements(gl.TRIANGLES, this._indices.length, gl.UNSIGNED_SHORT, 0);
   }
 }
