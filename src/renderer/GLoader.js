@@ -100,16 +100,16 @@ class GLoader {
             program = this._program;
         program.useProgram();
         nodes.forEach((node)=>{
-            if(!node.meshes && !node.chidren) return;
-            const meshes = node.children?this._extractMesh(node.chidren):node.meshes;
-            meshes.forEach(mesh=>{
-                mesh.primitives.forEach(primitive=>{
-                    const attributes = {};
-                    for(const attr in primitive.attributes){
-                        attributes[attr] = primitive.attributes[attr].array;
-                    }
-                });
-            });
+            // if(!node.meshes && !node.chidren) return;
+            // const meshes = node.children?this._extractMesh(node.chidren):node.meshes;
+            // meshes.forEach(mesh=>{
+            //     mesh.primitives.forEach(primitive=>{
+            //         const attributes = {};
+            //         for(const attr in primitive.attributes){
+            //             attributes[attr] = primitive.attributes[attr].array;
+            //         }
+            //     });
+            // });
         });
         //
         const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
