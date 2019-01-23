@@ -1,4 +1,5 @@
 const requestImage = require("./../utils/requestImage"),
+    merge = require("./../utils/merge"),
     fetch = require("./../utils/fetch");
 
 const Camera = require("./../camera/Camera"),
@@ -277,14 +278,20 @@ class GLTFLoader {
         if (glTF.meshes) {
             for (let i = 0, len = glTF.meshes.length; i < len; i++) {
                 const mJson = glTF.meshes[i];
-                this._meshes[i] = new GMesh(i, mJson);
+                this._meshes[i] = new GMesh(i, mJson, {
+                    json: glTF,
+                    accessors: this._accessors,
+                    materials: this._materials
+                });
             }
         }
         //node
         if (glTF.nodes) {
             for (let i = 0, len = glTF.nodes.length; i < len; i++) {
                 const nJson = glTF.nodes[i];
-                this._nodes[i] = new GNode(i, nJson);
+                this._nodes[i] = new GNode(i, nJson, {
+                    meshs: this._meshes
+                });
             }
         }
         //node: hook up children
