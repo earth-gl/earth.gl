@@ -38,11 +38,7 @@ class GLoader {
         /**
          * gltf scene
          */
-        this._scene = null;
-        /**
-         * gltf nodes
-         */
-        this._nodes = [];
+        this._scenes = null;
         /**
          * gltf extensions
          */
@@ -87,27 +83,22 @@ class GLoader {
             const loader = new GLTFLoader(json,{
                 uri:uri
             });
-            loader.load(program).then(gltf => {
-            //     that._scene = gltf.scenes[gltf.scene];
-            //     that._nodes = that._scene.nodes;
-            //     that._initComponents();
+            loader.load(program).then(scenes => {
+                that._scenes = scenes;
+                scenes.forEach(scene=>{
+                    that._initComponents(scene);
+                });
             });
         });
-    }
-
-    _extractMesh(){
-
     }
     /**
      * 
      */
-    _initComponents() {
+    _initComponents(scene) {
         const gl = this._gl,
-            scene = this._scene,
-            nodes = this._nodes;
-        const program = this._program = new GProgram(gl, vertText, fragText);
+            nodes = scene.nodes,
+            program = this._program;
         program.useProgram();
-        //
         nodes.forEach((node)=>{
             if(!node.meshes && !node.chidren) return;
             const meshes = node.children?this._extractMesh(node.chidren):node.meshes;

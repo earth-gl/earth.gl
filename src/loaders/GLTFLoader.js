@@ -1,8 +1,6 @@
 const requestImage = require("./../utils/requestImage"),
-    merge = require("./../utils/merge"),
-    fetch = require("./../utils/fetch");
-
-const Camera = require("./../camera/Camera"),
+    fetch = require("./../utils/fetch"),
+    Camera = require("./../camera/Camera"),
     GNode = require("./../renderer/GNode"),
     GMesh = require("./../renderer/GMesh"),
     GTexture = require("./../renderer/GTexture"),
@@ -10,15 +8,6 @@ const Camera = require("./../camera/Camera"),
     GMaterial = require("./../renderer/GMaterial"),
     GAccessor = require("./../renderer/GAccessor"),
     GBuffer = require("./../renderer/GBuffer");
-/**
- * 
- */
-class GLTFScene {
-
-    constructor(sceneID, options) {
-
-    }
-}
 /**
  * @class
  */
@@ -171,12 +160,14 @@ class GLTFLoader {
     }
     /**
      * @type {GProgram} program
+     * @returns {Promise}
      */
     load(program) {
         const tasks = this.tasks,
             that = this;
         return Promise.all(tasks).then(() => {
             that._postprocess(program);
+            return that._scenes;
         });
     }
     /**
@@ -290,7 +281,7 @@ class GLTFLoader {
             for (let i = 0, len = glTF.nodes.length; i < len; i++) {
                 const nJson = glTF.nodes[i];
                 this._nodes[i] = new GNode(i, nJson, {
-                    meshs: this._meshes
+                    meshes: this._meshes
                 });
             }
         }

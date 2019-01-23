@@ -9,6 +9,8 @@ class GNode {
      * @param {*} nodeID 
      * @param {*} options 
      * @param {Object} resources
+     * @param {mesh[]} resources.meshes
+     * 
      */
     constructor(nodeID, options, resources) {
         /**
