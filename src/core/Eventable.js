@@ -10,6 +10,9 @@
 const isString = require("../utils/isString"),
     { stopPropagation } = require("./../utils/domEvent");
 
+/**
+ * 
+ */
 class Eventable {
     /**
      * Register a handler function to be called whenever this event is fired.
