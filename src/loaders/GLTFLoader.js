@@ -141,6 +141,8 @@ class GLTFLoader {
     _initialization() {
         const json = this._json,
             baseUri = this._baseUri;
+        //glb reader
+        //if(json.buffer instanceof ArrayBuffer){ }
         //request buffers
         const fetchArrayBufferPromises = [];
         if (json.buffers) {

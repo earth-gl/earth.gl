@@ -22,7 +22,6 @@
     "3d-core-raub": "^1.0.1",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
-    "atob": "^2.1.2",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.1",
     "babel-plugin-external-helpers": "^6.22.0",
@@ -33,19 +32,14 @@
     "babel-plugin-transform-es2015-typeof-symbol": "^6.23.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-env": "^1.7.0",
-    "filereader": "^0.10.3",
     "glslify": "^7.0.0",
     "kiwi.matrix": "^0.3.4",
     "node-fetch": "^2.3.0",
-    "pako": "^1.0.7",
+    "requirejs": "^2.3.6",
     "rollup": "^1.0.0",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-glslify": "^1.0.7",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "xmlhttprequest": "^1.8.0"
-  },
-  "dependencies": {
-    "glsl-specular-phong": "^1.0.0"
+    "rollup-plugin-node-resolve": "^4.0.0"
   }
 }

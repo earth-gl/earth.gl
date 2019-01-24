@@ -118,6 +118,7 @@ class GProgram {
      * https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getActiveUniform
      */
     _activate() {
+        //bridge
         const gl = this._gl,
             program = this._program;
         //attrib

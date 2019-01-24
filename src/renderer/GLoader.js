@@ -2,8 +2,8 @@
 const fetch = require("./../utils/fetch"),
     glslify = require("glslify"),
     isNode = require("../utils/isNode"),
-    GProgram = require("./GProgram"),
     GBuffer = require("./GBuffer"),
+    GProgram = require("./GProgram"),
     GUniform = require("./GUniform"),
     GLTFLoader = require("./../loaders/GLTFLoader");
 //shaders 
@@ -80,12 +80,12 @@ class GLoader {
             return response.json();
         }).then(json => {
             const uri = root + modelFilename;
-            const loader = new GLTFLoader(json,{
-                uri:uri
+            const loader = new GLTFLoader(json, {
+                uri: uri
             });
             loader.load(program).then(scenes => {
                 that._scenes = scenes;
-                scenes.forEach(scene=>{
+                scenes.forEach(scene => {
                     that._initComponents(scene);
                 });
             });
@@ -99,28 +99,40 @@ class GLoader {
             nodes = scene.nodes,
             program = this._program;
         program.useProgram();
-        nodes.forEach((node)=>{
-            // if(!node.meshes && !node.chidren) return;
-            // const meshes = node.children?this._extractMesh(node.chidren):node.meshes;
-            // meshes.forEach(mesh=>{
-            //     mesh.primitives.forEach(primitive=>{
-            //         const attributes = {};
-            //         for(const attr in primitive.attributes){
-            //             attributes[attr] = primitive.attributes[attr].array;
-            //         }
-            //     });
-            // });
+        //prepare nodes
+        nodes.forEach((node) => {
+            if (!node.mesh && !node.children) return;
+            const mesh = node.mesh;
+            mesh.primitives.forEach(primitive => {
+                //use vao
+                const ext = gl.getExtension("OES_vertex_array_object");
+                const vao = ext.createVertexArrayOES();
+                ext.bindVertexArrayOES(vao);
+                //
+                const posAccessor = primitive.attributes["POSITION"];
+                const positionBuffer = posAccessor.bufferView;
+                //1.bind position buffer
+                positionBuffer.bindBuffer();
+                positionBuffer.bufferData();
+                posAccessor.link("a_position");
+                //
+                ext.bindVertexArrayOES(null);
+                //2.bind index buffer
+                const indicesBuffer = new primitive.createIndicesBuffer(program);
+                indicesBuffer.bindBuffer();
+                //3.draw element
+                gl.drawElements();
+            });
         });
-        //
-        const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
-        // transform data
-        verticesBuffer.bindBuffer();
-        verticesBuffer.bufferData(new Float32Array(this._vertices));
-        verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
-        // transform index data
-        const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
-        indexBuffer.bindBuffer();
-        indexBuffer.bufferData(new Uint16Array(this._indices));
+        // const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
+        // // transform data
+        // verticesBuffer.bindBuffer();
+        // verticesBuffer.bufferData(new Float32Array(this._vertices));
+        // verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
+        // // transform index data
+        // const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
+        // indexBuffer.bindBuffer();
+        // indexBuffer.bufferData(new Uint16Array(this._indices));
         //
         this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
         this._u_viewMatrix = new GUniform(program, "u_viewMatrix");

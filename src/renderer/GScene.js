@@ -23,9 +23,9 @@ const merge = require("./../utils/merge"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     Event = require("./../core/Event"),
     GGlobal = require("./GGlobal"),
-    GLoader = require("./GLoader"),
+    //GLoader = require("./GLoader"),
     Quadtree = require("./../core/Quadtree"),
-    GSurface = require("./GSurface"),
+    //GSurface = require("./GSurface"),
     now = require("./../utils/now"),
     PerspectiveCamera = require("./../camera/PerspectiveCamera"),
     { addDomEvent, domEventNames } = require("../utils/domEvent");
@@ -138,11 +138,11 @@ class GScene extends Event {
         //create earth
         this._earth = new GGlobal(gl);
         //create surface
-        this._surface = new GSurface(gl);
-        this._surface.update();
+        //this._surface = new GSurface(gl);
+        //this._surface.update();
         //create test gltfloader
-        this._gltf = new GLoader();
-        this._gltf.init(gl);
+        //this._gltf = new GLoader();
+        //this._gltf.init(gl);
     }
     /**
      * 

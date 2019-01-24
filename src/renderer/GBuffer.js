@@ -60,9 +60,9 @@ class GBuffer {
         this.byteOffset = byteOffset !== undefined ? byteOffset : 0;
         /**
          * @type {TypedArray}
-         * 
+         * this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
          */
-        this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
+        this._data = typedArrayBufferData;
     }
 
     /**
@@ -82,9 +82,10 @@ class GBuffer {
     bufferData() {
         const gl = this._gl,
             bufferType = this._bufferType,
-            drawType = this._drawType;
-        const typedArrayBufferData = this._data;
-        gl.bufferData(bufferType, typedArrayBufferData, drawType);
+            drawType = this._drawType,
+            data = this._data;
+        gl.bufferData(bufferType, data, drawType);
+        // gl.bindBuffer(bufferType,null);
     }
     /**
      * 

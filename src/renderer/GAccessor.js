@@ -78,8 +78,8 @@ class Accessor {
      */
     link(attribName) {
         const program = this.bufferView._program,
-            gl = program._gl;
-        const location = this.location = program.ActivateAttributes[attribName];
+            gl = program._gl,
+            location = program.ActivateAttributes[attribName];
         gl.vertexAttribPointer(
             location,
             this.size,
@@ -87,8 +87,10 @@ class Accessor {
             this.normalized,
             this.byteStride,
             this.byteOffset
-        );
+        );      
         gl.enableVertexAttribArray(location);
+        //store location
+        this.location = location;
     }
     /**
      * relink attrib pointer

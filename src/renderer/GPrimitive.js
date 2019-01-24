@@ -1,13 +1,18 @@
+const GBuffer = require("./GBuffer");
 /**
  * @class
  */
-class GPrimitive{
-
-    constructor(gltf,p){
+class GPrimitive {
+    /**
+     * 
+     * @param {*} gltf 
+     * @param {Object} pJson config form gltf json
+     */
+    constructor(gltf, pJson) {
         /**
          * 
          */
-        this.p = p;
+        this.p = pJson;
         /**
          * 
          */
@@ -15,19 +20,19 @@ class GPrimitive{
         /**
          * 
          */
-        this.attributes = p.attributes;
+        this.attributes = pJson.attributes;
         /**
          * accessor id
          */
-        this.indices = p.indices !== undefined ? p.indices : null;
+        this.indices = pJson.indices !== undefined ? pJson.indices : null;
         /**
          * 
          */
-        this.extensions = p.extensions !== undefined ? p.extensions : null;
+        this.extensions = pJson.extensions !== undefined ? pJson.extensions : null;
         /**
          * 
          */
-        this.extras = p.extras !== undefined ? p.extras : null;
+        this.extras = pJson.extras !== undefined ? pJson.extras : null;
         /**
          * 
          */
@@ -44,12 +49,12 @@ class GPrimitive{
     /**
      * 
      */
-    _initAttrib(){
+    _initAttrib() {
         const p = this.p;
         if (p.extensions !== undefined) {
             if (p.extensions.gl_avatar !== undefined) {
                 if (p.extensions.gl_avatar.attributes) {
-                    for (const attribName in p.extensions.gl_avatar.attributes ) {
+                    for (const attribName in p.extensions.gl_avatar.attributes) {
                         this.attributes[attribName] = p.extensions.gl_avatar.attributes[attribName];
                     }
                 }
@@ -58,8 +63,25 @@ class GPrimitive{
     }
     /**
      * 
+     * @param {GProgram} program 
      */
-    _initAccessor(){
+    createIndicesBuffer(program){
+        const gl = program._gl,
+            indices = this.indices,
+            indicesComponentType = this.indicesComponentType,
+            indicesLength = this.indicesLength,
+            indicesOffset = this.indicesOffset,
+            bufferData = this.gltf.accessors[indices].bufferView;
+        const indicesBuffer = new GBuffer(
+            program,indicesComponentType,
+            gl.STATIC_DRAW,bufferData,
+            indicesLength,indicesOffset,0);
+        return indicesBuffer;
+    }
+    /**
+     * 
+     */
+    _initAccessor() {
         const gltf = this.gltf;
         if (this.indices !== null) {
             this.indicesComponentType = gltf.json.accessors[this.indices].componentType;
@@ -70,14 +92,14 @@ class GPrimitive{
             this.drawArraysCount = gltf.json.accessors[this.attributes.POSITION].count;
             this.drawArraysOffset = gltf.json.accessors[this.attributes.POSITION].byteOffset || 0;
         }
-        for (const attribName in this.attributes ) {
+        for (const attribName in this.attributes) {
             this.attributes[attribName] = gltf.accessors[this.attributes[attribName]];
         }
     }
     /**
      * 
      */
-    _initMaterial(){
+    _initMaterial() {
         const gltf = this.gltf,
             p = this.p;
         /**
@@ -87,7 +109,7 @@ class GPrimitive{
         /**
          * default: gl.TRIANGLES
          */
-        this.mode = p.mode !== undefined ? p.mode : 4; 
+        this.mode = p.mode !== undefined ? p.mode : 4;
         /**
          * gl.ARRAY_BUFFER or gl.ELEMENT_BUFFER
          */

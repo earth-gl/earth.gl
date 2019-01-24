@@ -1,16 +1,10 @@
-const glslify = require("glslify"),
-  isNode = require("../utils/isNode"),
+const fragText = require("./../shader/glsl-earth-gl-camera-fs.glsl"),
+  vertText = require("./../shader/glsl-earth-gl-camera-vs.glsl"),
   { PHYSICAL_CONSTANT } = require("../utils/constant"),
   GProgram = require("./GProgram"),
   GBuffer = require("./GBuffer"),
   GAccessor = require("./GAccessor"),
   GUniform = require("./GUniform");
-/**
- * glsl resource
- */
-const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-camera-fs.glsl") : require("./../shader/glsl-earth-gl-camera-fs.glsl");
-const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-camera-vs.glsl") : require("./../shader/glsl-earth-gl-camera-vs.glsl");
-
 /**
  * 绘制全球
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Scene/Globe.js
@@ -80,72 +74,79 @@ class GGlobal {
       radiusX = this._radiusX,
       radiusY = this._radiusY,
       radiusZ = this._radiusZ,
-      vertexPositionData = [],
-      indexData = [];
-    for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+      vertices = [],
+      indices = [];
+    //calcute vertices
+    for (let latNumber = 0; latNumber <= latitudeBands; latNumber++) {
       var theta = latNumber * Math.PI / latitudeBands;
       var sinTheta = Math.sin(theta);
       var cosTheta = Math.cos(theta);
-      for (var longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+      for (let longNumber = 0; longNumber <= longitudeBands; longNumber++) {
         var phi = longNumber * 2 * Math.PI / longitudeBands;
         var sinPhi = Math.sin(phi);
         var cosPhi = Math.cos(phi);
         var x = cosPhi * sinTheta;
         var y = cosTheta;
         var z = sinPhi * sinTheta;
-        // colors = [[1.0, 1.0, 0.3, 1.0]];
-        vertexPositionData.push(radiusX * x);
-        vertexPositionData.push(radiusY * y);
-        vertexPositionData.push(radiusZ * z);
+        vertices.push(radiusX * x);
+        vertices.push(radiusY * y);
+        vertices.push(radiusZ * z);
+      }
+    }
+    //calcute indices
+    for (let latNumber = 0; latNumber < latitudeBands; latNumber++) {
+      for (let longNumber = 0; longNumber < longitudeBands; longNumber++) {
         var first = (latNumber * (longitudeBands + 1)) + longNumber;
         var second = first + longitudeBands + 1;
-        indexData.push(first);
-        indexData.push(second);
-        indexData.push(first + 1);
-        indexData.push(second);
-        indexData.push(second + 1);
-        indexData.push(first + 1);
+        indices.push(first);
+        indices.push(second);
+        indices.push(first + 1);
+        indices.push(second);
+        indices.push(second + 1);
+        indices.push(first + 1);
       }
     }
     //vertex data
-    this._vertices = vertexPositionData;
+    this._vertices = vertices;
     //vertex index
-    this._indices = indexData;
+    this._indices = indices;
   }
   /**
    * 构造资源
    */
   _initComponents() {
-    //
     const gl = this._gl;
     const program = this._program = new GProgram(gl, vertText, fragText);
-    //
     program.useProgram();
-    //
-    const verticesBuffer = this._verticesBuffer = new GBuffer(
+    //创建顶点buffer
+    const verticesBuffer = new GBuffer(
       program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
       new Float32Array(this._vertices),
       this._vertices.length, 0, 0);
-    // transform data
+    //写入数据
     verticesBuffer.bindBuffer();
     verticesBuffer.bufferData();
     // accessor attrib
-    const verticesAccessor = this._verticesAccessor = new GAccessor(
-      gl.FLOAT, 0, false, 
-      this._vertices.length, 
+    const verticesAccessor = new GAccessor(
+      gl.FLOAT, 0, false,
+      this._vertices.length,
       "VEC3", verticesBuffer);
     verticesAccessor.link("a_position");
     // transform index data
-    const indexBuffer = this._indicesBuffer = new GBuffer(
+    const indexBuffer = new GBuffer(
       program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
       new Uint16Array(this._indices),
       this._indices.length, 0, 0);
     indexBuffer.bindBuffer();
     indexBuffer.bufferData();
-    //
+    //camera matrix
     this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
     this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
     this._u_modelMatrix = new GUniform(program, "u_modelMatrix");
+    //bind resource
+    this._verticesAccessor = verticesAccessor;
+    this._indicesBuffer = indexBuffer;
+    this._verticesBuffer = verticesBuffer;
   }
   /**
    * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
@@ -168,9 +169,10 @@ class GGlobal {
     u_modelMatrix.assignValue(camera.IdentityMatrix);
     //bind buffer
     vBuffer.bindBuffer();
-    iBuffer.bindBuffer();
     aBuffer.relink();
+    iBuffer.bindBuffer();
     //draw elements
+    //https://developer.mozilla.org/en-US/docs/Web/API/OES_element_index_uint
     gl.drawElements(gl.TRIANGLES, this._indices.length, gl.UNSIGNED_SHORT, 0);
   }
 }
