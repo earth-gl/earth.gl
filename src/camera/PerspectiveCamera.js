@@ -3,8 +3,6 @@
  */
 const Camera = require("./Camera"),
     { Mat4, Vec3, GLMatrix } = require("kiwi.matrix");
-//set kiwi.matrix pricision to high 
-GLMatrix.setMatrixArrayType(Array);
 /**
  * const viewProjectionMatrix = projectionMatrix * viewMatrix * [objectMatrix]
  * @class

@@ -1,7 +1,6 @@
 
 const merge = require("./../utils/merge"),
     Plane = require("./Plane"),
-    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
     CullingVolume = require("./CullingVolume");
 /**
  * reference:

@@ -1,6 +1,3 @@
-/**
- * merge objects
- */
 const merge = require("../utils/merge");
 /**
  * default program options

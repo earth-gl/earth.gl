@@ -10,7 +10,8 @@ export default {
         exports: "named",
         format:"iife",
         file:"./dist/earth.gl.js",
-        sourcemap:true
+        sourcemap:true,
+        strict:false
     },
     external: [
         "fs",

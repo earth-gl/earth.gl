@@ -7,19 +7,23 @@ const Quat = require("kiwi.matrix").Quat,
     Vec3 = require("kiwi.matrix").Vec3;
 
 const { preventDefault, stopPropagation } = require("../utils/domEvent"),
-    Event = require("./Event");
+    Eventable = require("./Eventable");
 
-class Trackball extends Event {
+class Trackball extends Eventable {
     /**
     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
     * @param {PerspectiveCamera} camera
     */
-    constructor(camera) {
+    constructor(camera, scene) {
         super();
         /**
          * @type {PerspectiveCamera}
          */
         this.camera = camera;
+        /**
+         * @type {GScene}
+         */
+        this.scene = scene;
         /**
          * render screen
          */
@@ -115,7 +119,8 @@ class Trackball extends Event {
     }
 
     _registerEvent() {
-        this.on("mousedown", this.mousedown, this);
+        const scene =this.scene;
+        scene.on("mousedown", this.mousedown, this);
     }
 
     /**
@@ -209,6 +214,8 @@ class Trackball extends Event {
     mousedown(event) {
         preventDefault(event);
         stopPropagation(event);
+        //
+        const scene =this.scene;
         //rotate
         this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
         this._movePrev = this._moveCurr.clone();
@@ -216,8 +223,8 @@ class Trackball extends Event {
         this._panStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._panEnd = this._panStart.clone();
         //
-        this.on("mousemove", this.mousemove, this);
-        this.on("mouseup", this.mouseup, this);
+        scene.on("mousemove", this.mousemove, this);
+        scene.on("mouseup", this.mouseup, this);
     }
 
     mousemove(event) {
@@ -229,9 +236,10 @@ class Trackball extends Event {
     }
 
     mouseup(event) {
-        this.off("mousemove", this.mousemove, this);
-        this.off("mouseup", this.mouseup, this);
-        this.fire("dragEnd",event,true);
+        const scene =this.scene;
+        scene.off("mousemove", this.mousemove, this);
+        scene.off("mouseup", this.mouseup, this);
+        scene.fire("dragEnd",event,true);
     }
 
     update() {

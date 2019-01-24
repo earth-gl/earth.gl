@@ -21,7 +21,7 @@
 const merge = require("./../utils/merge"),
     TrackballController = require("../core/TrackballController"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
-    Event = require("./../core/Event"),
+    Eventable = require("./../core/Eventable"),
     GGlobal = require("./GGlobal"),
     //GLoader = require("./GLoader"),
     Quadtree = require("./../core/Quadtree"),
@@ -44,7 +44,7 @@ const CONTEXT_OPTIONS = {
 /**
  * @class Scene
  */
-class GScene extends Event {
+class GScene extends Eventable {
     /**
      * 
      * @param {Object} [options]
@@ -154,10 +154,9 @@ class GScene extends Event {
         const canvas = this._canvas,
             camera = this._camera;
         addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
-        this._trackball = new TrackballController(camera);
+        this._trackball = new TrackballController(camera,this);
         const trackball = this._trackball;
         trackball.update();
-        this.addEventPopNode(trackball);
     }
     /**
      * refrenece:

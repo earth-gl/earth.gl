@@ -11,7 +11,7 @@ class QuadtreeTileSchema {
         /**
          * 
          */
-        options = merge(options);
+        options = merge({},options);
         /**
          * @type {String}
          */
