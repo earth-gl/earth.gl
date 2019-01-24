@@ -96,7 +96,7 @@ class GScene extends Event {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, maximumRadius);
+        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, maximumRadius * 5);
         /**
          * @type {Quadtree}
          */
@@ -123,11 +123,14 @@ class GScene extends Event {
             height = this._height,
             devicePixelRatio = this._devicePixelRatio,
             camera = this._camera,
+            canvas = this._canvas,
             gl = this._gl;
         //setting camera position at 2*raduis
         camera.position = [0, 0, maximumRadius * 2.5];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
     /**
@@ -148,9 +151,9 @@ class GScene extends Event {
      * 
      */
     _registerDomEvents() {
-        const dom = this._canvas,
+        const canvas = this._canvas,
             camera = this._camera;
-        addDomEvent(dom, domEventNames, this._handleDomEvent, this);
+        addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
         this._trackball = new TrackballController(camera);
         const trackball = this._trackball;
         trackball.update();
@@ -208,9 +211,10 @@ class GScene extends Event {
             // primitives = this._primitives,
             earth = this._earth;
         //
+        //gl.enable(gl.DEPTH_TEST);
+        gl.clearDepth(1.0);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update camera
         trackball.update();
         //render earth

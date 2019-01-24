@@ -119,9 +119,9 @@ class Event {
         return this;
     }
 
-    fire(type, data, propagate) {
+    fire(type, e, propagate) {
         if (!this.listens(type, propagate)) { return this; }
-        var event = merge({}, data, { type: type, target: this }),
+        var event = merge(e,{ type: type, target: this }),
             events = this._events;
         var typeIndex = events[type + "_idx"],
             i, len, listeners, id;

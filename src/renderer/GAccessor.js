@@ -80,6 +80,7 @@ class Accessor {
         const program = this.bufferView._program,
             gl = program._gl,
             location = program.ActivateAttributes[attribName];
+        //
         gl.vertexAttribPointer(
             location,
             this.size,
