@@ -1,3 +1,5 @@
+precision highp float;
+
 #pragma glslify: targetpos = require('./chunk/glsl-earth-gl-targetpos.glsl')
 
 uniform mat4 u_projectionMatrix;

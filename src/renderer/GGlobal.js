@@ -74,6 +74,7 @@ class GGlobal {
       radiusX = this._radiusX,
       radiusY = this._radiusY,
       radiusZ = this._radiusZ,
+      tCoords = [],
       vertices = [],
       indices = [];
     //calcute vertices
@@ -85,31 +86,41 @@ class GGlobal {
         var phi = longNumber * 2 * Math.PI / longitudeBands;
         var sinPhi = Math.sin(phi);
         var cosPhi = Math.cos(phi);
+        //
         var x = cosPhi * sinTheta;
         var y = cosTheta;
         var z = sinPhi * sinTheta;
         vertices.push(radiusX * x);
         vertices.push(radiusY * y);
         vertices.push(radiusZ * z);
+        //
+        var u = longNumber/longitudeBands;
+        var v = latNumber/latitudeBands;
+        tCoords.push(u);
+        tCoords.push(v);
       }
     }
     //calcute indices
     for (let latNumber = 0; latNumber < latitudeBands; latNumber++) {
       for (let longNumber = 0; longNumber < longitudeBands; longNumber++) {
-        var first = (latNumber * (longitudeBands + 1)) + longNumber;
-        var second = first + longitudeBands + 1;
-        indices.push(first);
-        indices.push(second);
-        indices.push(first + 1);
-        indices.push(second);
-        indices.push(second + 1);
-        indices.push(first + 1);
+        const A = (latNumber * (longitudeBands + 1)) + longNumber,
+          B = A + longitudeBands + 1,
+          C = A+1,
+          D = B+1;
+        indices.push(A);
+        indices.push(B);
+        indices.push(C);
+        indices.push(B);
+        indices.push(D);
+        indices.push(C);
       }
     }
     //vertex data
     this._vertices = vertices;
     //vertex index
     this._indices = indices;
+    //coords
+    this._tCoords = tCoords;
   }
   /**
    * 构造资源

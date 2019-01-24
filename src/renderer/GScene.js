@@ -96,7 +96,7 @@ class GScene extends Eventable {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.1, maximumRadius * 5);
+        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, maximumRadius * 3);
         /**
          * @type {Quadtree}
          */
@@ -121,12 +121,13 @@ class GScene extends Eventable {
         //gl context
         const width = this._width,
             height = this._height,
-            devicePixelRatio = this._devicePixelRatio,
+            // devicePixelRatio = this._devicePixelRatio,
+            devicePixelRatio = 1,
             camera = this._camera,
             canvas = this._canvas,
             gl = this._gl;
         //setting camera position at 2*raduis
-        camera.position = [0, 0, maximumRadius * 2.5];
+        camera.position = [0, 0, maximumRadius * 2.2];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -209,7 +210,6 @@ class GScene extends Eventable {
             // surface = this._surface,
             // primitives = this._primitives,
             earth = this._earth;
-        //
         //gl.enable(gl.DEPTH_TEST);
         gl.clearDepth(1.0);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
