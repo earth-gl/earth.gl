@@ -18,17 +18,17 @@
  * 3. 可自定义加载建筑
  * 4. 提供camera distance，用于确定lod
  */
-const merge = require("./../utils/merge"),
-    TrackballController = require("../core/TrackballController"),
-    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
-    Eventable = require("./../core/Eventable"),
-    GGlobal = require("./GGlobal"),
+const merge = require('./../utils/merge'),
+    TrackballController = require('../core/TrackballController'),
+    maximumRadius = require('./../core/Ellipsoid').WGS84.maximumRadius,
+    Eventable = require('./../core/Eventable'),
+    GGlobal = require('./GGlobal'),
     //GLoader = require("./GLoader"),
-    Quadtree = require("./../core/Quadtree"),
-    //GSurface = require("./GSurface"),
-    now = require("./../utils/now"),
-    PerspectiveCamera = require("./../camera/PerspectiveCamera"),
-    { addDomEvent, domEventNames } = require("../utils/domEvent");
+    Quadtree = require('./../core/Quadtree'),
+    //GSurface = require('./GSurface'),
+    now = require('./../utils/now'),
+    PerspectiveCamera = require('./../camera/PerspectiveCamera'),
+    { addDomEvent, domEventNames } = require('../utils/domEvent');
 /**
  * 
  */
