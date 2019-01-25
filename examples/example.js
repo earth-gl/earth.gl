@@ -1,6 +1,6 @@
 const GScene = earth.gl.renderer.GScene;
 
-const canvas = document.getElementById("mapCanvas");
+const canvas = document.getElementById('mapCanvas');
 
 const scene = new GScene({
     canvas: canvas,

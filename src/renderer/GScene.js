@@ -23,7 +23,7 @@ const merge = require('./../utils/merge'),
     maximumRadius = require('./../core/Ellipsoid').WGS84.maximumRadius,
     Eventable = require('./../core/Eventable'),
     GGlobal = require('./GGlobal'),
-    //GLoader = require("./GLoader"),
+    GLoader = require('./GLoader'),
     Quadtree = require('./../core/Quadtree'),
     //GSurface = require('./GSurface'),
     PerspectiveCamera = require('./../camera/PerspectiveCamera'),
@@ -140,8 +140,8 @@ class GScene extends Eventable {
         //this._surface = new GSurface(gl);
         //this._surface.update();
         //create test gltfloader
-        //this._gltf = new GLoader();
-        //this._gltf.init(gl);
+        this._gltf = new GLoader();
+        this._gltf.init(gl);
     }
     /**
      * 
@@ -173,7 +173,7 @@ class GScene extends Eventable {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
-            //gltf = this._gltf,
+            gltf = this._gltf,
             //quadtree = this._quadtree,
             // surface = this._surface,
             earth = this._earth;
@@ -184,8 +184,9 @@ class GScene extends Eventable {
         //update camera
         trackball.update();
         //render earth
-        //gltf.render(camera);
         earth.render(camera);
+        //render gltf
+        gltf.render(camera);
         //render surface (terrain)
         //surface.render(camera);
         // for(var i = 0,len = primitives;i<len;i++)

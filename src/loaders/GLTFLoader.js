@@ -1,13 +1,13 @@
-const requestImage = require("./../utils/requestImage"),
-    fetch = require("./../utils/fetch"),
-    Camera = require("./../camera/Camera"),
-    GNode = require("./../renderer/GNode"),
-    GMesh = require("./../renderer/GMesh"),
-    GTexture = require("./../renderer/GTexture"),
-    GSampler = require("./../renderer/GSampler"),
-    GMaterial = require("./../renderer/GMaterial"),
-    GAccessor = require("./../renderer/GAccessor"),
-    GBuffer = require("./../renderer/GBuffer");
+const requestImage = require('./../utils/requestImage'),
+    fetch = require('./../utils/fetch'),
+    Camera = require('./../camera/Camera'),
+    GNode = require('./../renderer/GNode'),
+    GMesh = require('./../renderer/GMesh'),
+    GTexture = require('./../renderer/GTexture'),
+    GSampler = require('./../renderer/GSampler'),
+    GMaterial = require('./../renderer/GMaterial'),
+    GAccessor = require('./../renderer/GAccessor'),
+    GBuffer = require('./../renderer/GBuffer');
 /**
  * @class
  */
@@ -178,8 +178,8 @@ class GLTFLoader {
      * @returns {String}
      */
     _getBaseUri(uri) {
-        let basePath = "";
-        const i = uri.lastIndexOf("/");
+        let basePath = '';
+        const i = uri.lastIndexOf('/');
         if (i !== -1) {
             basePath = uri.substring(0, i + 1);
         }
@@ -205,7 +205,7 @@ class GLTFLoader {
     _fetchArrayBuffer(url, bid) {
         const that = this;
         return fetch(url, {
-            responseType: "arraybuffer"
+            responseType: 'arraybuffer'
         }).then(response => {
             return response.arrayBuffer();
         }).then(buffer => {

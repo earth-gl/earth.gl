@@ -1,7 +1,5 @@
 const fragText = require('./../shader/barycentric-fs.glsl'),
   vertText = require('./../shader/barycentric-vs.glsl'),
-  //fragText = require('./../shader/camera-fs.glsl'),
-  //vertText = require('./../shader/camera-vs.glsl'),
   { PHYSICAL_CONSTANT } = require('../utils/constant'),
   GProgram = require('./GProgram'),
   GBuffer = require('./GBuffer'),

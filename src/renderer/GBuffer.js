@@ -62,7 +62,7 @@ class GBuffer {
          * @type {TypedArray}
          * this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
          */
-        this._data = typedArrayBufferData;
+        this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
     }
 
     /**

@@ -63,23 +63,6 @@ class GPrimitive {
     }
     /**
      * 
-     * @param {GProgram} program 
-     */
-    createIndicesBuffer(program){
-        const gl = program._gl,
-            indices = this.indices,
-            indicesComponentType = this.indicesComponentType,
-            indicesLength = this.indicesLength,
-            indicesOffset = this.indicesOffset,
-            bufferData = this.gltf.accessors[indices].bufferView;
-        const indicesBuffer = new GBuffer(
-            program,indicesComponentType,
-            gl.STATIC_DRAW,bufferData,
-            indicesLength,indicesOffset,0);
-        return indicesBuffer;
-    }
-    /**
-     * 
      */
     _initAccessor() {
         const gltf = this.gltf;
@@ -87,6 +70,7 @@ class GPrimitive {
             this.indicesComponentType = gltf.json.accessors[this.indices].componentType;
             this.indicesLength = gltf.json.accessors[this.indices].count;
             this.indicesOffset = gltf.json.accessors[this.indices].byteOffset || 0;
+            this.indicesBuffer = gltf.accessors[this.indices].bufferView;
         } else {
             // assume 'POSITION' is there
             this.drawArraysCount = gltf.json.accessors[this.attributes.POSITION].count;

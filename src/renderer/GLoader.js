@@ -1,14 +1,11 @@
 
-const fetch = require("./../utils/fetch"),
-    glslify = require("glslify"),
-    isNode = require("../utils/isNode"),
-    GBuffer = require("./GBuffer"),
-    GProgram = require("./GProgram"),
-    GUniform = require("./GUniform"),
-    GLTFLoader = require("./../loaders/GLTFLoader");
+const fetch = require('./../utils/fetch'),
+    GProgram = require('./GProgram'),
+    GUniform = require('./GUniform'),
+    GLTFLoader = require('./../loaders/GLTFLoader');
 //shaders 
-const fragText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-fs.glsl") : require("./../shader/glsl-earth-gl-gltf-fs.glsl");
-const vertText = isNode ? glslify.file("./../shader/glsl-earth-gl-gltf-vs.glsl") : require("./../shader/glsl-earth-gl-gltf-vs.glsl");
+const fragText = require('./../shader/standard-fs.glsl');
+const vertText = require('./../shader/standard-vs.glsl');
 /**
  * @class
  */
@@ -22,11 +19,11 @@ class GLoader {
         /**
          * 
          */
-        this.root = root || "http://139.129.7.130/models/DamagedHelmet/glTF/";
+        this.root = root || 'http://139.129.7.130/models/DamagedHelmet/glTF/';
         /**
          * 
          */
-        this.modelFilename = modelFilename || "DamagedHelmet.gltf";
+        this.modelFilename = modelFilename || 'DamagedHelmet.gltf';
         /**
          * @type {WebGLRenderingContext}
          */
@@ -75,7 +72,7 @@ class GLoader {
             program = this._program,
             modelFilename = this.modelFilename;
         fetch(root + modelFilename, {
-            responseType: "json"
+            responseType: 'json'
         }).then(response => {
             return response.json();
         }).then(json => {
@@ -105,23 +102,23 @@ class GLoader {
             const mesh = node.mesh;
             mesh.primitives.forEach(primitive => {
                 //use vao
-                const ext = gl.getExtension("OES_vertex_array_object");
+                const ext = gl.getExtension('OES_vertex_array_object');
                 const vao = ext.createVertexArrayOES();
                 ext.bindVertexArrayOES(vao);
                 //
-                const posAccessor = primitive.attributes["POSITION"];
+                const posAccessor = primitive.attributes['POSITION'];
                 const positionBuffer = posAccessor.bufferView;
                 //1.bind position buffer
                 positionBuffer.bindBuffer();
                 positionBuffer.bufferData();
-                posAccessor.link("a_position");
+                posAccessor.link('a_position');
                 //
                 ext.bindVertexArrayOES(null);
                 //2.bind index buffer
-                const indicesBuffer = new primitive.createIndicesBuffer(program);
+                const indicesBuffer = primitive.indicesBuffer;
                 indicesBuffer.bindBuffer();
                 //3.draw element
-                gl.drawElements();
+                gl.drawElements(primitive.mode, primitive.indicesLength, primitive.indicesComponentType, primitive.indicesOffset);
             });
         });
         // const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
@@ -134,12 +131,12 @@ class GLoader {
         // indexBuffer.bindBuffer();
         // indexBuffer.bufferData(new Uint16Array(this._indices));
         //
-        this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
-        this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
-        this._u_modelMatrix = new GUniform(program, "u_modelMatrix");
+        this._u_projectionMatrix = new GUniform(program, 'u_projectionMatrix');
+        this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
+        this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
     }
 
-    render(camera) {
+    render() {
 
     }
 

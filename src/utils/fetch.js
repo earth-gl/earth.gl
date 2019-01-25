@@ -1,7 +1,6 @@
 /**
  * @function
  */
-const isNode = require("./isNode"),
-    nativeFetch = isNode?require("node-fetch"):fetch;
+const nativeFetch = fetch;
 
 module.exports = nativeFetch;
