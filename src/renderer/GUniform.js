@@ -43,7 +43,7 @@ class GUniform {
             program = this._program,
             uniform = program.ActivateUniforms[uniformName];
         if (uniform.type === gl.FLOAT_MAT4)
-            this._funcName = "uniformMatrix4fv";
+            this._funcName = 'uniformMatrix4fv';
         this._location = uniform.location;
     }
     /**
@@ -55,7 +55,7 @@ class GUniform {
         const funcName = this._funcName,
             location = this._location,
             gl = this._gl;
-        !funcName ? console.log("unkonwn unifrom type") : gl[funcName].apply(gl, [location, false, arr]);
+        !funcName ? console.log('unkonwn unifrom type') : gl[funcName].apply(gl, [location, false, arr]);
     }
 }
 

@@ -1,4 +1,4 @@
-const merge = require("../utils/merge");
+const merge = require('../utils/merge');
 /**
  * default program options
  */
@@ -71,7 +71,6 @@ class GProgram {
     get ActivateUniforms(){
         return this._uniforms;
     }
-
     /**
      * 
      */

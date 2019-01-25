@@ -26,7 +26,6 @@ const merge = require('./../utils/merge'),
     //GLoader = require("./GLoader"),
     Quadtree = require('./../core/Quadtree'),
     //GSurface = require('./GSurface'),
-    now = require('./../utils/now'),
     PerspectiveCamera = require('./../camera/PerspectiveCamera'),
     { addDomEvent, domEventNames } = require('../utils/domEvent');
 /**
@@ -68,7 +67,7 @@ class GScene extends Eventable {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = options.gl || this._canvas.getContext("webgl", this._contextOptions) || this._canvas.getContext("experimental-webgl", this._contextOptions);
+        this._gl = options.gl || this._canvas.getContext('webgl', this._contextOptions) || this._canvas.getContext('experimental-webgl', this._contextOptions);
         /**
          * @type {Number}
          */
@@ -89,10 +88,6 @@ class GScene extends Eventable {
          * 
          */
         this._shadow = options.shadow || false;
-        /**
-         * @type {Array}
-         */
-        this._primitives = [];
         /**
          * 
          */
@@ -168,35 +163,8 @@ class GScene extends Eventable {
     _handleDomEvent(e) {
         //dom event type
         const type = e.type;
-        //ignore click lasted for more than 300ms.
-        if (type === "mousedown" || (type === "touchstart" && e.touches.length === 1)) {
-            this._mouseDownTime = now();
-            this._startContainerPoint = [e.x, e.y];
-        } else if (type === "mousemove") {
-            // const downTime = this._mouseDownTime,
-            //     endTime = now();
-            // const deltaTime =!downTime?1:downTime - endTime;
-        } else if (type === "click" || type === "touchend" || type === "mouseup") {
-            //mousedown | touchstart propogation is stopped
-            // if (!this._mouseDownTime) return;
-            // const downTime = this._mouseDownTime;
-            // delete this._mouseDownTime;
-            // const time = now();
-        }
+        //handle directly
         this.fire(type, e, true);
-    }
-    /**
-     * 
-     * @param {Event} e 
-     */
-    _getActualEvent(e) {
-        return e.touches && e.touches.length > 0 ? e.touches[0] : e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e;
-    }
-    /**
-     * 
-     */
-    get primitives() {
-        return this._primitives;
     }
     /**
      * 
@@ -208,10 +176,9 @@ class GScene extends Eventable {
             //gltf = this._gltf,
             //quadtree = this._quadtree,
             // surface = this._surface,
-            // primitives = this._primitives,
             earth = this._earth;
         //gl.enable(gl.DEPTH_TEST);
-        gl.clearDepth(1.0);
+        gl.enable(gl.CULL_FACE);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update camera

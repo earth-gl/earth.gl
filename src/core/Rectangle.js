@@ -1,7 +1,7 @@
 const TWO_PI = 2 * Math.PI,
     PI_OVER_TWO = Math.PI / 2,
-    {equal14,EPSILON14} = require("./../utils/revise"),
-    Geographic = require("./Geographic");
+    {equal14,EPSILON14} = require('./../utils/revise'),
+    Geographic = require('./Geographic');
     
 /**
  * 

@@ -6,7 +6,7 @@ const babel = require('rollup-plugin-babel');
 const glslify = require('rollup-plugin-glslify');
 
 const watch = ()=>{
-    const watcher = gulpwatch(['./src/**/*.js']);
+    const watcher = gulpwatch(['./src/**/*.js','./src/shader/**/*.glsl']);
     watcher.on('change', function(path) {
         console.log(`File ${path} was changed`);
         build();

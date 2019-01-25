@@ -1,10 +1,12 @@
-const fragText = require("./../shader/glsl-earth-gl-camera-fs.glsl"),
-  vertText = require("./../shader/glsl-earth-gl-camera-vs.glsl"),
-  { PHYSICAL_CONSTANT } = require("../utils/constant"),
-  GProgram = require("./GProgram"),
-  GBuffer = require("./GBuffer"),
-  GAccessor = require("./GAccessor"),
-  GUniform = require("./GUniform");
+const fragText = require('./../shader/barycentric-fs.glsl'),
+  vertText = require('./../shader/barycentric-vs.glsl'),
+  //fragText = require('./../shader/camera-fs.glsl'),
+  //vertText = require('./../shader/camera-vs.glsl'),
+  { PHYSICAL_CONSTANT } = require('../utils/constant'),
+  GProgram = require('./GProgram'),
+  GBuffer = require('./GBuffer'),
+  GAccessor = require('./GAccessor'),
+  GUniform = require('./GUniform');
 /**
  * 绘制全球
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Scene/Globe.js
@@ -67,6 +69,8 @@ class GGlobal {
   }
   /**
    * 计算geometry资源
+   * isBufferGeometry
+   * https://github.com/mrdoob/three.js/blob/02b5ba0b53f8f461e85c9877f5a6c0094bc2bbf3/src/geometries/WireframeGeometry.js#L72 
    */
   _geometryData() {
     const latitudeBands = 64,
@@ -76,7 +80,8 @@ class GGlobal {
       radiusZ = this._radiusZ,
       tCoords = [],
       vertices = [],
-      indices = [];
+      indices = [],
+      barycentric = [];
     //calcute vertices
     for (let latNumber = 0; latNumber <= latitudeBands; latNumber++) {
       var theta = latNumber * Math.PI / latitudeBands;
@@ -94,70 +99,110 @@ class GGlobal {
         vertices.push(radiusY * y);
         vertices.push(radiusZ * z);
         //
-        var u = longNumber/longitudeBands;
-        var v = latNumber/latitudeBands;
+        var u = longNumber / longitudeBands;
+        var v = latNumber / latitudeBands;
         tCoords.push(u);
         tCoords.push(v);
       }
     }
     //calcute indices
-    for (let latNumber = 0; latNumber < latitudeBands; latNumber++) {
-      for (let longNumber = 0; longNumber < longitudeBands; longNumber++) {
-        const A = (latNumber * (longitudeBands + 1)) + longNumber,
-          B = A + longitudeBands + 1,
-          C = A+1,
-          D = B+1;
-        indices.push(A);
-        indices.push(B);
-        indices.push(C);
-        indices.push(B);
-        indices.push(D);
-        indices.push(C);
+    for (let latNumber = 0; latNumber < latitudeBands; ++latNumber) {
+      for (let longNumber = 0; longNumber < longitudeBands; ++longNumber) {
+        let first = (latNumber * (longitudeBands + 1)) + longNumber;
+        let second = first + longitudeBands + 1;
+        indices.push(first);
+        indices.push(second);
+        indices.push(first + 1);
+        indices.push(second);
+        indices.push(second + 1);
+        indices.push(first + 1);
       }
     }
-    //vertex data
+    //calcute barycentric, every three points draw a trangle
+    for (let i = 0, len = indices.length / 6; i < len; i++) {
+      barycentric.push(0);
+      barycentric.push(0);
+      barycentric.push(1);
+      barycentric.push(0);
+      barycentric.push(0);
+      barycentric.push(1);
+    }
+    // vertex data
     this._vertices = vertices;
-    //vertex index
+    // vertex index
     this._indices = indices;
-    //coords
+    // coords
     this._tCoords = tCoords;
+    // barycentric
+    this._barycentric = barycentric;
+  }
+  /**
+   * init vertex buffer
+   */
+  _initialVertexBuffer() {
+    const gl = this._gl,
+      program = this._program;
+    const vBuffer = this._vBuffer = new GBuffer(
+      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
+      new Float32Array(this._vertices),
+      this._vertices.length, 0, 0);
+    //写入数据
+    vBuffer.bindBuffer();
+    vBuffer.bufferData();
+    //a_position accessor
+    const vAccessor = this._vAccessor = new GAccessor(
+      gl.FLOAT, 0, false, this._vertices.length, 'VEC3', vBuffer);
+    //turn on a_position
+    vAccessor.link('a_position');
+  }
+  /**
+   * 
+   */
+  _initialBarycentricBuffer() {
+    const gl = this._gl,
+      program = this._program;
+    const bBuffer = this._bBuffer = new GBuffer(
+      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
+      new Float32Array(this._barycentric), this._barycentric.length, 0, 0);
+    //写入数据
+    bBuffer.bindBuffer();
+    bBuffer.bufferData();
+    //v_barycentric accessor
+    const bAccessor = this._bAccessor = new GAccessor(
+      gl.FLOAT, 0, false, this._barycentric.length, 'VEC2', bBuffer);
+    //turn on a_position
+    bAccessor.link('a_barycentric');
+  }
+  /**
+   * 
+   */
+  _initialIndexBuffer() {
+    const gl = this._gl,
+      program = this._program;
+    // transform index data
+    const iBuffer = this._iBuffer = new GBuffer(
+      program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
+      new Uint16Array(this._indices), this._indices.length, 0, 0);
+    iBuffer.bindBuffer();
+    iBuffer.bufferData();
   }
   /**
    * 构造资源
    */
   _initComponents() {
     const gl = this._gl;
+    //init program
+    gl.getExtension('OES_standard_derivatives');
     const program = this._program = new GProgram(gl, vertText, fragText);
     program.useProgram();
-    //创建顶点buffer
-    const verticesBuffer = new GBuffer(
-      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
-      new Float32Array(this._vertices),
-      this._vertices.length, 0, 0);
-    //写入数据
-    verticesBuffer.bindBuffer();
-    verticesBuffer.bufferData();
-    // accessor attrib
-    const verticesAccessor = new GAccessor(
-      gl.FLOAT, 0, false,
-      this._vertices.length,
-      "VEC3", verticesBuffer);
-    verticesAccessor.link("a_position");
-    // transform index data
-    const indexBuffer = new GBuffer(
-      program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
-      new Uint16Array(this._indices),
-      this._indices.length, 0, 0);
-    indexBuffer.bindBuffer();
-    indexBuffer.bufferData();
+    //init buffer
+    this._initialVertexBuffer();
+    this._initialBarycentricBuffer();
+    this._initialIndexBuffer();
     //camera matrix
-    this._u_projectionMatrix = new GUniform(program, "u_projectionMatrix");
-    this._u_viewMatrix = new GUniform(program, "u_viewMatrix");
-    this._u_modelMatrix = new GUniform(program, "u_modelMatrix");
-    //bind resource
-    this._verticesAccessor = verticesAccessor;
-    this._indicesBuffer = indexBuffer;
-    this._verticesBuffer = verticesBuffer;
+    this._u_projectionMatrix = new GUniform(program, 'u_projectionMatrix');
+    this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
+    this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
   }
   /**
    * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
@@ -166,9 +211,11 @@ class GGlobal {
   render(camera) {
     const gl = this._gl,
       program = this._program,
-      aBuffer = this._verticesAccessor,
-      vBuffer = this._verticesBuffer,
-      iBuffer = this._indicesBuffer,
+      vAccessor = this._vAccessor,
+      bAccessor = this._bAccessor,
+      vBuffer = this._vBuffer,
+      bBuffer = this._bBuffer,
+      iBuffer = this._iBuffer,
       u_projectionMatrix = this._u_projectionMatrix,
       u_viewMatrix = this._u_viewMatrix,
       u_modelMatrix = this._u_modelMatrix;
@@ -180,7 +227,9 @@ class GGlobal {
     u_modelMatrix.assignValue(camera.IdentityMatrix);
     //bind buffer
     vBuffer.bindBuffer();
-    aBuffer.relink();
+    vAccessor.relink();
+    bBuffer.bindBuffer();
+    bAccessor.relink();
     iBuffer.bindBuffer();
     //draw elements
     //https://developer.mozilla.org/en-US/docs/Web/API/OES_element_index_uint
