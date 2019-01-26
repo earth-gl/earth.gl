@@ -1,10 +1,11 @@
-const fragText = require('./../shader/barycentric-fs.glsl'),
-  vertText = require('./../shader/barycentric-vs.glsl'),
+const isNode = require('./../utils/isNode'),
   { PHYSICAL_CONSTANT } = require('../utils/constant'),
   GProgram = require('./GProgram'),
-  GBuffer = require('./GBuffer'),
+  GBuffer = require('./GBufferView'),
   GAccessor = require('./GAccessor'),
   GUniform = require('./GUniform');
+const fragText = isNode ? require('glslify').file('./../shader/barycentric-fs.glsl') : require('./../shader/barycentric-fs.glsl'),
+  vertText = isNode ? require('glslify').file('./../shader/barycentric-vs.glsl') : require('./../shader/barycentric-vs.glsl');
 /**
  * 绘制全球
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Scene/Globe.js

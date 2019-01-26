@@ -1,11 +1,12 @@
 
+//
 const fetch = require('./../utils/fetch'),
+    isNode = require('./../utils/isNode'),
     GProgram = require('./GProgram'),
-    GUniform = require('./GUniform'),
     GLTFLoader = require('./../loaders/GLTFLoader');
 //shaders 
-const fragText = require('./../shader/standard-fs.glsl');
-const vertText = require('./../shader/standard-vs.glsl');
+const fragText = isNode ? require('glslify').file('./../shader/standard-fs.glsl') : require('./../shader/standard-fs.glsl');
+const vertText = isNode ? require('glslify').file('./../shader/standard-vs.glsl') : require('./../shader/standard-vs.glsl');
 /**
  * @class
  */
@@ -112,7 +113,7 @@ class GLoader {
                 positionBuffer.bindBuffer();
                 positionBuffer.bufferData();
                 posAccessor.link('a_position');
-                //
+                //oes
                 ext.bindVertexArrayOES(null);
                 //2.bind index buffer
                 const indicesBuffer = primitive.indicesBuffer;
@@ -131,9 +132,9 @@ class GLoader {
         // indexBuffer.bindBuffer();
         // indexBuffer.bufferData(new Uint16Array(this._indices));
         //
-        this._u_projectionMatrix = new GUniform(program, 'u_projectionMatrix');
-        this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
-        this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
+        // this._u_projectionMatrix = new GUniform(program, 'u_projectionMatrix');
+        // this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
+        // this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
     }
 
     render() {

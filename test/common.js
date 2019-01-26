@@ -1,7 +1,10 @@
-const node3d = require("3d-core-raub");
-const { Screen, Image } = node3d;
+const node3d = require('3d-core-raub');
+// const gl = require('webgl-raub');
+const { Screen, Image , doc } = node3d;
+// Document.setWebgl(gl);
+
 //map global object
-global.document = global.window = node3d.doc;
+global.document = global.window = doc;
 global.Image = Image;
 const requestAnimationFrame = window.requestAnimationFrame;
 /**

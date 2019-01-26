@@ -1,21 +1,40 @@
 /**
  * @typedef {import("./GProgram")} GProgram
  */
-
+/**
+ * get arrayBuffer ctor type
+ */
+const getArrayCtor = function(componentType){
+    switch (componentType) {
+        case 0x1400:
+            return Int8Array;
+        case 0x1401:
+            return Uint8Array;
+        case 0x1402:
+            return Int16Array;
+        case 0x1403:
+            return Uint16Array;
+        case 0x1404:
+            return Int32Array;
+        case 0x1405:
+            return Uint32Array;
+        case 0x1406:
+            return Float32Array;
+        }
+};
 /**
  * @module
  * @export
  * @class
  * @example
- * var buffer = new Buffer();
- * buffer.bindBuffer();
- * buffer.bufferData();
+ * 记录的不是 typedBuffer，而是原始的arrayBuffer
+ * var buffer = new GBufferView();
  */
-class GBuffer {
+class GBufferView {
     /**
      * Creates an instance of Buffer.
      * 与GAccessor搭配使用
-     * @param {GProgram} program 
+     * @param {WebGLRenderingContext} program 
      * @param {Number} bufferType gl.ARRAY_BUFFER gl.ELEMENT_BUFFER
      * @param {number} drawType gl.STATIC_DRAW gl.DYNAMIC_DRAW
      * @param {Array} typedArrayBufferData
@@ -24,15 +43,11 @@ class GBuffer {
      * @param {Number} [byteStride] default 0
      * @memberof Buffer
      */
-    constructor(program, bufferType, drawType, typedArrayBufferData, byteLength, byteOffset, byteStride) {
-        /**
-         * @type {GProgram}
-         */
-        this._program = program;
+    constructor(gl, bufferType, drawType, typedArrayBufferData, byteLength, byteOffset, byteStride) {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = program._gl;
+        this._gl = gl;
         /**
          * @type {WebGLBuffer}
          */
@@ -64,7 +79,14 @@ class GBuffer {
          */
         this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
     }
-
+    /**
+     * 
+     * @param {*} accessorName 
+     * @param {*} arrayBuffer 
+     * @param {*} offset 
+     */
+    _toTypedArray(){
+    }
     /**
      * 
      * @param {Number} type gl.ARRAY_BUFFER
@@ -98,4 +120,4 @@ class GBuffer {
 
 }
 
-module.exports = GBuffer;
+module.exports = GBufferView;

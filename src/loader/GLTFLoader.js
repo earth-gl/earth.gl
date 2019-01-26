@@ -7,7 +7,7 @@ const requestImage = require('./../utils/requestImage'),
     GSampler = require('./../renderer/GSampler'),
     GMaterial = require('./../renderer/GMaterial'),
     GAccessor = require('./../renderer/GAccessor'),
-    GBuffer = require('./../renderer/GBuffer');
+    GBuffer = require('../renderer/GBufferView');
 /**
  * @class
  */

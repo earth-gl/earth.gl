@@ -1,8 +1,8 @@
-const { gl, screen, document, requestAnimationFrame } = require("./common");
+const { gl, screen, document, requestAnimationFrame } = require('./common');
 /**
  * --------------------------------------------------------------------------
  */
-const GScene = require("../src/renderer/GScene");
+const GScene = require('../src/renderer/GScene');
 
 const scene = new GScene({
     gl: gl,
