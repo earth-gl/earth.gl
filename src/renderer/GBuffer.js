@@ -62,7 +62,6 @@ class GBuffer {
             drawType = this._drawType,
             data = this._data;
         gl.bufferData(bufferType, data, drawType);
-        gl.bindBuffer(bufferType, null);
     }
 }
 

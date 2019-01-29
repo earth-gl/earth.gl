@@ -29,7 +29,7 @@ class GLoader {
         /**
          * @type {GProgram}
          */
-        this._program = null;
+        this._gProgram = null;
         /**
          * gltf scene
          */
@@ -42,6 +42,10 @@ class GLoader {
          * gltf extras
          */
         this.extras = null;
+        /**
+         * @type {Array}
+         */
+        this.caches = [];
     }
     /**
      * 
@@ -55,7 +59,7 @@ class GLoader {
         /**
          * 
          */
-        this._program = new GProgram(gl, vertText, fragText);
+        this._gProgram = new GProgram(gl, vertText, fragText);
         /**
          * initial request
          */
@@ -67,7 +71,7 @@ class GLoader {
     _initialRequest() {
         const that = this,
             root = this.root,
-            program = this._program,
+            program = this._gProgram,
             modelFilename = this.modelFilename;
         fetch(root + modelFilename, {
             responseType: 'json'
@@ -92,30 +96,33 @@ class GLoader {
     _initComponents(scene) {
         const gl = this._gl,
             nodes = scene.nodes,
-            program = this._program;
+            caches = this.caches,
+            program = this._gProgram;
         program.useProgram();
         //prepare nodes
         nodes.forEach((node) => {
             if (!node.mesh && !node.children) return;
             const mesh = node.mesh;
             mesh.primitives.forEach(primitive => {
-                //use vao
-                const ext = gl.getExtension('OES_vertex_array_object');
-                const vao = ext.createVertexArrayOES();
-                ext.bindVertexArrayOES(vao);
-                //
+                //1.bind vertex buffer
                 const posAccessor = primitive.attributes['POSITION'];
-                const positionBuffer = posAccessor.bufferView;
-                //1.bind position buffer
-                positionBuffer.bindBuffer();
-                positionBuffer.bufferData();
+                posAccessor.bindBuffer();
+                posAccessor.bufferData();
                 posAccessor.link('a_position');
-                //oes
-                ext.bindVertexArrayOES(null);
                 //2.bind index buffer
                 const indicesBuffer = primitive.indicesBuffer;
                 indicesBuffer.bindBuffer();
-                //3.draw element
+                indicesBuffer.bufferData();
+                //3.cache buffers
+                caches.push({
+                    accessor: posAccessor,
+                    indicesBuffer: indicesBuffer,
+                    mode: primitive.mode,
+                    indicesLength: primitive.indicesLength,
+                    indicesComponentType: primitive.indicesComponentType,
+                    indicesOffset: primitive.indicesOffset
+                });
+                //4.draw element
                 gl.drawElements(primitive.mode, primitive.indicesLength, primitive.indicesComponentType, primitive.indicesOffset);
             });
         });
@@ -134,8 +141,23 @@ class GLoader {
         // this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
     }
 
-    render() {
-
+    render(camera) {
+        const caches = this.caches,
+            gProgram = this._gProgram,
+            gl = this._gl;
+        gProgram.useProgram();
+        for (let i = 0, len = caches.length; i < len; i++) {
+            const cache = caches[i];
+            const accessor = cache.accessor,
+                indicesBuffer = cache.indicesBuffer,
+                mode = cache.mode,
+                indicesLength = cache.indicesLength,
+                indicesComponentType = cache.indicesComponentType,
+                indicesOffset = cache.indicesOffset;
+            accessor.relink();
+            indicesBuffer.bindBuffer();
+            gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
+        }
     }
 
 }
