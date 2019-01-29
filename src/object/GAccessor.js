@@ -29,6 +29,8 @@ class GAccessor {
      * @param {Object} [options] 记录对原始buffer的处理方法
      * @param {Number} [options.byteOffset]
      * @param {Boolean} [options.normalized]
+     * @param {Array} [options.min]
+     * @param {Array} [options.max]
      */
     constructor(gProgram, gBufferView, componentType, type, count, options = {}) {
         /**

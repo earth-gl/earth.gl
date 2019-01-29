@@ -1,9 +1,6 @@
-
-//
 const fetch = require('./../utils/fetch'),
-    isNode = require('./../utils/isNode'),
     GProgram = require('./GProgram'),
-    GLTFLoader = require('./../loaders/GLTFLoader');
+    GLTFLoader = require('./../loader/GLTFLoader');
 //shaders 
 const fragText = require('./../shader/standard-fs.glsl');
 const vertText = require('./../shader/standard-vs.glsl');

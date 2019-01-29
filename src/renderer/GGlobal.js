@@ -1,5 +1,4 @@
-const isNode = require('./../utils/isNode'),
-  { PHYSICAL_CONSTANT } = require('../utils/constant'),
+const { PHYSICAL_CONSTANT } = require('../utils/constant'),
   GProgram = require('./GProgram'),
   GBuffer = require('./GBuffer'),
   GBufferView = require('./../object/GBufferView'),

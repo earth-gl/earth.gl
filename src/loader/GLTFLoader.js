@@ -1,14 +1,17 @@
 const requestImage = require('./../utils/requestImage'),
     fetch = require('./../utils/fetch'),
     Camera = require('./../camera/Camera'),
-    GNode = require('./../renderer/GNode'),
-    GMesh = require('./../renderer/GMesh'),
-    GTexture = require('./../renderer/GTexture'),
+    //objects
+    GNode = require('./../object/GNode'),
+    GMesh = require('./../object/GMesh'),
+    GMaterial = require('./../object/GMaterial'),
+    GAccessor = require('./../object/GAccessor'),
+    GBufferView = require('./../object/GBufferView'),
+    //renderer
     GSampler = require('./../renderer/GSampler'),
-    GMaterial = require('./../renderer/GMaterial'),
-    GAccessor = require('./../renderer/GAccessor'),
-    GBuffer = require('../renderer/GBufferView');
+    GTexture = require('./../renderer/GTexture');
 /**
+ * @author yellow date 2019/1/29
  * @class
  */
 class GLTFLoader {
@@ -228,10 +231,16 @@ class GLTFLoader {
         if (glTF.bufferViews) {
             for (let i = 0, len = glTF.bufferViews.length; i < len; i++) {
                 const bJson = glTF.bufferViews[i];
-                this._bufferViews[i] = new GBuffer(
-                    program, bJson.target, gl.STATIC_DRAW,
+                this._bufferViews[i] = new GBufferView(
+                    gl,
                     this._buffers[bJson.buffer],
-                    bJson.byteLength, bJson.byteOffset, bJson.byteStride);
+                    bJson.byteLength,
+                    {
+                        bufferType: bJson.target,
+                        drawType: gl.STATIC_DRAW,
+                        byteOffset: bJson.byteOffset,
+                        byteStride: bJson.byteStride
+                    });
             }
         }
         //accessors
@@ -241,9 +250,17 @@ class GLTFLoader {
                 const bvid = aJson.bufferView;
                 const bufferView = this._bufferViews[bvid];
                 this._accessors[i] = new GAccessor(
-                    aJson.componentType, aJson.byteOffset,
-                    aJson.normalized, aJson.count, aJson.type,
-                    bufferView, aJson.min, aJson.max);
+                    program,
+                    bufferView,
+                    aJson.componentType,
+                    aJson.type,
+                    aJson.count,
+                    {
+                        byteOffset: aJson.byteOffset,
+                        normalized: aJson.normalized,
+                        min: aJson.min,
+                        max: aJson.max
+                    });
             }
         }
         //materials
