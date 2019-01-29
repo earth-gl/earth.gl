@@ -29,7 +29,6 @@ class GAccessor {
      * @param {Object} [options] 记录对原始buffer的处理方法
      * @param {Number} [options.byteOffset]
      * @param {Boolean} [options.normalized]
-     * @param {Number} [options.count] 
      */
     constructor(gProgram, gBufferView, componentType, type, count, options = {}) {
         /**
@@ -96,11 +95,12 @@ class GAccessor {
      * 
      */
     _createGBuffer() {
-        const gBufferView = this._gBufferView,
+        const gProgram = this._gProgram,
+            gBufferView = this._gBufferView,
             componentType = this._componentType,
             typeSize = this._typeSize,
             count = this._count,
-            gBuffer = gBufferView.toTypedArray(componentType, typeSize, count, 0);
+            gBuffer = gBufferView.toTypedArray(gProgram, componentType, typeSize, count, 0);
         return gBuffer;
     }
     /**
@@ -144,6 +144,9 @@ class GAccessor {
     relink() {
         const gl = this._gl,
             location = this._location;
+        //bind buffer
+        this.bindBuffer();
+        //turn on attribName
         gl.vertexAttribPointer(
             location,
             this._typeSize,

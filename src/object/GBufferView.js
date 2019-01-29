@@ -1,6 +1,7 @@
 /**
  * @typedef {import("./GProgram")} GProgram
  */
+const GBuffer = require('./../renderer/GBuffer');
 /**
  * get arrayBuffer ctor type
  */
@@ -76,51 +77,25 @@ class GBufferView {
         this._data = data.slice(this._byteOffset, this._byteOffset + this._byteLength);
     }
     /**
-     * 
+     * @param {gProgram} gProgram
      * @param {Number} componentType, as gl.Float
      * @param {Number} typeSize, as VEC3 = 3, MAT4 = 16
      * @param {Number} count, the length of typed array buffer
      * @param {Number} offset, offset of the typed array buffer
      */
-    toTypedArray(componentType, typeSize, count, offset = 0) {
-        const ArrayCtor = getArrayCtor(componentType),
-            data = this._data;
-        if (offset % ArrayCtor.BYTES_PER_ELEMENT !== 0) {
-            const arrayBuffer = data.slice(offset, offset + count * typeSize * ArrayCtor.BYTES_PER_ELEMENT);
-            return new ArrayCtor(arrayBuffer, 0, count * typeSize);
-        } else {
-            return new ArrayCtor(data, offset, count * typeSize);
-        }
-    }
-    /**
-     * 
-     * @param {Number} type gl.ARRAY_BUFFER
-     */
-    bindBuffer() {
-        const gl = this._gl,
-            bufferType = this._bufferType,
-            buffer = this._buffer;
-        gl.bindBuffer(bufferType, buffer);
-    }
-    /**
-     * 
-     * @param {Array} arr , mat4,vec3...
-     */
-    bufferData() {
-        const gl = this._gl,
+    toTypedArray(gProgram, componentType, typeSize, count, offset = 0) {
+        const data = this._data,
             bufferType = this._bufferType,
             drawType = this._drawType,
-            data = this._data;
-        gl.bufferData(bufferType, data, drawType);
-        // gl.bindBuffer(bufferType,null);
-    }
-    /**
-     * 
-     */
-    _createBuffer() {
-        const gl = this._gl;
-        const buffer = gl.createBuffer();
-        return buffer;
+            ArrayCtor = getArrayCtor(componentType);
+        let typedArrayBuffer;
+        if (offset % ArrayCtor.BYTES_PER_ELEMENT !== 0) {
+            const arrayBuffer = data.slice(offset, offset + count * typeSize * ArrayCtor.BYTES_PER_ELEMENT);
+            typedArrayBuffer =  new ArrayCtor(arrayBuffer, 0, count * typeSize);
+        } else {
+            typedArrayBuffer = new ArrayCtor(data, offset, count * typeSize);
+        }
+        return new GBuffer(gProgram, typedArrayBuffer, bufferType, drawType);
     }
 }
 

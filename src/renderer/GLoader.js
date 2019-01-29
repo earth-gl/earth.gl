@@ -5,8 +5,8 @@ const fetch = require('./../utils/fetch'),
     GProgram = require('./GProgram'),
     GLTFLoader = require('./../loaders/GLTFLoader');
 //shaders 
-const fragText = isNode ? require('glslify').file('./../shader/standard-fs.glsl') : require('./../shader/standard-fs.glsl');
-const vertText = isNode ? require('glslify').file('./../shader/standard-vs.glsl') : require('./../shader/standard-vs.glsl');
+const fragText = require('./../shader/standard-fs.glsl');
+const vertText = require('./../shader/standard-vs.glsl');
 /**
  * @class
  */

@@ -5,8 +5,8 @@ const isNode = require('./../utils/isNode'),
   GBufferView = require('./../object/GBufferView'),
   GAccessor = require('./../object/GAccessor'),
   GUniform = require('./GUniform');
-const fragText = isNode ? require('glslify').file('./../shader/barycentric-fs.glsl') : require('./../shader/barycentric-fs.glsl'),
-  vertText = isNode ? require('glslify').file('./../shader/barycentric-vs.glsl') : require('./../shader/barycentric-vs.glsl');
+const fragText = require('./../shader/barycentric-fs.glsl'),
+  vertText = require('./../shader/barycentric-vs.glsl');
 /**
  * 绘制全球
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Scene/Globe.js
@@ -143,7 +143,7 @@ class GGlobal {
     const gl = this._gl,
       gProgram = this._gProgram;
     //create bufferView
-    const vBufferView = this._vBufferView = new GBufferView(
+    const vBufferView = new GBufferView(
       gl,
       this._vertices,
       this._vertices.length,
@@ -159,12 +159,14 @@ class GGlobal {
       vBufferView,
       gl.FLOAT,
       'VEC3',
-      this._vertices.length/3, //表示三个数据组成一个点
+      this._vertices.length/3, // totallenght/Type.BYTES_PER_ELEMENT
       {
         byteOffset: 0,
         normalized: false
       });
     // gl.FLOAT, 0, false, this._vertices.length, 'VEC3', vBufferView);
+    vAccessor.bindBuffer();
+    vAccessor.bufferData();
     //turn on a_position
     vAccessor.link('a_position');
   }
@@ -173,16 +175,31 @@ class GGlobal {
    */
   _initialBarycentricBuffer() {
     const gl = this._gl,
-      program = this._gProgram;
-    const bBuffer = this._bBuffer = new GBuffer(
-      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
-      new Float32Array(this._barycentric), this._barycentric.length, 0, 0);
-    //写入数据
-    bBuffer.bindBuffer();
-    bBuffer.bufferData();
-    //v_barycentric accessor
+      gProgram = this._gProgram;
+    const bBufferView = new GBufferView(
+      gl,
+      this._barycentric,
+      this._barycentric.length,
+      {
+        bufferType:gl.ARRAY_BUFFER,
+        drawType:gl.STATIC_DRAW,
+        byteOffset:0,
+        byteStride:0
+      }
+    );
     const bAccessor = this._bAccessor = new GAccessor(
-      gl.FLOAT, 0, false, this._barycentric.length, 'VEC2', bBuffer);
+      gProgram,
+      bBufferView,
+      gl.FLOAT,
+      'VEC2',
+      this._barycentric.length/3,
+      {
+        byteOffset:0,
+        normalized:false
+      });
+    //写入数据
+    bAccessor.bindBuffer();
+    bAccessor.bufferData();
     //turn on a_position
     bAccessor.link('a_barycentric');
   }
@@ -191,11 +208,13 @@ class GGlobal {
    */
   _initialIndexBuffer() {
     const gl = this._gl,
-      program = this._gProgram;
+      gProgram = this._gProgram;
     // transform index data
     const iBuffer = this._iBuffer = new GBuffer(
-      program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
-      new Uint16Array(this._indices), this._indices.length, 0, 0);
+      gProgram,
+      new Uint16Array(this._indices),
+      gl.ELEMENT_ARRAY_BUFFER,
+      gl.STATIC_DRAW);
     iBuffer.bindBuffer();
     iBuffer.bufferData();
   }
@@ -226,8 +245,6 @@ class GGlobal {
       program = this._gProgram,
       vAccessor = this._vAccessor,
       bAccessor = this._bAccessor,
-      vBuffer = this._vBufferView,
-      bBuffer = this._bBuffer,
       iBuffer = this._iBuffer,
       u_projectionMatrix = this._u_projectionMatrix,
       u_viewMatrix = this._u_viewMatrix,
@@ -239,9 +256,7 @@ class GGlobal {
     u_viewMatrix.assignValue(camera.ViewMatrix);
     u_modelMatrix.assignValue(camera.IdentityMatrix);
     //bind buffer
-    vBuffer.bindBuffer();
     vAccessor.relink();
-    bBuffer.bindBuffer();
     bAccessor.relink();
     iBuffer.bindBuffer();
     //draw elements
