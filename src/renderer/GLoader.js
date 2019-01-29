@@ -140,7 +140,10 @@ class GLoader {
         // this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
         // this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
     }
-
+    /**
+     * 
+     * @param {Camera} camera 
+     */
     render(camera) {
         const caches = this.caches,
             gProgram = this._gProgram,
