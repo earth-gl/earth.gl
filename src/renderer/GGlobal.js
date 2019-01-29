@@ -1,8 +1,9 @@
 const isNode = require('./../utils/isNode'),
   { PHYSICAL_CONSTANT } = require('../utils/constant'),
   GProgram = require('./GProgram'),
-  GBuffer = require('./GBufferView'),
-  GAccessor = require('./GAccessor'),
+  GBuffer = require('./GBuffer'),
+  GBufferView = require('./../object/GBufferView'),
+  GAccessor = require('./../object/GAccessor'),
   GUniform = require('./GUniform');
 const fragText = isNode ? require('glslify').file('./../shader/barycentric-fs.glsl') : require('./../shader/barycentric-fs.glsl'),
   vertText = isNode ? require('glslify').file('./../shader/barycentric-vs.glsl') : require('./../shader/barycentric-vs.glsl');
@@ -56,7 +57,7 @@ class GGlobal {
     /**
      * 
      */
-    this._program = null;
+    this._gProgram = null;
     /**
      * 计算geometry vertex index normal
      */
@@ -140,17 +141,30 @@ class GGlobal {
    */
   _initialVertexBuffer() {
     const gl = this._gl,
-      program = this._program;
-    const vBuffer = this._vBuffer = new GBuffer(
-      program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
-      new Float32Array(this._vertices),
-      this._vertices.length, 0, 0);
-    //写入数据
-    vBuffer.bindBuffer();
-    vBuffer.bufferData();
+      gProgram = this._gProgram;
+    //create bufferView
+    const vBufferView = this._vBufferView = new GBufferView(
+      gl,
+      this._vertices,
+      this._vertices.length,
+      {
+        bufferType: gl.ARRAY_BUFFER,
+        drawType: gl.STATIC_DRAW,
+        byteOffset: 0,
+        byteStride: 0
+      });
     //a_position accessor
     const vAccessor = this._vAccessor = new GAccessor(
-      gl.FLOAT, 0, false, this._vertices.length, 'VEC3', vBuffer);
+      gProgram,
+      vBufferView,
+      gl.FLOAT,
+      'VEC3',
+      this._vertices.length/3, //表示三个数据组成一个点
+      {
+        byteOffset: 0,
+        normalized: false
+      });
+    // gl.FLOAT, 0, false, this._vertices.length, 'VEC3', vBufferView);
     //turn on a_position
     vAccessor.link('a_position');
   }
@@ -159,7 +173,7 @@ class GGlobal {
    */
   _initialBarycentricBuffer() {
     const gl = this._gl,
-      program = this._program;
+      program = this._gProgram;
     const bBuffer = this._bBuffer = new GBuffer(
       program, gl.ARRAY_BUFFER, gl.STATIC_DRAW,
       new Float32Array(this._barycentric), this._barycentric.length, 0, 0);
@@ -177,7 +191,7 @@ class GGlobal {
    */
   _initialIndexBuffer() {
     const gl = this._gl,
-      program = this._program;
+      program = this._gProgram;
     // transform index data
     const iBuffer = this._iBuffer = new GBuffer(
       program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW,
@@ -192,7 +206,7 @@ class GGlobal {
     const gl = this._gl;
     //init program
     gl.getExtension('OES_standard_derivatives');
-    const program = this._program = new GProgram(gl, vertText, fragText);
+    const program = this._gProgram = new GProgram(gl, vertText, fragText);
     program.useProgram();
     //init buffer
     this._initialVertexBuffer();
@@ -209,10 +223,10 @@ class GGlobal {
    */
   render(camera) {
     const gl = this._gl,
-      program = this._program,
+      program = this._gProgram,
       vAccessor = this._vAccessor,
       bAccessor = this._bAccessor,
-      vBuffer = this._vBuffer,
+      vBuffer = this._vBufferView,
       bBuffer = this._bBuffer,
       iBuffer = this._iBuffer,
       u_projectionMatrix = this._u_projectionMatrix,

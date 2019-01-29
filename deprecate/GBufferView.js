@@ -1,5 +1,5 @@
 /**
- * @typedef {import("./GProgram")} GProgram
+ * @typedef {import("../src/renderer/GProgram")} GProgram
  */
 /**
  * get arrayBuffer ctor type

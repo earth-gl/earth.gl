@@ -4,7 +4,7 @@
 /**
  * get arrayBuffer ctor type
  */
-const getArrayCtor = function(componentType){
+const getArrayCtor = function (componentType) {
     switch (componentType) {
         case 0x1400:
             return Int8Array;
@@ -20,7 +20,7 @@ const getArrayCtor = function(componentType){
             return Uint32Array;
         case 0x1406:
             return Float32Array;
-        }
+    }
 };
 /**
  * @module
@@ -34,58 +34,63 @@ class GBufferView {
     /**
      * Creates an instance of Buffer.
      * 与GAccessor搭配使用
-     * @param {WebGLRenderingContext} program 
-     * @param {Number} bufferType gl.ARRAY_BUFFER gl.ELEMENT_BUFFER
-     * @param {number} drawType gl.STATIC_DRAW gl.DYNAMIC_DRAW
-     * @param {Array} typedArrayBufferData
+     * @param {WebGLRenderingContext} gl 
+     * @param {ArrayBuffer} data ,the raw arrayBuffer
      * @param {Number} byteLength
-     * @param {Number} [byteOffset] default 0
-     * @param {Number} [byteStride] default 0
-     * @memberof Buffer
+     * @param {Object} [options] the options of bufferview
+     * @param {String} [options.bufferType] gl.ARRAY_BUFFER or gl.ELEMENT_BUFFER
+     * @param {Number} [options.drawType] gl.STATIC_DRAW or gl.DYNAMIC_DRAW
+     * @param {Number} [options.byteOffset] default 0
+     * @param {Number} [options.byteStride] default 0
      */
-    constructor(gl, bufferType, drawType, typedArrayBufferData, byteLength, byteOffset, byteStride) {
+    constructor(gl, data, byteLength, options) {
         /**
          * @type {WebGLRenderingContext}
          */
         this._gl = gl;
         /**
-         * @type {WebGLBuffer}
-         */
-        this._buffer = this._createBuffer();
-        /**
          * @type {Number}
          * traget, gl.ARRAY_BUFFER, gl.ELEMENT_BUFFER
          */
-        this._bufferType = bufferType;
+        this._bufferType = options.bufferType || gl.ARRAY_BUFFER;
+        /**
+         * @type {Number}
+         * drawtype, gl.STATIC_DRAW or gl.DYNAMIC_DRAW
+         */
+        this._drawType = options.drawType || gl.STATIC_DRAW;
         /**
          * @type {Number}
          */
-        this._drawType = drawType;
+        this._byteLength = byteLength !== undefined ? byteLength : 0;
         /**
-         * required
+         * @type {Number}
          */
-        this.byteLength = byteLength !== undefined ? byteLength : 0;
+        this._byteStride = options.byteStride !== undefined ? options.byteStride : 0;
         /**
-         * 
+         * @type {Number}
          */
-        this.byteStride = byteStride !== undefined ? byteStride : 0;
+        this._byteOffset = options.byteOffset !== undefined ? options.byteOffset : 0;
         /**
-         * 
+         * @type {ArrayBuffer}
          */
-        this.byteOffset = byteOffset !== undefined ? byteOffset : 0;
-        /**
-         * @type {TypedArray}
-         * this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
-         */
-        this._data = typedArrayBufferData.slice(this.byteOffset, this.byteOffset + this.byteLength);
+        this._data = data.slice(this._byteOffset, this._byteOffset + this._byteLength);
     }
     /**
      * 
-     * @param {*} accessorName 
-     * @param {*} arrayBuffer 
-     * @param {*} offset 
+     * @param {Number} componentType, as gl.Float
+     * @param {Number} typeSize, as VEC3 = 3, MAT4 = 16
+     * @param {Number} count, the length of typed array buffer
+     * @param {Number} offset, offset of the typed array buffer
      */
-    _toTypedArray(){
+    toTypedArray(componentType, typeSize, count, offset = 0) {
+        const ArrayCtor = getArrayCtor(componentType),
+            data = this._data;
+        if (offset % ArrayCtor.BYTES_PER_ELEMENT !== 0) {
+            const arrayBuffer = data.slice(offset, offset + count * typeSize * ArrayCtor.BYTES_PER_ELEMENT);
+            return new ArrayCtor(arrayBuffer, 0, count * typeSize);
+        } else {
+            return new ArrayCtor(data, offset, count * typeSize);
+        }
     }
     /**
      * 
@@ -117,7 +122,6 @@ class GBufferView {
         const buffer = gl.createBuffer();
         return buffer;
     }
-
 }
 
 module.exports = GBufferView;
