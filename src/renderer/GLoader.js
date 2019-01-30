@@ -1,5 +1,6 @@
 const fetch = require('./../utils/fetch'),
     GProgram = require('./GProgram'),
+    GUniform = require('./GUniform'),
     GLTFLoader = require('./../loader/GLTFLoader');
 //shaders 
 const fragText = require('./../shader/standard-fs.glsl');
@@ -97,8 +98,8 @@ class GLoader {
         const gl = this._gl,
             nodes = scene.nodes,
             caches = this.caches,
-            program = this._gProgram;
-        program.useProgram();
+            gProgram = this._gProgram;
+        gProgram.useProgram();
         //prepare nodes
         nodes.forEach((node) => {
             if (!node.mesh && !node.children) return;
@@ -113,8 +114,18 @@ class GLoader {
                 const indicesBuffer = primitive.indicesBuffer;
                 indicesBuffer.bindBuffer();
                 indicesBuffer.bufferData();
-                //3.cache buffers
+                //3.uniform
+                //uniform mat4 u_projectionMatrix;
+                // uniform mat4 u_viewMatrix;
+                // uniform mat4 u_modelMatrix;
+                const uProject = new GUniform(gProgram,'u_projectionMatrix'),
+                    uView = new GUniform(gProgram,'u_viewMatrix'),
+                    uModel = new GUniform(gProgram,'u_modelMatrix');
+                //4.cache buffers
                 caches.push({
+                    uProject:uProject,
+                    uView:uView,
+                    uModel:uModel,
                     accessor: posAccessor,
                     indicesBuffer: indicesBuffer,
                     mode: primitive.mode,
@@ -156,9 +167,16 @@ class GLoader {
                 mode = cache.mode,
                 indicesLength = cache.indicesLength,
                 indicesComponentType = cache.indicesComponentType,
-                indicesOffset = cache.indicesOffset;
+                indicesOffset = cache.indicesOffset,
+                uProject = cache.uProject,
+                uView = cache.uView,
+                uModel = cache.uModel;
             accessor.relink();
             indicesBuffer.bindBuffer();
+            uProject.assignValue(camera.ProjectionMatrix);
+            uView.assignValue(camera.ViewMatrix);
+            uModel.assignValue(camera.IdentityMatrix);
+            //draw elements
             gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
         }
     }
