@@ -123,6 +123,8 @@ class GLoader {
                     uModel = new GUniform(gProgram,'u_modelMatrix');
                 //4.cache buffers
                 caches.push({
+                    //模型矩阵值
+                    modelMatrix:node.modelMatrix.value,
                     uProject:uProject,
                     uView:uView,
                     uModel:uModel,
@@ -170,12 +172,13 @@ class GLoader {
                 indicesOffset = cache.indicesOffset,
                 uProject = cache.uProject,
                 uView = cache.uView,
+                modelMatrix = cache.modelMatrix,
                 uModel = cache.uModel;
             accessor.relink();
             indicesBuffer.bindBuffer();
             uProject.assignValue(camera.ProjectionMatrix);
             uView.assignValue(camera.ViewMatrix);
-            uModel.assignValue(camera.IdentityMatrix);
+            uModel.assignValue(modelMatrix);
             //draw elements
             gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
         }

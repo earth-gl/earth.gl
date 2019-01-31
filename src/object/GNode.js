@@ -1,5 +1,5 @@
 
-const {Mat4} = require("kiwi.matrix");
+const { Mat4, Quat, Vec3 } = require("kiwi.matrix");
 /**
  * @class
  */
@@ -14,6 +14,10 @@ class GNode {
      */
     constructor(nodeID, options, resources) {
         /**
+         * @type {Object}
+         */
+        this._options = options;
+        /**
          * @type {Number}
          */
         this.nodeID = nodeID;
@@ -26,26 +30,6 @@ class GNode {
          */
         this.camera = options.camera !== undefined ? options.camera : null;
         /**
-         * @type {Mat4}
-         */
-        this.modelMatrix = new Mat4().identity();
-        // if (options.hasOwnProperty('matrix')) {
-        //     for (var i = 0; i < 16; ++i) {
-        //         this.matrix[i] = options.matrix[i];
-        //     }
-        //     this.translation = vec3.create();
-        //     mat4.getTranslation(this.translation, this.matrix);
-        //     this.rotation = quat.create();
-        //     mat4.getRotation(this.rotation, this.matrix);
-        //     this.scale = vec3.create();
-        //     mat4.getScaling(this.scale, this.matrix);
-        // } else {
-        //     // this.translation = null;
-        //     // this.rotation = null;
-        //     // this.scale = null;
-        //     this.getTransformMatrixFromTRS(options.translation, options.rotation, options.scale);
-        // }
-        /**
          * @type {Node[]}
          */
         this.children = options.children || [];  // init as id, then hook up to node object later
@@ -56,7 +40,7 @@ class GNode {
         /**
          * init as id, then hook up to skin object later
          */
-        this.skin = options.skin !== undefined ? options.skin : null;   
+        this.skin = options.skin !== undefined ? options.skin : null;
         //if (options.extensions !== undefined) {
         //     if (options.extensions.gl_avatar !== undefined && curLoader.enableGLAvatar === true) {
         //         var linkedSkinID = curLoader.skeletonGltf.json.extensions.gl_avatar.skins[options.extensions.gl_avatar.skin.name];
@@ -81,7 +65,36 @@ class GNode {
          * axis aligned bounding box, not need to apply node transform to aabb
          */
         this.aabb = null;
-        // this.bvh = new BoundingBox();
+        /**
+         * initial model matrix
+         */
+        this._initial();
+    }
+
+    _initial() {
+        const options = this._options;
+        let modelMatrix;
+        if (options.matrix) {
+            const matrix = options.matrix;
+            modelMatrix = new Mat4().set(
+                matrix[0], matrix[1], matrix[2], matrix[3],
+                matrix[4], matrix[5], matrix[6], matrix[7], matrix[8],
+                matrix[9], matrix[10], matrix[11], matrix[12],
+                matrix[13], matrix[14], matrix[15]
+            );
+        } else {
+            const translation = options.translation || [0.0, 0.0, 0.0],
+                rotation = options.rotation || [0.0, 0.0, 0.0, 0.0],
+                scale = options.scale || [1.0, 1.0, 1.0];
+            const q = new Quat().set(rotation[0], rotation[1], rotation[2], rotation[3]),
+                v = new Vec3().set(translation[0], translation[1], translation[2]),
+                s = new Vec3().set(scale[0], scale[1], scale[2]);
+            modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
+        }
+        /**
+         * @type {Mat4}
+         */
+        this.modelMatrix = modelMatrix;
     }
 
 }
