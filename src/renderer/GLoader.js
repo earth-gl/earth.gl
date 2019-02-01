@@ -1,6 +1,9 @@
 const fetch = require('./../utils/fetch'),
+    { GLMatrix, Mat4 } = require('kiwi.matrix'),
     GProgram = require('./GProgram'),
     GUniform = require('./GUniform'),
+    WGS84 = require('./../core/Ellipsoid').WGS84,
+    Geographic = require('./../core/Geographic'),
     GLTFLoader = require('./../loader/GLTFLoader');
 //shaders 
 const fragText = require('./../shader/standard-fs.glsl');
@@ -11,10 +14,13 @@ const vertText = require('./../shader/standard-vs.glsl');
 class GLoader {
     /**
      * 
-     * @param {String} root 
-     * @param {String} modelFilename 
+     * @param {String} root the root url of gltf, as 'http://139.129.7.130/models/DamagedHelmet/glTF/'
+     * @param {String} modelFilename the model file name, as 'DamagedHelmet.gltf'
+     * @param {Object} [options]
+     * @param {Number} [options.lng] 
+     * @param {Number} [options.lat]
      */
-    constructor(root, modelFilename) {
+    constructor(root, modelFilename, options = {}) {
         /**
          * 
          */
@@ -36,6 +42,14 @@ class GLoader {
          */
         this._scenes = null;
         /**
+         * @type {Number} represent location in degree
+         */
+        this._lat = options.lat || 0.0;
+        /**
+         * @type {Number} represent location in degree
+         */
+        this._lng = options.lng || 0.0;
+        /**
          * gltf extensions
          */
         this.extensions = null;
@@ -52,7 +66,7 @@ class GLoader {
      * 
      * @param {WebGLRenderingContext} gl 
      */
-    init(gl) {
+    init(gl, gScene) {
         /**
          * set gl context
          */
@@ -95,7 +109,11 @@ class GLoader {
      * 
      */
     _initComponents(scene) {
-        const gl = this._gl,
+        const lat = this._lat,
+            lng = this._lng,
+            geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), 0), //convert degree to radian
+            spaceV3 = WGS84.geographicToSpace(geographic),
+            gl = this._gl,
             nodes = scene.nodes,
             caches = this.caches,
             gProgram = this._gProgram;
@@ -115,19 +133,19 @@ class GLoader {
                 indicesBuffer.bindBuffer();
                 indicesBuffer.bufferData();
                 //3.uniform
-                //uniform mat4 u_projectionMatrix;
-                // uniform mat4 u_viewMatrix;
-                // uniform mat4 u_modelMatrix;
-                const uProject = new GUniform(gProgram,'u_projectionMatrix'),
-                    uView = new GUniform(gProgram,'u_viewMatrix'),
-                    uModel = new GUniform(gProgram,'u_modelMatrix');
+                const uProject = new GUniform(gProgram, 'u_projectionMatrix'),
+                    uView = new GUniform(gProgram, 'u_viewMatrix'),
+                    uModel = new GUniform(gProgram, 'u_modelMatrix');
+                //4.translate model matrix
+                const translation = spaceV3.clone().add(node.modelMatrix.getTranslation()),
+                    modelMatrix = node.modelMatrix.clone().setTranslation(translation);
                 //4.cache buffers
                 caches.push({
                     //模型矩阵值
-                    modelMatrix:node.modelMatrix.value,
-                    uProject:uProject,
-                    uView:uView,
-                    uModel:uModel,
+                    modelMatrix: modelMatrix.value,
+                    uProject: uProject,
+                    uView: uView,
+                    uModel: uModel,
                     accessor: posAccessor,
                     indicesBuffer: indicesBuffer,
                     mode: primitive.mode,
@@ -139,19 +157,6 @@ class GLoader {
                 gl.drawElements(primitive.mode, primitive.indicesLength, primitive.indicesComponentType, primitive.indicesOffset);
             });
         });
-        // const verticesBuffer = this._verticesBuffer = new GBuffer(program, gl.ARRAY_BUFFER, gl.STATIC_DRAW, "a_position");
-        // // transform data
-        // verticesBuffer.bindBuffer();
-        // verticesBuffer.bufferData(new Float32Array(this._vertices));
-        // verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
-        // // transform index data
-        // const indexBuffer = this._indicesBuffer = new GBuffer(program, gl.ELEMENT_ARRAY_BUFFER, gl.STATIC_DRAW);
-        // indexBuffer.bindBuffer();
-        // indexBuffer.bufferData(new Uint16Array(this._indices));
-        //
-        // this._u_projectionMatrix = new GUniform(program, 'u_projectionMatrix');
-        // this._u_viewMatrix = new GUniform(program, 'u_viewMatrix');
-        // this._u_modelMatrix = new GUniform(program, 'u_modelMatrix');
     }
     /**
      * 
@@ -164,16 +169,17 @@ class GLoader {
         gProgram.useProgram();
         for (let i = 0, len = caches.length; i < len; i++) {
             const cache = caches[i];
-            const accessor = cache.accessor,
-                indicesBuffer = cache.indicesBuffer,
-                mode = cache.mode,
-                indicesLength = cache.indicesLength,
-                indicesComponentType = cache.indicesComponentType,
-                indicesOffset = cache.indicesOffset,
-                uProject = cache.uProject,
-                uView = cache.uView,
-                modelMatrix = cache.modelMatrix,
-                uModel = cache.uModel;
+            const { accessor,
+                indicesBuffer,
+                mode,
+                indicesLength,
+                indicesComponentType,
+                indicesOffset,
+                uProject,
+                uView,
+                modelMatrix,
+                uModel } = cache;
+            //relink
             accessor.relink();
             indicesBuffer.bindBuffer();
             uProject.assignValue(camera.ProjectionMatrix);

@@ -2,6 +2,7 @@ const GProgram = require('./renderer/GProgram'),
     GBuffer = require('./renderer/GBuffer'),
     GUniform = require('./renderer/GUniform'),
     GScene = require('./renderer/GScene'),
+    GLoader = require('./renderer/GLoader'),
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
 module.exports = {
@@ -9,10 +10,7 @@ module.exports = {
         camera: {
             PerspectiveCamera: PerspectiveCamera,
         },
-        loaders:
-        {
-
-        },
+        GLoader:GLoader,
         renderer: {
             GScene: GScene,
             GProgram: GProgram,

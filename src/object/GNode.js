@@ -10,6 +10,8 @@ class GNode {
      * @param {*} options 
      * @param {Object} resources
      * @param {mesh[]} resources.meshes
+     * @param {Object} options
+     * @param {Number[]} [options.translation]
      * 
      */
     constructor(nodeID, options, resources) {
@@ -41,14 +43,6 @@ class GNode {
          * init as id, then hook up to skin object later
          */
         this.skin = options.skin !== undefined ? options.skin : null;
-        //if (options.extensions !== undefined) {
-        //     if (options.extensions.gl_avatar !== undefined && curLoader.enableGLAvatar === true) {
-        //         var linkedSkinID = curLoader.skeletonGltf.json.extensions.gl_avatar.skins[options.extensions.gl_avatar.skin.name];
-        //         var linkedSkin = curLoader.skeletonGltf.skins[linkedSkinID];
-        //         this.skin = new SkinLink(curLoader.glTF, linkedSkin, options.extensions.gl_avatar.skin.inverseBindMatrices);
-        //     }
-        // }
-        // // TODO: morph targets weights
         /**
          * 
          */
@@ -68,10 +62,12 @@ class GNode {
         /**
          * initial model matrix
          */
-        this._initial();
+        this._initialMatrix();
     }
-
-    _initial() {
+    /**
+     * calcute matrix
+     */
+    _initialMatrix() {
         const options = this._options;
         let modelMatrix;
         if (options.matrix) {
@@ -83,20 +79,33 @@ class GNode {
                 matrix[13], matrix[14], matrix[15]
             );
         } else {
-            const translation = options.translation || [0.0, 0.0, 0.0],
+            const translation = options.translation || [ 0.0, 0.0, 0.0],
                 rotation = options.rotation || [0.0, 0.0, 0.0, 0.0],
-                scale = options.scale || [1.0, 1.0, 1.0];
+                scale = options.scale || [300000.0, 300000.0, 300000.0];
             const q = new Quat().set(rotation[0], rotation[1], rotation[2], rotation[3]),
                 v = new Vec3().set(translation[0], translation[1], translation[2]),
                 s = new Vec3().set(scale[0], scale[1], scale[2]);
             modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
         }
         /**
+         * model matrix from rotation traslation and scale
          * @type {Mat4}
          */
         this.modelMatrix = modelMatrix;
     }
-
+    /**
+     * init skin
+     */
+    _initExtension(){
+                //if (options.extensions !== undefined) {
+        //     if (options.extensions.gl_avatar !== undefined && curLoader.enableGLAvatar === true) {
+        //         var linkedSkinID = curLoader.skeletonGltf.json.extensions.gl_avatar.skins[options.extensions.gl_avatar.skin.name];
+        //         var linkedSkin = curLoader.skeletonGltf.skins[linkedSkinID];
+        //         this.skin = new SkinLink(curLoader.glTF, linkedSkin, options.extensions.gl_avatar.skin.inverseBindMatrices);
+        //     }
+        // }
+        // // TODO: morph targets weights
+    }
 }
 
 module.exports = GNode;

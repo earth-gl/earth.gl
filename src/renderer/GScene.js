@@ -97,6 +97,11 @@ class GScene extends Eventable {
          */
         this._quadtree = new Quadtree(this._camera);
         /**
+         * gltf instances
+         * @type {Array}
+         */
+        this._gltfs = [];
+        /**
          * initialization
          */
         this._initialize();
@@ -140,8 +145,6 @@ class GScene extends Eventable {
         //this._surface = new GSurface(gl);
         //this._surface.update();
         //create test gltfloader
-        this._gltf = new GLoader();
-        this._gltf.init(gl);
     }
     /**
      * 
@@ -167,13 +170,24 @@ class GScene extends Eventable {
         this.fire(type, e, true);
     }
     /**
+     * @type {Object} o
+     */
+    add(o){
+        const gl = this._gl,
+            gltfs = this._gltfs;
+        if(o instanceof GLoader){
+            gltfs.push(o);
+            o.init(gl,this);
+        }
+    }
+    /**
      * 
      */
     render() {
         const gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
-            gltf = this._gltf,
+            gltfs = this._gltfs,
             //quadtree = this._quadtree,
             // surface = this._surface,
             earth = this._earth;
@@ -186,11 +200,10 @@ class GScene extends Eventable {
         //render earth
         earth.render(camera);
         //render gltf
-        gltf.render(camera);
-        //render surface (terrain)
-        //surface.render(camera);
-        // for(var i = 0,len = primitives;i<len;i++)
-        //     primitives[i].render(camera);
+        for(let i =0,len = gltfs.length;i<len;i++){
+            const gltf = gltfs[i];
+            gltf.render(camera);
+        }
     }
 }
 
