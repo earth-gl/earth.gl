@@ -148,6 +148,10 @@ const stopPropagation = function (e) {
  */
 const domEventNames =
     /**
+     * 
+     */
+    'mousewheel '+
+    /**
      * mousedown event
      * @event Map#mousedown
      * @type {Object}

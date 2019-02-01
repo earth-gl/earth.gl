@@ -13,8 +13,8 @@ const gltf = new GLoader(
     'http://139.129.7.130/models/DamagedHelmet/glTF/',
     'DamagedHelmet.gltf',
     {
-        lat: 33.1111,
-        lng: 114.1111
+        lng: 114.1111,
+        lat: 33.1111
     });
 
 scene.add(gltf);

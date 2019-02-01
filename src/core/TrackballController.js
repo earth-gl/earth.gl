@@ -43,7 +43,7 @@ class Trackball extends Eventable {
         /**
          * }{ debug
          */
-        this._dynamicDampingFactor = 0.2;
+        this.dynamicDampingFactor = 0.2;
         /**
          * 
          */
@@ -119,8 +119,11 @@ class Trackball extends Eventable {
     }
 
     _registerEvent() {
-        const scene =this.scene;
-        scene.on("mousedown", this.mousedown, this);
+        const scene = this.scene;
+        //pan map
+        scene.on('mousedown', this.mousedown, this);
+        //zoom map
+        scene.on('mousewheel', this.mousewheel, this);
     }
 
     /**
@@ -141,6 +144,15 @@ class Trackball extends Eventable {
             ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
             ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width)
         );
+    }
+
+    zoomCamera(){
+        const factor = 1.0 + ( this._zoomEnd.y - this._zoomStart.y ) * this.zoomSpeed;
+        if ( factor !== 1.0 && factor > 0.0 ) {
+            this._eye.scale(factor);
+        }else{
+            this._zoomStart._out[1] += ( this._zoomEnd.y - this._zoomStart.y ) * this.dynamicDampingFactor;
+        }
     }
 
     rotateCamera() {
@@ -215,14 +227,17 @@ class Trackball extends Eventable {
         preventDefault(event);
         stopPropagation(event);
         //
-        const scene =this.scene;
+        const scene = this.scene;
         //rotate
         this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
         this._movePrev = this._moveCurr.clone();
         //pan
         this._panStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._panEnd = this._panStart.clone();
-        //
+        //zoom
+        this._zoomStart = this.getMouseOnScreen(event.pageX, event.pageY);
+        this._zoomEnd = this._zoomStart.clone();
+        //resgister document events
         scene.on("mousemove", this.mousemove, this);
         scene.on("mouseup", this.mouseup, this);
     }
@@ -236,24 +251,43 @@ class Trackball extends Eventable {
     }
 
     mouseup(event) {
-        const scene =this.scene;
+        const scene = this.scene;
         scene.off("mousemove", this.mousemove, this);
         scene.off("mouseup", this.mouseup, this);
-        scene.fire("dragEnd",event,true);
+        scene.fire("dragEnd", event, true);
+    }
+
+    mousewheel(event) {
+        preventDefault(event);
+        stopPropagation(event);
+        
+        switch(event.deltaMode){
+            case 2: //zoom in pages
+                this._zoomStart._out[1] = event.deltaY*0.025;
+                break;
+            case 1: //zoom in lines
+                this._zoomStart._out[1] -= event.deltaY * 0.01;
+                break;
+            default: //undefined, 0, assume pixels
+                this._zoomStart._out[1] -= event.deltaY * 0.00025;
+                break;
+        }
     }
 
     update() {
         const camera = this.camera,
             target = this.target;
         this._eye = camera.position.clone().sub(target);
-        //1. pan
+        //1. rotate
         this.rotateCamera();
-        //
+        //2. zoom
+        this.zoomCamera();
+        //update position and lookat center
         camera.position = target.clone().add(this._eye).value;
         camera.lookAt(target.value);
-        //2. rotate
-        //3. 
         camera._update();
+        //clear zoom
+        this._zoomStart = this._zoomEnd.clone();
     }
 }
 
