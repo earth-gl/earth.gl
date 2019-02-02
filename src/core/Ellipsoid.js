@@ -184,7 +184,7 @@ class Ellipsoid {
         return new Geographic(longitude, latitude, height);
     }
     /**
-     * 
+     * convert geographic coord to sapce coord (x, y, z)
      * @param {Geographic} geographic 
      */
     geographicToSpace(geographic) {

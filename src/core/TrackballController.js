@@ -260,7 +260,6 @@ class Trackball extends Eventable {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        
         switch(event.deltaMode){
             case 2: //zoom in pages
                 this._zoomStart._out[1] = event.deltaY*0.025;
@@ -269,11 +268,13 @@ class Trackball extends Eventable {
                 this._zoomStart._out[1] -= event.deltaY * 0.01;
                 break;
             default: //undefined, 0, assume pixels
-                this._zoomStart._out[1] -= event.deltaY * 0.00025;
+                this._zoomStart._out[1] -= event.deltaY * 0.00015;
                 break;
         }
     }
-
+    /**
+     * 
+     */
     update() {
         const camera = this.camera,
             target = this.target;
@@ -287,6 +288,12 @@ class Trackball extends Eventable {
         camera.lookAt(target.value);
         camera._update();
         //clear zoom
+        this._clearState();
+    }
+    /**
+     * 
+     */
+    _clearState(){
         this._zoomStart = this._zoomEnd.clone();
     }
 }

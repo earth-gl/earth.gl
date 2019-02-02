@@ -1,26 +1,34 @@
 const QuadtreeTile = require("./QuadtreeTile"),
     ellipsoid = require("./Ellipsoid").WGS84,
     maximumRadius = require("./Ellipsoid").WGS84.maximumRadius,
-    terrainTileSchema = require("./QuadtreeTileSchema").CESIUM_TERRAIN;
+    Eventable = require('./Eventable'),
+    quadtreeTileSchema = require("./QuadtreeTileSchema").CESIUM_TERRAIN;
 /**
  * 预建瓦片规则
  * @class
+ * @fires 'updatedTiles'
  */
-class Quadtree {
+class Quadtree extends Eventable {
     /**
      * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
      * @param {PerspectiveCamera} camera 
+     * @param {GScene} gScene
      */
-    constructor(camera) {
+    constructor(camera, gScene) {
+        super();
         /**
          * @typedef {import("./QuadtreeTileSchema")} QuadtreeTileSchema
          * @type {QuadtreeTileSchema}
          */
-        this._tileSchema = terrainTileSchema;
+        this._tileSchema = quadtreeTileSchema;
         /**
          * @type {PerspectiveCamera}
          */
         this._camera = camera;
+        /**
+         * 
+         */
+        this._gScene = gScene;
         /**
          * if less then maximumScreenSpaceError, the tile should be load
          * @type {Number}
@@ -34,6 +42,14 @@ class Quadtree {
          * @type {QuadtreeTile[]}
          */
         this._zeroLevelTiles = [];
+        /**
+         * @type {QuadtreeTile[]}
+         */
+        this._tileCaches=[];
+        /**
+         * register events
+         */
+        this._registerEvents();
         /**
          * initialize geometric errors at each level
          */
@@ -52,8 +68,45 @@ class Quadtree {
     /**
      * 
      */
+    _registerEvents() {
+        const gScene = this._gScene;
+        gScene.on('mouseup', this._updateQuadtreeTileByDistanceError, this);
+    }
+    /**
+     * calctue tileset by distance error
+     */
+    _updateQuadtreeTileByDistanceError() {
+        const that = this;
+            camera = this._camera,
+            //compare with exist tiles, to achieve new tile
+            tileCache = this._titleCache;
+        //pick root tile
+        const rootTiles = this.pickZeroLevelQuadtreeTiles(camera.position);
+        //wait rendering
+        const waitRenderingQuadtreeTile = [];
+        //liter func, to calcute new tile in distance error
+        const liter = function (quadtreeTile) {
+            const error = that._spaceError(quadtreeTile);
+            if (error > 2)
+                for (var i = 0; i < 4; i++)
+                    liter(quadtreeTile.children[i])
+            else
+                waitRenderingQuadtreeTile.push(quadtreeTile);
+        }
+        //calcute from root tile
+        for (var i = 0, len = rootTiles.length; i < len; i++) {
+            const tile = rootTiles[i];
+            liter(tile);
+        }
+        //fire updated
+        this.fire('updatedTiles', { waitRendering: waitRenderingQuadtreeTile }, true);
+    }
+    /**
+     * 
+     */
     _computeMaximumGeometricError(level) {
-        const maximumGeometricError = maximumRadius * 2 * Math.PI * 0.25 / (65 * terrainTileSchema.getNumberOfXTilesAtLevel(level));
+        const tileSchema = this._tileSchema,
+            maximumGeometricError = maximumRadius * 2 * Math.PI * 0.25 / (65 * tileSchema.getNumberOfXTilesAtLevel(level));
         return maximumGeometricError;
     }
     /**
@@ -74,17 +127,17 @@ class Quadtree {
      * @type {Vec3}
      * @returns {QuadtreeTile[]} tiles
      */
-    pickZeroLevelQuadtreeTiles(cameraSpacePosition){
+    pickZeroLevelQuadtreeTiles(cameraSpacePosition) {
         //zero
         const zeroLevelTiles = this._zeroLevelTiles,
             pickedZeroLevelTiles = [];
         //1.转化camera 到椭球体
         const geographic = ellipsoid.spaceToGeographic(cameraSpacePosition);
         //2.计算tile rectangle与 geo coord 相交
-        for(var i=0,len = zeroLevelTiles.length; i<len;i++){
+        for (var i = 0, len = zeroLevelTiles.length; i < len; i++) {
             const quadtreeTile = zeroLevelTiles[i];
             //3.返回tile
-            quadtreeTile.boundary.contain(geographic)?pickedZeroLevelTiles.push(quadtreeTile):null;
+            quadtreeTile.boundary.contain(geographic) ? pickedZeroLevelTiles.push(quadtreeTile) : null;
         }
         return pickedZeroLevelTiles;
     }
@@ -109,7 +162,6 @@ class Quadtree {
         const error = (maxGeometricError * height) / (distance * sseDenominator);
         return error;
     }
-    
 }
 
 module.exports = Quadtree;

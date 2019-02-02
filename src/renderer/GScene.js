@@ -25,7 +25,7 @@ const merge = require('./../utils/merge'),
     GGlobal = require('./GGlobal'),
     GLoader = require('./GLoader'),
     Quadtree = require('./../core/Quadtree'),
-    //GSurface = require('./GSurface'),
+    GSurface = require('./GSurface'),
     PerspectiveCamera = require('./../camera/PerspectiveCamera'),
     { addDomEvent, domEventNames } = require('../utils/domEvent');
 /**
@@ -95,7 +95,7 @@ class GScene extends Eventable {
         /**
          * @type {Quadtree}
          */
-        this._quadtree = new Quadtree(this._camera);
+        this._quadtree = new Quadtree(this._camera, this);
         /**
          * gltf instances
          * @type {Array}
@@ -138,13 +138,12 @@ class GScene extends Eventable {
      * 
      */
     _initComponents() {
-        const gl = this._gl;
+        const quadtree = this._quadtree,
+            gl = this._gl;
         //create earth
         this._earth = new GGlobal(gl);
         //create surface
-        //this._surface = new GSurface(gl);
-        //this._surface.update();
-        //create test gltfloader
+        this._surface = new GSurface(gl, quadtree);
     }
     /**
      * 
@@ -156,6 +155,12 @@ class GScene extends Eventable {
         this._trackball = new TrackballController(camera,this);
         const trackball = this._trackball;
         trackball.update();
+    }
+    /**
+     * register events on GScene
+     */
+    _registerSceneEvents(){
+        
     }
     /**
      * refrenece:
@@ -189,7 +194,7 @@ class GScene extends Eventable {
             camera = this._camera,
             gltfs = this._gltfs,
             //quadtree = this._quadtree,
-            // surface = this._surface,
+            //surface = this._surface,
             earth = this._earth;
         //gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -199,6 +204,8 @@ class GScene extends Eventable {
         trackball.update();
         //render earth
         earth.render(camera);
+        //render surface
+        //surface.render(camera);
         //render gltf
         for(let i =0,len = gltfs.length;i<len;i++){
             const gltf = gltfs[i];
