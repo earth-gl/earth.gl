@@ -19,7 +19,7 @@ class QuadtreeTileSchema {
         /**
          * x direction tiles number at level 0
          */
-        this._numberOfLevelZeroTilesX = options.xNUmber || 2;
+        this._numberOfLevelZeroTilesX = options.xNUmber || 1;
         /**
          * y direction tiles number at level 0
          */

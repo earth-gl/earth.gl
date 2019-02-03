@@ -1,6 +1,7 @@
 
-const requestImage = require('./../utils/requestImage'),
-    PI_OVER_TWO = Math.PI / 2,
+const PI_OVER_TWO = Math.PI / 2,
+    requestImage = require('./../utils/requestImage'),
+    GTexture = require('./GTexture'),
     QuadtreeTile = require("./../core/QuadtreeTile"),
     ellipsoid_wgs84 = require("./../core/Ellipsoid").WGS84,
     equal14 = require("./../utils/revise").equal14,
@@ -36,7 +37,7 @@ class GSurface {
          * @type {Object[]}
          * key-value: key=level-x-y, value:{program,buffer}
          */
-        this._surfaces = [];
+        this._tileCaches = [];
         /**
          * listen to quadtree fire events
          */
@@ -53,14 +54,44 @@ class GSurface {
      * @param o
      */
     _updateTiles(o) {
-        const { waitRendering } = o;
-        const sss = '';
+        const tileCaches = this._tileCaches,
+            { waitRendering } = o;
+        //1. request images
+        for (let i = 0, len = waitRendering.length; i < len; i++) {
+            const qudatreeTile = waitRendering[i];
+            const { x, y, level } = qudatreeTile;
+            this._request(level, x, y, tileCaches);
+        }
+        //2. calcute vertices and indices , textcoord
+        //3. caches program
     }
     /**
      * 
      * @param {*} tile 
      */
-    _request(tile) {
+    _request(level, x, y, tileCaches) {
+        const gl = this._gl,
+            width = 256,
+            height = 256;
+        const tileCache = {};
+        //level x y
+        //https://c.basemaps.cartocdn.com/light_all/
+        //openstreet map https://a.tile.openstreetmap.org
+        const baseUri = 'https://a.tile.openstreetmap.org/',
+            uri = baseUri + level + '/' + x + '/' + y + '.png';
+        //request image
+        requestImage(uri).then(arraybuffer => {
+            //1.calcute indics
+            const gProgram = new GProgram(gl, vertText, fragText),
+                texture = new GTexture(gl, arraybuffer, width, height, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gl.TEXTURE_2D);
+            //2.texture image2d
+            texture.texImage2D();
+            //3.store texture
+            tileCache.gProgram = gProgram;
+            tileCache.texture = texture;
+            //4.
+            tileCaches.push(tileCache);
+        });
         // const quadtreeTile = new QuadtreeTile({ x: 6, y: 1, level: 2 }),
         //     that = this,
         //     surfaces = this._surfaces;
@@ -112,15 +143,6 @@ class GSurface {
             //gl draw
             gl.drawElements(gl.TRIANGLES, lengthOfIndices, gl.UNSIGNED_SHORT, 0);
         }
-    }
-    /**
-     * 
-     */
-    update() {
-        this._request();
-        //1. culling volume
-        //2. wait rendering tile collection
-        //3. combine arrybuffer
     }
 }
 

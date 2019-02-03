@@ -281,7 +281,7 @@ class GLTFLoader {
         if (glTF.textures) {
             for (let i = 0, len = glTF.textures.length; i < len; i++) {
                 const tJson = glTF.textures[i];
-                this._textures[i] = new GTexture(tJson);
+                //this._textures[i] = new GTexture(tJson);
             }
         }
         //mesh

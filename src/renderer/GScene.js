@@ -186,7 +186,8 @@ class GScene extends Eventable {
         }
     }
     /**
-     * 
+     * reference
+     * https://github.com/mdn/webgl-examples/blob/ea1c73ff3ec8d069d890cda0495052bb44a8b073/tutorial/sample6/webgl-demo.js#L283
      */
     render() {
         const gl = this._gl,
@@ -196,9 +197,12 @@ class GScene extends Eventable {
             //quadtree = this._quadtree,
             //surface = this._surface,
             earth = this._earth;
-        //gl.enable(gl.DEPTH_TEST);
+        //gl state
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+        gl.clearDepth(1.0);                 // Clear everything
+        gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+        gl.depthFunc(gl.LEQUAL);
         gl.enable(gl.CULL_FACE);
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update camera
         trackball.update();

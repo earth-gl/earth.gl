@@ -78,6 +78,7 @@ class Quadtree extends Eventable {
     _updateQuadtreeTileByDistanceError() {
         const that = this;
             camera = this._camera,
+            maximumScreenSpaceError = this._maximumScreenSpaceError,
             //compare with exist tiles, to achieve new tile
             tileCache = this._titleCache;
         //pick root tile
@@ -87,14 +88,14 @@ class Quadtree extends Eventable {
         //liter func, to calcute new tile in distance error
         const liter = function (quadtreeTile) {
             const error = that._spaceError(quadtreeTile);
-            if (error > 2)
-                for (var i = 0; i < 4; i++)
+            if (error > maximumScreenSpaceError)
+                for (let i = 0; i < 4; i++)
                     liter(quadtreeTile.children[i])
             else
                 waitRenderingQuadtreeTile.push(quadtreeTile);
         }
         //calcute from root tile
-        for (var i = 0, len = rootTiles.length; i < len; i++) {
+        for (let i = 0, len = rootTiles.length; i < len; i++) {
             const tile = rootTiles[i];
             liter(tile);
         }

@@ -9,16 +9,15 @@ uniform mat4 u_viewMatrix;
 //模型矩阵
 uniform mat4 u_modelMatrix;
 
-//物体位置
+//物体顶点坐标
 attribute vec3 a_position;
-//法线坐标
-attribute vec3 a_normals;
 //纹理坐标
-uniform sampler2D u_texture;
+attribute vec2 a_texcoord;
 
-varying vec4 v_color;
+//传递给fs的纹理坐标
+varying vec2 v_texcoord;
 
 void main() { 
-    v_color = vec4(a_position,1.0);
     gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix, a_position);
+    v_texcoord = a_texcoord;
 }
