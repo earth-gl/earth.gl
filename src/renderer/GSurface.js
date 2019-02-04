@@ -2,6 +2,7 @@
 const PI_OVER_TWO = Math.PI / 2,
     requestImage = require('./../utils/requestImage'),
     GTexture = require('./GTexture'),
+    Geographic = require('./../core/Geographic'),
     QuadtreeTile = require("./../core/QuadtreeTile"),
     GBufferView = require('./../object/GBufferView'),
     GAccessor = require('./../object/GAccessor'),
@@ -39,7 +40,7 @@ class GSurface {
          * @type {Object[]}
          * key-value: key=level-x-y, value:{program,buffer}
          */
-        this._tileCaches = [];
+        this._tileCaches = {};
         /**
          * listen to quadtree fire events
          */
@@ -63,8 +64,53 @@ class GSurface {
             const qudatreeTile = waitRendering[i];
             this._request(qudatreeTile);
         }
-        //2. calcute vertices and indices , textcoord
-        //3. caches program
+    }
+    /**
+     * interpolation
+     */
+    _lerp(boundary) {
+        const lerp = 5,
+            lerpFactor = 1 / lerp,
+            rangeX = boundary.width,
+            rangeY = boundary.height,
+            northwest = boundary.northwest;
+        let vertices = [],
+            indices = [];
+        for (let x = 1; x <= lerp; x++)
+            for (let y = 1; y <= lerp; y++) {
+                const x0 = x - 1,
+                    y0 = y - 1,
+                    g1 = new Geographic(
+                        northwest.longitude + x0 * lerpFactor * rangeX,
+                        northwest.latitude - y0 * lerpFactor * rangeY,
+                        0),
+                    g2 = new Geographic(
+                        northwest.longitude + x0 * lerpFactor * rangeX,
+                        northwest.latitude - y0 * lerpFactor * rangeY - y * lerpFactor * rangeY,
+                        0),
+                    g3 = new Geographic(
+                        northwest.longitude + x0 * lerpFactor * rangeX + x * lerpFactor * rangeX,
+                        northwest.latitude - y0 * lerpFactor * rangeY - y * lerpFactor * rangeY,
+                        0),
+                    g4 = new Geographic(
+                        northwest.longitude + x0 * lerpFactor * rangeX + x * lerpFactor * rangeX,
+                        northwest.latitude - y0 * lerpFactor * rangeY,
+                        0);
+                const s1 = WGS84.geographicToSpace(g1),
+                    s2 = WGS84.geographicToSpace(g2),
+                    s3 = WGS84.geographicToSpace(g3),
+                    s4 = WGS84.geographicToSpace(g4);
+                //let
+                vertices = vertices.concat(s1._out).concat(s2._out).concat(s3._out).concat(s4._out)
+                const index = x0 * lerp + y0;
+                indices.push(index + 3);
+                indices.push(index + 2);
+                indices.push(index + 1);
+                indices.push(index + 3);
+                indices.push(index + 1);
+                indices.push(index);
+            }
+        return { vertices, indices };
     }
     /**
      * 
@@ -73,19 +119,19 @@ class GSurface {
     _request(qudatreeTile) {
         const { x, y, level, boundary } = qudatreeTile;
         const gl = this._gl,
+            key = x + '-' + y + '-' + level,
             width = 256,
             height = 256,
-            tileCache = {},
             tileCaches = this._tileCaches;
-        const nw = WGS84.geographicToSpace(boundary.northwest),
-            ne = WGS84.geographicToSpace(boundary.northeast),
-            sw = WGS84.geographicToSpace(boundary.southwest),
-            se = WGS84.geographicToSpace(boundary.southeast);
+        //check tile Cached
+        if (tileCaches[key]) return;
         //create program
-        const gProgram = new GProgram(gl, vertText, fragText);
+        const tileCache = {},
+            gProgram = new GProgram(gl, vertText, fragText);
         //texture = new GTexture(gl, arraybuffer, width, height, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gl.TEXTURE_2D);
-        const vertices = [].concat(nw._out).concat(sw._out).concat(se._out).concat(ne._out);
-        const indices = [0, 1, 2, 2, 3, 0];
+        const { vertices, indices } = this._lerp(boundary);
+        //const vertices = [].concat(nw._out).concat(sw._out).concat(se._out).concat(ne._out);
+        //const indices = [0, 1, 2, 2, 3, 0];
         gProgram.useProgram();
         //1. create vertices buffer
         const vBufferView = new GBufferView(
@@ -134,7 +180,7 @@ class GSurface {
         tileCache.uView = uView;
         tileCache.uModel = uModel;
         //cache tile
-        tileCaches.push(tileCache);
+        tileCaches[key] = tileCache;
         //level x y
         //https://c.basemaps.cartocdn.com/light_all/
         //openstreet map https://a.tile.openstreetmap.org
@@ -206,8 +252,8 @@ class GSurface {
     render(camera) {
         const gl = this._gl,
             tileCaches = this._tileCaches;
-        for (var i = 0, len = tileCaches.length; i < len; i++) {
-            const tileCache = tileCaches[i],
+        for (const key in tileCaches) {
+            const tileCache = tileCaches[key],
                 { uProjection,
                     uView,
                     uModel,

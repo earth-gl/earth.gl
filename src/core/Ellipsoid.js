@@ -197,7 +197,6 @@ class Ellipsoid {
         return k.add(n);
     }
 }
-
 /**
  * @type {Ellipsoid}
  */
