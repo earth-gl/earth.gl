@@ -3,7 +3,9 @@ const PI_OVER_TWO = Math.PI / 2,
     requestImage = require('./../utils/requestImage'),
     GTexture = require('./GTexture'),
     QuadtreeTile = require("./../core/QuadtreeTile"),
-    ellipsoid_wgs84 = require("./../core/Ellipsoid").WGS84,
+    GBufferView = require('./../object/GBufferView'),
+    GAccessor = require('./../object/GAccessor'),
+    WGS84 = require("./../core/Ellipsoid").WGS84,
     equal14 = require("./../utils/revise").equal14,
     BoundingSphere = require("./../core/BoundingSphere"),
     maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
@@ -56,11 +58,10 @@ class GSurface {
     _updateTiles(o) {
         const tileCaches = this._tileCaches,
             { waitRendering } = o;
-        //1. request images
-        for (let i = 0, len = waitRendering.length; i < len; i++) {
+        //1. request images,len = waitRendering.length
+        for (let i = 0, len = 1; i < len; i++) {
             const qudatreeTile = waitRendering[i];
-            const { x, y, level } = qudatreeTile;
-            this._request(level, x, y, tileCaches);
+            this._request(qudatreeTile);
         }
         //2. calcute vertices and indices , textcoord
         //3. caches program
@@ -69,11 +70,17 @@ class GSurface {
      * 
      * @param {*} tile 
      */
-    _request(level, x, y, tileCaches) {
+    _request(qudatreeTile) {
+        const { x, y, level, boundary} = qudatreeTile;
         const gl = this._gl,
             width = 256,
-            height = 256;
-        const tileCache = {};
+            height = 256,
+            tileCache = {},
+            tileCaches = this._tileCaches;
+        const nw = WGS84.geographicToSpace(boundary.northwest),
+            ne = WGS84.geographicToSpace(boundary.northeast),
+            sw = WGS84.geographicToSpace(boundary.southwest),
+            se = WGS84.geographicToSpace(boundary.southeast);
         //level x y
         //https://c.basemaps.cartocdn.com/light_all/
         //openstreet map https://a.tile.openstreetmap.org
@@ -84,64 +91,89 @@ class GSurface {
             //1.calcute indics
             const gProgram = new GProgram(gl, vertText, fragText),
                 texture = new GTexture(gl, arraybuffer, width, height, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gl.TEXTURE_2D);
-            //2.texture image2d
-            texture.texImage2D();
-            //3.store texture
+            const vertices = [].concat(nw._out).concat(ne._out).concat(sw._out).concat(se._out);
+            const indices = [3,2,1,3,1,0];
+            gProgram.useProgram();
+            //1. create vertices buffer
+            const vBufferView = new GBufferView(
+                gl,
+                vertices,
+                vertices.length,
+                {
+                  bufferType: gl.ARRAY_BUFFER,
+                  drawType: gl.STATIC_DRAW,
+                  byteOffset: 0,
+                  byteStride: 0
+                });
+            const vAccessor = new GAccessor(
+                gProgram,
+                vBufferView,
+                gl.FLOAT,
+                'VEC3',
+                vertices.length/3,
+                {
+                  byteOffset: 0,
+                  normalized: false
+                });
+            vAccessor.bindBuffer();
+            vAccessor.bufferData();
+            vAccessor.link('a_position');
+            //2. create indices buffer
+            const iBuffer = new GBuffer(
+                gProgram,
+                new Uint16Array(indices),
+                gl.ELEMENT_ARRAY_BUFFER,
+                gl.STATIC_DRAW);
+            iBuffer.bindBuffer();
+            iBuffer.bufferData();
+            //3.uniform
+            const uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
+                uView = new GUniform(gProgram, 'u_viewMatrix'),
+                uModel = new GUniform(gProgram, 'u_modelMatrix');
+            //3.create texture image2d
+            // texture.texImage2D();
+            //4.cache resource
             tileCache.gProgram = gProgram;
-            tileCache.texture = texture;
-            //4.
+            // tileCache.texture = texture;
+            tileCache.vAccessor = vAccessor;
+            tileCache.iBuffer = iBuffer;
+            tileCache.iLength = indices.length;
+            tileCache.uProjection = uProjection;
+            tileCache.uView = uView;
+            tileCache.uModel = uModel;
+            //cache tile
             tileCaches.push(tileCache);
         });
-        // const quadtreeTile = new QuadtreeTile({ x: 6, y: 1, level: 2 }),
-        //     that = this,
-        //     surfaces = this._surfaces;
-        // fetch(url, {
-        //     method: "GET",
-        //     headers: {
-        //         "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01,*/*;",
-        //     },
-        //     responseType: "arraybuffer",
-        // }).then(function (res) {
-        //     return res.arrayBuffer();
-        // }).then(function (buffer) {
-        //     //}{debug 
-        // });
-    }
-    /**
-     * 
-     * @param {Float32Array} vertices 
-     * @param {Unit8Array} indices 
-     */
-    _createSufraceElement(vertices, indices) {
-        const processVertices = [];
-        const processIndices = indices;
-        const lengthOfIndices = processIndices.length;
-        const gl = this._gl;
-        const program = new GProgram(gl, vertText, fragText);
-        program.useProgram();
-        // const u_projectionMatrix = new GUniform(program, "u_projectionMatrix"),
-        //     u_viewMatrix = new GUniform(program, "u_viewMatrix"),
-        //     u_modelMatrix = new GUniform(program, "u_modelMatrix");
     }
     /**
      * 
      * @param {*} camera 
      */
     render(camera) {
-        const gl = this._gl;
-        for (var i = 0, len = this._surfaces.length; i < len; i++) {
-            const surface = this._surfaces[i],
-                { u_projectionMatrix, u_viewMatrix, u_modelMatrix, program, verticesBuffer, indicesBuffer, lengthOfIndices } = surface;
-            program.useProgram();
-            verticesBuffer.bindBuffer();
-            verticesBuffer.linkAndEnableAttribPointer(3, gl.FLOAT, false, 0, 0);
-            indicesBuffer.bindBuffer();
+        const gl = this._gl,
+            tileCaches = this._tileCaches;
+        for (var i = 0, len = tileCaches.length; i < len; i++) {
+            const tileCache = tileCaches[i],
+                {   uProjection,
+                    uView,
+                    uModel,
+                    iLength, 
+                    gProgram,
+                    vAccessor,
+                    iBuffer
+                } = tileCache;
+            gProgram.useProgram();
+            //bind vertex buffer
+            vAccessor.bindBuffer();
+            vAccessor.relink('a_position');
+            //bind indices buffer
+            iBuffer.bindBuffer();
             //set camera
-            u_projectionMatrix.assignValue(camera.ProjectionMatrix);
-            u_viewMatrix.assignValue(camera.ViewMatrix);
-            u_modelMatrix.assignValue(camera.IdentityMatrix);
-            //gl draw
-            gl.drawElements(gl.TRIANGLES, lengthOfIndices, gl.UNSIGNED_SHORT, 0);
+            uProjection.assignValue(camera.ProjectionMatrix);
+            uView.assignValue(camera.ViewMatrix);
+            uModel.assignValue(camera.IdentityMatrix);
+            //
+            gl.drawElements(gl.TRIANGLES, iLength, gl.UNSIGNED_SHORT, 0);
         }
     }
 }

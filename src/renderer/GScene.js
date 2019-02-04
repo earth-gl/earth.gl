@@ -194,8 +194,7 @@ class GScene extends Eventable {
             trackball = this._trackball,
             camera = this._camera,
             gltfs = this._gltfs,
-            //quadtree = this._quadtree,
-            //surface = this._surface,
+            surface = this._surface,
             earth = this._earth;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -209,7 +208,7 @@ class GScene extends Eventable {
         //render earth
         earth.render(camera);
         //render surface
-        //surface.render(camera);
+        surface.render(camera);
         //render gltf
         for(let i =0,len = gltfs.length;i<len;i++){
             const gltf = gltfs[i];
