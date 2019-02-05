@@ -69,12 +69,13 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 4,
+        const lerp = 5,
             lerpFactor = 1 / lerp,
             rangeX = boundary.width
-            rangeY = boundary.height;
+        rangeY = boundary.height;
         const start = boundary.southwest;
-        let vertices = [],
+        let texcoords = [],
+            vertices = [],
             indices = [];
         for (let x = 0; x <= lerp; x++)
             for (let y = 0; y <= lerp; y++) {
@@ -86,6 +87,8 @@ class GSurface {
                 const spaceCoord = WGS84.geographicToSpace(g1);
                 //push vertices
                 vertices = vertices.concat(spaceCoord._out);
+                //texcoords
+                texcoords = texcoords.concat([x * lerpFactor, y * lerpFactor]);
             }
         for (let x = 0; x < lerp; ++x)
             for (let y = 0; y < lerp; ++y) {
@@ -98,7 +101,8 @@ class GSurface {
                 indices.push(second + 1);
                 indices.push(first + 1);
             }
-        return { vertices, indices };
+        //retrun vertices array and indices array
+        return { vertices, indices, texcoords };
     }
     /**
      * 
@@ -113,125 +117,107 @@ class GSurface {
             tileCaches = this._tileCaches;
         //check tile Cached
         if (tileCaches[key]) return;
-        //create program
-        const tileCache = {},
-            gProgram = new GProgram(gl, vertText, fragText);
-        //texture = new GTexture(gl, arraybuffer, width, height, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gl.TEXTURE_2D);
-        const { vertices, indices } = this._lerp(boundary);
-        //const vertices = [].concat(nw._out).concat(sw._out).concat(se._out).concat(ne._out);
-        //const indices = [0, 1, 2, 2, 3, 0];
-        gProgram.useProgram();
-        //1. create vertices buffer
-        const vBufferView = new GBufferView(
-            gl,
-            vertices,
-            vertices.length,
-            {
-                bufferType: gl.ARRAY_BUFFER,
-                drawType: gl.STATIC_DRAW,
-                byteOffset: 0,
-                byteStride: 0
-            });
-        const vAccessor = new GAccessor(
-            gProgram,
-            vBufferView,
-            gl.FLOAT,
-            'VEC3',
-            vertices.length / 3,
-            {
-                byteOffset: 0,
-                normalized: false
-            });
-        vAccessor.bindBuffer();
-        vAccessor.bufferData();
-        vAccessor.link('a_position');
-        //2. create indices buffer
-        const iBuffer = new GBuffer(
-            gProgram,
-            new Uint16Array(indices),
-            gl.ELEMENT_ARRAY_BUFFER,
-            gl.STATIC_DRAW);
-        iBuffer.bindBuffer();
-        iBuffer.bufferData();
-        //3.uniform
-        const uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
-            uView = new GUniform(gProgram, 'u_viewMatrix'),
-            uModel = new GUniform(gProgram, 'u_modelMatrix');
-        //3.create texture image2d
-        // texture.texImage2D();
-        //4.cache resource
-        tileCache.gProgram = gProgram;
-        tileCache.vAccessor = vAccessor;
-        tileCache.iBuffer = iBuffer;
-        tileCache.iLength = indices.length;
-        tileCache.uProjection = uProjection;
-        tileCache.uView = uView;
-        tileCache.uModel = uModel;
-        //cache tile
-        tileCaches[key] = tileCache;
         //level x y
         //https://c.basemaps.cartocdn.com/light_all/
         //openstreet map https://a.tile.openstreetmap.org
-        // const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
-        //    uri = baseUri + level + '/' + x + '/' + y + '.png';
+        const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
+            uri = baseUri + level + '/' + x + '/' + y + '.png';
         //request image
-        // requestImage(uri).then(arraybuffer => {
-        //     //1.calcute indics
-        //     const gProgram = new GProgram(gl, vertText, fragText);
-        //         //texture = new GTexture(gl, arraybuffer, width, height, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gl.TEXTURE_2D);
-        //     const vertices = [].concat(nw._out).concat(sw._out).concat(se._out).concat(ne._out);
-        //     const indices = [3, 2, 1, 3, 1, 0];
-        //     gProgram.useProgram();
-        //     //1. create vertices buffer
-        //     const vBufferView = new GBufferView(
-        //         gl,
-        //         vertices,
-        //         vertices.length,
-        //         {
-        //           bufferType: gl.ARRAY_BUFFER,
-        //           drawType: gl.STATIC_DRAW,
-        //           byteOffset: 0,
-        //           byteStride: 0
-        //         });
-        //     const vAccessor = new GAccessor(
-        //         gProgram,
-        //         vBufferView,
-        //         gl.FLOAT,
-        //         'VEC3',
-        //         vertices.length/3,
-        //         {
-        //           byteOffset: 0,
-        //           normalized: false
-        //         });
-        //     vAccessor.bindBuffer();
-        //     vAccessor.bufferData();
-        //     vAccessor.link('a_position');
-        //     //2. create indices buffer
-        //     const iBuffer = new GBuffer(
-        //         gProgram,
-        //         new Uint8Array(indices),
-        //         gl.ELEMENT_ARRAY_BUFFER,
-        //         gl.STATIC_DRAW);
-        //     iBuffer.bindBuffer();
-        //     iBuffer.bufferData();
-        //     //3.uniform
-        //     const uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
-        //         uView = new GUniform(gProgram, 'u_viewMatrix'),
-        //         uModel = new GUniform(gProgram, 'u_modelMatrix');
-        //     //3.create texture image2d
-        //     // texture.texImage2D();
-        //     //4.cache resource
-        //     tileCache.gProgram = gProgram;
-        //     // tileCache.texture = texture;
-        //     tileCache.vAccessor = vAccessor;
-        //     tileCache.iBuffer = iBuffer;
-        //     tileCache.iLength = indices.length;
-        //     tileCache.uProjection = uProjection;
-        //     tileCache.uView = uView;
-        //     tileCache.uModel = uModel;
-        //     //cache tile
-        //     tileCaches.push(tileCache);
-        // });
+        requestImage(uri).then(arraybuffer => {
+            //create program
+            const tileCache = {},
+                gProgram = new GProgram(gl, vertText, fragText);
+            const { vertices, indices, texcoords } = this._lerp(boundary);
+            gProgram.useProgram();
+            //1. create vertices buffer
+            const vBufferView = new GBufferView(
+                gl,
+                vertices,
+                vertices.length,
+                {
+                    bufferType: gl.ARRAY_BUFFER,
+                    drawType: gl.STATIC_DRAW,
+                    byteOffset: 0,
+                    byteStride: 0
+                });
+            const vAccessor = new GAccessor(
+                gProgram,
+                vBufferView,
+                gl.FLOAT,
+                'VEC3',
+                vertices.length / 3,
+                {
+                    byteOffset: 0,
+                    normalized: false
+                });
+            vAccessor.bindBuffer();
+            vAccessor.bufferData();
+            vAccessor.link('a_position');
+            //2.create texcoord buffer
+            const tBufferView = new GBufferView(
+                gl,
+                texcoords,
+                texcoords.length,
+                {
+                    bufferType: gl.ARRAY_BUFFER,
+                    drawType: gl.STATIC_DRAW,
+                    byteOffset: 0,
+                    byteStride: 0
+                }
+            );
+            const tAccessor = new GAccessor(
+                gProgram,
+                tBufferView,
+                gl.FLOAT,
+                'VEC2',
+                texcoords.length/3,
+                {
+                    byteOffset: 0,
+                    normalized: false
+                }
+            );
+            tAccessor.bindBuffer();
+            tAccessor.bufferData();
+            tAccessor.link('a_texcoord');
+            //2. create indices buffer
+            const iBuffer = new GBuffer(
+                gProgram,
+                new Uint16Array(indices),
+                gl.ELEMENT_ARRAY_BUFFER,
+                gl.STATIC_DRAW);
+            iBuffer.bindBuffer();
+            iBuffer.bufferData();
+            //3.uniform
+            const uTexture = new GUniform(gProgram, 'u_texture'),
+                uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
+                uView = new GUniform(gProgram, 'u_viewMatrix'),
+                uModel = new GUniform(gProgram, 'u_modelMatrix');
+            //3.create texture image2d
+            const gTexture = new GTexture(
+                gl, 
+                arraybuffer, 
+                width, 
+                height, 
+                gl.RGBA, 
+                gl.RGBA, 
+                gl.UNSIGNED_BYTE, 
+                gl.TEXTURE_2D);
+            gTexture.bindTexture();
+            gTexture.texImage2D();
+            //4.cache resource
+            tileCache.gProgram = gProgram;
+            tileCache.vAccessor = vAccessor;
+            tileCache.tAccessor = tAccessor;
+            tileCache.iBuffer = iBuffer;
+            tileCache.iLength = indices.length;
+            tileCache.uProjection = uProjection;
+            tileCache.uTexture = uTexture;
+            tileCache.uView = uView;
+            tileCache.uModel = uModel;
+            tileCache.gTexture = gTexture;
+            //cache tile
+            tileCaches[key] = tileCache;
+        });
     }
     /**
      * 
