@@ -69,46 +69,34 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 5,
+        const lerp = 4,
             lerpFactor = 1 / lerp,
-            rangeX = boundary.width,
-            rangeY = boundary.height,
-            northwest = boundary.northwest;
+            rangeX = boundary.width
+            rangeY = boundary.height;
+        const start = boundary.southwest;
         let vertices = [],
             indices = [];
-        for (let x = 1; x <= lerp; x++)
-            for (let y = 1; y <= lerp; y++) {
-                const x0 = x - 1,
-                    y0 = y - 1,
-                    g1 = new Geographic(
-                        northwest.longitude + x0 * lerpFactor * rangeX,
-                        northwest.latitude - y0 * lerpFactor * rangeY,
-                        0),
-                    g2 = new Geographic(
-                        northwest.longitude + x0 * lerpFactor * rangeX,
-                        northwest.latitude - y0 * lerpFactor * rangeY - y * lerpFactor * rangeY,
-                        0),
-                    g3 = new Geographic(
-                        northwest.longitude + x0 * lerpFactor * rangeX + x * lerpFactor * rangeX,
-                        northwest.latitude - y0 * lerpFactor * rangeY - y * lerpFactor * rangeY,
-                        0),
-                    g4 = new Geographic(
-                        northwest.longitude + x0 * lerpFactor * rangeX + x * lerpFactor * rangeX,
-                        northwest.latitude - y0 * lerpFactor * rangeY,
-                        0);
-                const s1 = WGS84.geographicToSpace(g1),
-                    s2 = WGS84.geographicToSpace(g2),
-                    s3 = WGS84.geographicToSpace(g3),
-                    s4 = WGS84.geographicToSpace(g4);
-                //let
-                vertices = vertices.concat(s1._out).concat(s2._out).concat(s3._out).concat(s4._out)
-                const index = x0 * lerp + y0;
-                indices.push(index + 3);
-                indices.push(index + 2);
-                indices.push(index + 1);
-                indices.push(index + 3);
-                indices.push(index + 1);
-                indices.push(index);
+        for (let x = 0; x <= lerp; x++)
+            for (let y = 0; y <= lerp; y++) {
+                const g1 = new Geographic(
+                    start.longitude + x * lerpFactor * rangeX,
+                    start.latitude + y * lerpFactor * rangeY,
+                    0);
+                //convert to space coord
+                const spaceCoord = WGS84.geographicToSpace(g1);
+                //push vertices
+                vertices = vertices.concat(spaceCoord._out);
+            }
+        for (let x = 0; x < lerp; ++x)
+            for (let y = 0; y < lerp; ++y) {
+                let first = (x * (lerp + 1)) + y;
+                let second = first + lerp + 1;
+                indices.push(first);
+                indices.push(second);
+                indices.push(first + 1);
+                indices.push(second);
+                indices.push(second + 1);
+                indices.push(first + 1);
             }
         return { vertices, indices };
     }
