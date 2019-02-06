@@ -31,7 +31,7 @@ class Trackball extends Eventable {
         /**
          * 
          */
-        this.rotateSpeed = 1.0;
+        this.rotateSpeed = 0.6;
         /**
          * 
          */
@@ -125,7 +125,6 @@ class Trackball extends Eventable {
         //zoom map
         scene.on('mousewheel', this.mousewheel, this);
     }
-
     /**
      * 
      * @param {*} pageX 
@@ -138,14 +137,20 @@ class Trackball extends Eventable {
             (pageY - this.screen.top) / this.screen.height
         );
     }
-
+    /**
+     * 
+     * @param {*} pageX 
+     * @param {*} pageY 
+     */
     getMouseOnCircle(pageX, pageY) {
         return new Vec2().set(
             ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
             ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width)
         );
     }
-
+    /**
+     * 
+     */
     zoomCamera(){
         const factor = 1.0 + ( this._zoomEnd.y - this._zoomStart.y ) * this.zoomSpeed;
         if ( factor !== 1.0 && factor > 0.0 ) {
@@ -154,7 +159,9 @@ class Trackball extends Eventable {
             this._zoomStart._out[1] += ( this._zoomEnd.y - this._zoomStart.y ) * this.dynamicDampingFactor;
         }
     }
-
+    /**
+     * 
+     */
     rotateCamera() {
         const target = this.target,
             camera = this.camera,
@@ -162,13 +169,14 @@ class Trackball extends Eventable {
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
-            //movePrev.x - moveCurr.x,
-            //movePrev.y - moveCurr.y,
-            moveCurr.x - movePrev.x,
-            moveCurr.y - movePrev.y,
+            movePrev.x - moveCurr.x,
+            movePrev.y - moveCurr.y,
+            //moveCurr.x - movePrev.x,
+            //moveCurr.y - movePrev.y,
             0
         );
-        let angle = moveDirection.len();
+        //set rotate direction as -1
+        let angle = -moveDirection.len();
         if (angle) {
             this._eye = camera.position.clone().sub(target);
             const eyeDirection = this._eye.clone().normalize();
@@ -193,7 +201,9 @@ class Trackball extends Eventable {
         //assign movePrev position
         this._movePrev = moveCurr.clone();
     }
-
+    /**
+     * 
+     */
     panCamera() {
         const panStart = this._panStart,
             panEnd = this._panEnd,
@@ -216,7 +226,10 @@ class Trackball extends Eventable {
             panStart.add(panEnd.clone().sub(panStart).scale(dynamicDampingFactor));
         }
     }
-
+    /**
+     * 
+     * @param {*} event 
+     */
     mousedown(event) {
         preventDefault(event);
         stopPropagation(event);
@@ -235,7 +248,10 @@ class Trackball extends Eventable {
         scene.on("mousemove", this.mousemove, this);
         scene.on("mouseup", this.mouseup, this);
     }
-
+    /**
+     * 
+     * @param {*} event 
+     */
     mousemove(event) {
         //rotate
         this._movePrev = this._moveCurr.clone();
@@ -243,14 +259,20 @@ class Trackball extends Eventable {
         //pan
         this._panEnd = this.getMouseOnScreen(event.pageX, event.pageY);
     }
-
+    /**
+     * 
+     * @param {*} event 
+     */
     mouseup(event) {
         const scene = this.scene;
         scene.off("mousemove", this.mousemove, this);
         scene.off("mouseup", this.mouseup, this);
         scene.fire("dragEnd", event, true);
     }
-
+    /**
+     * 
+     * @param {*} event 
+     */
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
