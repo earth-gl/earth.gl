@@ -116,9 +116,8 @@ class GSurface {
             width = 256,
             height = 256,
             tileCaches = this._tileCaches;
-        //check tile Cached
+        //check tile cached
         if (tileCaches[key]) return;
-        //level x y
         //https://c.basemaps.cartocdn.com/light_all/
         //openstreet map https://a.tile.openstreetmap.org
         const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
@@ -130,7 +129,7 @@ class GSurface {
                 gProgram = new GProgram(gl, vertText, fragText);
             const { vertices, indices, texcoords } = this._lerp(boundary);
             gProgram.useProgram();
-            //1. create vertices buffer
+            //create vertices buffer
             const vBufferView = new GBufferView(
                 gl,
                 vertices,
@@ -154,7 +153,7 @@ class GSurface {
             vAccessor.bindBuffer();
             vAccessor.bufferData();
             vAccessor.link('a_position');
-            //2.create texcoord buffer
+            //create texcoord buffer
             const tBufferView = new GBufferView(
                 gl,
                 texcoords,
@@ -180,7 +179,7 @@ class GSurface {
             tAccessor.bindBuffer();
             tAccessor.bufferData();
             tAccessor.link('a_texcoord');
-            //2. create indices buffer
+            //create indices buffer
             const iBuffer = new GBuffer(
                 gProgram,
                 new Uint16Array(indices),
@@ -188,7 +187,7 @@ class GSurface {
                 gl.STATIC_DRAW);
             iBuffer.bindBuffer();
             iBuffer.bufferData();
-            //3.create texture image2d
+            //create texture image2d
             const gTexture = new GTexture(
                 gl,
                 arraybuffer,
@@ -205,7 +204,7 @@ class GSurface {
                 uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
                 uView = new GUniform(gProgram, 'u_viewMatrix'),
                 uModel = new GUniform(gProgram, 'u_modelMatrix');
-            //4.cache resource
+            //cache resource
             tileCache.gProgram = gProgram;
             tileCache.vAccessor = vAccessor;
             tileCache.tAccessor = tAccessor;
@@ -241,6 +240,7 @@ class GSurface {
                     uTexture,
                     gTexture
                 } = tileCache;
+            //use program
             gProgram.useProgram();
             //bind vertex buffer a_position
             vAccessor.bindBuffer();

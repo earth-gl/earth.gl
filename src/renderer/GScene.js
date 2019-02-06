@@ -214,6 +214,7 @@ class GScene extends Eventable {
             const gltf = gltfs[i];
             gltf.render(camera);
         }
+        //
     }
 }
 

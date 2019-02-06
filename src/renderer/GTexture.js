@@ -68,6 +68,7 @@ class GTexture {
         this.bindTexture();
         //textimage 2d
         gl.texImage2D(textureType, 0, format, width, height, 0, srcFormat, srcType, pixel);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         //set parameteri
         if (this._isPowerOf2(width) && this._isPowerOf2(height)) {
             //generate mips.

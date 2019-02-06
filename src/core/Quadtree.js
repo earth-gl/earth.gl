@@ -47,6 +47,11 @@ class Quadtree extends Eventable {
          */
         this._tileCaches=[];
         /**
+         * current zoom level
+         * @type {Number}
+         */
+        this._level = 0;
+        /**
          * register events
          */
         this._registerEvents();
@@ -81,26 +86,39 @@ class Quadtree extends Eventable {
             maximumScreenSpaceError = this._maximumScreenSpaceError,
             //compare with exist tiles, to achieve new tile
             tileCache = this._titleCache;
+        //current Level
+        let level = 0;
         //pick root tile
         const rootTiles = this.pickZeroLevelQuadtreeTiles(camera.position);
         //wait rendering
-        const waitRenderingQuadtreeTile = [];
+        const rawQuadtreeTiles = [];
+        const renderingQuadtreeTiles = [];
         //liter func, to calcute new tile in distance error
         const liter = function (quadtreeTile) {
             const error = that._spaceError(quadtreeTile);
             if (error > maximumScreenSpaceError)
                 for (let i = 0; i < 4; i++)
                     liter(quadtreeTile.children[i])
-            else
-                waitRenderingQuadtreeTile.push(quadtreeTile);
+            else{
+                const litLevel = quadtreeTile.level;
+                level = litLevel>level? litLevel:level;
+                rawQuadtreeTiles.push(quadtreeTile);
+            }
         }
         //calcute from root tile
         for (let i = 0, len = rootTiles.length; i < len; i++) {
             const tile = rootTiles[i];
             liter(tile);
         }
+        //filter level of tile
+        for(let i =0, len = rawQuadtreeTiles.length;i<len;i++){
+            const quadtreeTile = rawQuadtreeTiles[i];
+            quadtreeTile.level === level?renderingQuadtreeTiles.push(quadtreeTile):null;
+        }
+        //set current level
+        this._level = level;
         //fire updated
-        this.fire('updatedTiles', { waitRendering: waitRenderingQuadtreeTile }, true);
+        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
     }
     /**
      * 

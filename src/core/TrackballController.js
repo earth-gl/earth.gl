@@ -189,12 +189,6 @@ class Trackball extends Eventable {
             //
             this._lastAxis = axis.clone();
             this._lastAngle = angle;
-        } else if (this._lastAngle) {
-            // this._lastAngle *= Math.sqrt(1.0 - this.dynamicDampingFactor);
-            // this._eye = camera.position.clone().sub(target);
-            // const quaternion = new Quat().setAxisAngle(this._lastAxis, this._lastAngle);
-            // this._eye.applyQuat(quaternion);
-            // camera.up.applyQuat(quaternion);
         }
         //assign movePrev position
         this._movePrev = moveCurr.clone();
