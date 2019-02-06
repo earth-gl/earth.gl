@@ -31,7 +31,7 @@ class Trackball extends Eventable {
         /**
          * 
          */
-        this.rotateSpeed = 0.6;
+        this.rotateSpeeds = [];
         /**
          * 
          */
@@ -107,6 +107,12 @@ class Trackball extends Eventable {
     }
 
     _initialize() {
+        //rotation speed, above level 3, speed is normal
+        this.rotateSpeeds = [1.0, 1.0, 1.0, 1.0];
+        for (let i = 4; i <= 22; i++) {
+            const offset = i - 3;
+            this.rotateSpeeds[i] = 1.0 / (1 << offset);
+        }
         //camera clone
         this.target0 = this.target.clone();
         this.position0 = this.camera.position.clone();
@@ -151,21 +157,22 @@ class Trackball extends Eventable {
     /**
      * 
      */
-    zoomCamera(){
-        const factor = 1.0 + ( this._zoomEnd.y - this._zoomStart.y ) * this.zoomSpeed;
-        if ( factor !== 1.0 && factor > 0.0 ) {
+    zoomCamera() {
+        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * this.zoomSpeed;
+        if (factor !== 1.0 && factor > 0.0) {
             this._eye.scale(factor);
-        }else{
-            this._zoomStart._out[1] += ( this._zoomEnd.y - this._zoomStart.y ) * this.dynamicDampingFactor;
+        } else {
+            this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
         }
     }
     /**
      * 
      */
     rotateCamera() {
-        const target = this.target,
+        const level = this.scene.getLevel(),
+            target = this.target,
             camera = this.camera,
-            rotateSpeed = this.rotateSpeed,
+            rotateSpeed = this.rotateSpeeds[level],
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
@@ -276,9 +283,9 @@ class Trackball extends Eventable {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        switch(event.deltaMode){
+        switch (event.deltaMode) {
             case 2: //zoom in pages
-                this._zoomStart._out[1] = event.deltaY*0.025;
+                this._zoomStart._out[1] = event.deltaY * 0.025;
                 break;
             case 1: //zoom in lines
                 this._zoomStart._out[1] -= event.deltaY * 0.01;
@@ -309,7 +316,7 @@ class Trackball extends Eventable {
     /**
      * 
      */
-    _clearState(){
+    _clearState() {
         this._zoomStart = this._zoomEnd.clone();
     }
 }

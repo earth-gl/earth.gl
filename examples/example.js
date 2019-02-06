@@ -9,6 +9,7 @@ const scene = new GScene({
     height: 600
 });
 
+
 // const gltf = new GLoader(
 //     'http://139.129.7.130/models/DamagedHelmet/glTF/',
 //     'DamagedHelmet.gltf',

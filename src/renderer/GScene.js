@@ -115,6 +115,13 @@ class GScene extends Eventable {
         this._registerDomEvents();
     }
     /**
+     * get current zoom level
+     */
+    getLevel(){
+        const quadtree = this._quadtree;
+        return quadtree._level;
+    }
+    /**
      * 
      */
     _initialize() {
