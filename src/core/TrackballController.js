@@ -105,7 +105,9 @@ class Trackball extends Eventable {
          */
         this._registerEvent();
     }
-
+    /**
+     * 
+     */
     _initialize() {
         //rotation speed, above level 3, speed is normal
         this.rotateSpeeds = [1.0, 1.0, 1.0, 1.0];
@@ -123,7 +125,9 @@ class Trackball extends Eventable {
         this.screen.width = window.innerWidth;
         this.screen.height = window.innerHeight;
     }
-
+    /**
+     * 
+     */
     _registerEvent() {
         const scene = this.scene;
         //pan map

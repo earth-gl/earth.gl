@@ -120,8 +120,9 @@ class GSurface {
         if (tileCaches[key]) return;
         //https://c.basemaps.cartocdn.com/light_all/
         //openstreet map https://a.tile.openstreetmap.org
-        const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
-            uri = baseUri + level + '/' + x + '/' + y + '.png';
+        //https://services.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer/tile/
+        const baseUri = 'https://b.tile.openstreetmap.org/',
+            uri = baseUri + level + '/' + x + '/' + y+ '.png';
         //request image
         requestImage(uri).then(arraybuffer => {
             //create program
