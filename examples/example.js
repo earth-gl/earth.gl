@@ -9,15 +9,15 @@ const scene = new GScene({
     height: 600
 });
 
-const gltf = new GLoader(
-    'http://139.129.7.130/models/DamagedHelmet/glTF/',
-    'DamagedHelmet.gltf',
-    {
-        lng: 114.1111,
-        lat: 33.1111
-    });
+// const gltf = new GLoader(
+//     'http://139.129.7.130/models/DamagedHelmet/glTF/',
+//     'DamagedHelmet.gltf',
+//     {
+//         lng: 114.1111,
+//         lat: 33.1111
+//     });
 
-scene.add(gltf);
+// scene.add(gltf);
 
 const update = function () {
     scene.render();

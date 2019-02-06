@@ -69,7 +69,7 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 5,
+        const lerp = 8,
             lerpFactor = 1 / lerp,
             rangeX = boundary.width
         rangeY = boundary.height;
@@ -79,6 +79,7 @@ class GSurface {
             indices = [];
         for (let x = 0; x <= lerp; x++)
             for (let y = 0; y <= lerp; y++) {
+                //convert to space
                 const g1 = new Geographic(
                     start.longitude + x * lerpFactor * rangeX,
                     start.latitude + y * lerpFactor * rangeY,
@@ -170,7 +171,7 @@ class GSurface {
                 tBufferView,
                 gl.FLOAT,
                 'VEC2',
-                texcoords.length/3,
+                texcoords.length / 3,
                 {
                     byteOffset: 0,
                     normalized: false
@@ -187,23 +188,23 @@ class GSurface {
                 gl.STATIC_DRAW);
             iBuffer.bindBuffer();
             iBuffer.bufferData();
-            //3.uniform
+            //3.create texture image2d
+            const gTexture = new GTexture(
+                gl,
+                arraybuffer,
+                width,
+                height,
+                gl.RGBA,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                gl.TEXTURE_2D);
+            gTexture.bindTexture();
+            gTexture.texImage2D();
+            //uniform
             const uTexture = new GUniform(gProgram, 'u_texture'),
                 uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
                 uView = new GUniform(gProgram, 'u_viewMatrix'),
                 uModel = new GUniform(gProgram, 'u_modelMatrix');
-            //3.create texture image2d
-            const gTexture = new GTexture(
-                gl, 
-                arraybuffer, 
-                width, 
-                height, 
-                gl.RGBA, 
-                gl.RGBA, 
-                gl.UNSIGNED_BYTE, 
-                gl.TEXTURE_2D);
-            gTexture.bindTexture();
-            gTexture.texImage2D();
             //4.cache resource
             tileCache.gProgram = gProgram;
             tileCache.vAccessor = vAccessor;
@@ -228,20 +229,31 @@ class GSurface {
             tileCaches = this._tileCaches;
         for (const key in tileCaches) {
             const tileCache = tileCaches[key],
-                { uProjection,
+                {
+                    uProjection,
                     uView,
                     uModel,
                     iLength,
                     gProgram,
                     vAccessor,
-                    iBuffer
+                    iBuffer,
+                    tAccessor,
+                    uTexture,
+                    gTexture
                 } = tileCache;
             gProgram.useProgram();
-            //bind vertex buffer
+            //bind vertex buffer a_position
             vAccessor.bindBuffer();
-            vAccessor.relink('a_position');
+            vAccessor.relink();
+            //bind uv buffer, a_texcoord
+            tAccessor.bindBuffer();
+            tAccessor.relink();
             //bind indices buffer
             iBuffer.bindBuffer();
+            //active texture
+            gTexture.bindTexture();
+            //set texture
+            uTexture.assignValue(0);
             //set camera
             uProjection.assignValue(camera.ProjectionMatrix);
             uView.assignValue(camera.ViewMatrix);
