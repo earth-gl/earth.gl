@@ -128,8 +128,7 @@ class GScene extends Eventable {
         //gl context
         const width = this._width,
             height = this._height,
-            // devicePixelRatio = this._devicePixelRatio,
-            devicePixelRatio = 1,
+            devicePixelRatio = this._devicePixelRatio,
             camera = this._camera,
             canvas = this._canvas,
             gl = this._gl;
