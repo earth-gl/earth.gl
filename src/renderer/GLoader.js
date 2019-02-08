@@ -19,6 +19,8 @@ class GLoader {
      * @param {Object} [options]
      * @param {Number} [options.lng] 
      * @param {Number} [options.lat]
+     * @param {Number} [options.h] represent hight in meters, default is 0
+     * @param {Boolean} [options.vertical] object rotate to vertical surface
      */
     constructor(root, modelFilename, options = {}) {
         /**
@@ -50,17 +52,25 @@ class GLoader {
          */
         this._lng = options.lng || 0.0;
         /**
+         * @type {Number} height
+         */
+        this._h = options.h || 0.0;
+        /**
+         * @type {Boolean} model vertical of surface
+         */
+        this._vertical = options.vertical == undefined ? true : options.vertical;
+        /**
          * gltf extensions
          */
-        this.extensions = null;
+        this._extensions = null;
         /**
          * gltf extras
          */
-        this.extras = null;
+        this._extras = null;
         /**
          * @type {Array}
          */
-        this.caches = [];
+        this._caches = [];
     }
     /**
      * 
@@ -71,6 +81,10 @@ class GLoader {
          * set gl context
          */
         this._gl = gl;
+        /**
+         * @type {GScene}
+         */
+        this._gScene = gScene;
         /**
          * 
          */
@@ -109,14 +123,17 @@ class GLoader {
      * 
      */
     _initComponents(scene) {
-        const lat = this._lat,
+        const vertical = this._vertical,
+            lat = this._lat,
             lng = this._lng,
-            geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), 0), //convert degree to radian
+            h = this._h,
+            geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             spaceV3 = WGS84.geographicToSpace(geographic),
             gl = this._gl,
             nodes = scene.nodes,
-            caches = this.caches,
+            caches = this._caches,
             gProgram = this._gProgram;
+        //change program
         gProgram.useProgram();
         //prepare nodes
         nodes.forEach((node) => {
@@ -137,8 +154,15 @@ class GLoader {
                     uView = new GUniform(gProgram, 'u_viewMatrix'),
                     uModel = new GUniform(gProgram, 'u_modelMatrix');
                 //4.translate model matrix
-                const translation = spaceV3.clone().add(node.modelMatrix.getTranslation()),
-                    modelMatrix = node.modelMatrix.clone().setTranslation(translation);
+                const translation = spaceV3.clone().add(node.modelMatrix.getTranslation());
+                let modelMatrix = node.modelMatrix.clone().setTranslation(translation);
+                //rotate to surface vertical
+                if (vertical) {
+                    //按照经度旋转
+                    modelMatrix = modelMatrix.clone().rotateZ(GLMatrix.toRadian(lng - 90));
+                    //rotate model matrix
+                    modelMatrix = modelMatrix.clone().rotateX(GLMatrix.toRadian(lat));
+                }
                 //4.cache buffers
                 caches.push({
                     //模型矩阵值
@@ -163,7 +187,7 @@ class GLoader {
      * @param {Camera} camera 
      */
     render(camera) {
-        const caches = this.caches,
+        const caches = this._caches,
             gProgram = this._gProgram,
             gl = this._gl;
         gProgram.useProgram();
@@ -189,7 +213,6 @@ class GLoader {
             gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
         }
     }
-
 }
 
 module.exports = GLoader;
