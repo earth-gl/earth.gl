@@ -81,7 +81,7 @@ class GNode {
         } else {
             const translation = options.translation || [ 0.0, 0.0, 0.0],
                 rotation = options.rotation || [0.0, 0.0, 0.0, 0.0],
-                scale = options.scale || [300000.0, 300000.0, 300000.0];
+                scale = options.scale || [100000.0, 100000.0, 100000.0];
             const q = new Quat().set(rotation[0], rotation[1], rotation[2], rotation[3]),
                 v = new Vec3().set(translation[0], translation[1], translation[2]),
                 s = new Vec3().set(scale[0], scale[1], scale[2]);
