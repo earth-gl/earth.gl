@@ -6,10 +6,8 @@
 *   @class J.utils.Event
 *   @inheritable
 */
-
-const isString = require("../utils/isString"),
-    { stopPropagation } = require("./../utils/domEvent");
-
+const isString = require('./../utils/isString'),
+    { stopPropagation } = require('./../utils/domEvent');
 /**
  * 
  */
@@ -30,7 +28,7 @@ class Eventable {
             return this;
         }
         if (!isString(eventsOn)) {
-            return this._switch("on", eventsOn, handler);
+            return this._switch('on', eventsOn, handler);
         }
         if (!handler) {
             return this;
@@ -38,7 +36,7 @@ class Eventable {
         if (!this._eventMap) {
             this._eventMap = {};
         }
-        const eventTypes = eventsOn.toLowerCase().split(" ");
+        const eventTypes = eventsOn.toLowerCase().split(' ');
         let evtType;
         if (!context) {
             context = this;
@@ -99,9 +97,9 @@ class Eventable {
                     once[p] = this._wrapOnceHandler(p, eventTypes[p], context);
                 }
             }
-            return this._switch("on", once);
+            return this._switch('on', once);
         }
-        const evetTypes = eventTypes.split(" ");
+        const evetTypes = eventTypes.split(' ');
         for (let i = 0, l = evetTypes.length; i < l; i++) {
             this.on(evetTypes[i], this._wrapOnceHandler(evetTypes[i], handler, context));
         }
@@ -124,19 +122,19 @@ class Eventable {
             return this;
         }
         if (!isString(eventsOff)) {
-            return this._switch("off", eventsOff, handler);
+            return this._switch('off', eventsOff, handler);
         }
         if (!handler) {
             return this;
         }
-        const eventTypes = eventsOff.split(" ");
+        const eventTypes = eventsOff.split(' ');
         let eventType, listeners, wrapKey;
         if (!context) {
             context = this;
         }
         for (let j = 0, jl = eventTypes.length; j < jl; j++) {
             eventType = eventTypes[j].toLowerCase();
-            wrapKey = "Z__" + eventType;
+            wrapKey = 'Z__' + eventType;
             listeners = this._eventMap[eventType];
             if (!listeners) {
                 return this;
@@ -234,7 +232,7 @@ class Eventable {
 
     _wrapOnceHandler(evtType, handler, context) {
         const me = this;
-        const key = "Z__" + evtType;
+        const key = 'Z__' + evtType;
         let called = false;
         const fn = function onceHandler() {
             if (called) {
@@ -297,8 +295,8 @@ class Eventable {
         if (!handlerChain) {
             return this;
         }
-        param["type"] = eventType;
-        param["target"] = this;
+        param['type'] = eventType;
+        param['target'] = this;
         //in case of deleting a listener in a execution, copy the handlerChain to execute.
         const queue = handlerChain.slice(0);
         let context, bubble;
@@ -315,8 +313,8 @@ class Eventable {
             }
             //stops the event propagation if the handler returns false.
             if (bubble === false) {
-                if (param["domEvent"]) {
-                    stopPropagation(param["domEvent"]);
+                if (param['domEvent']) {
+                    stopPropagation(param['domEvent']);
                 }
             }
         }

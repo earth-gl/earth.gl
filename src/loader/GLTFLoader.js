@@ -8,8 +8,7 @@ const requestImage = require('./../utils/requestImage'),
     GAccessor = require('./../object/GAccessor'),
     GBufferView = require('./../object/GBufferView'),
     //renderer
-    GSampler = require('./../renderer/GSampler'),
-    GTexture = require('./../renderer/GTexture');
+    GSampler = require('./../renderer/GSampler');
 /**
  * @author yellow date 2019/1/29
  * @class
@@ -280,7 +279,7 @@ class GLTFLoader {
         //textures
         if (glTF.textures) {
             for (let i = 0, len = glTF.textures.length; i < len; i++) {
-                const tJson = glTF.textures[i];
+                //const tJson = glTF.textures[i];
                 //this._textures[i] = new GTexture(tJson);
             }
         }

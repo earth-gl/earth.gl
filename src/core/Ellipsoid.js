@@ -1,9 +1,7 @@
-const { Vec3 } = require("kiwi.matrix"),
-    EPSILON1 = 0.1,
-    EPSILON12 = 0.000000000001,
-    Geographic = require("./Geographic"),
-    {sin,cos} = require("./../utils/revise"),
-    { PHYSICAL_CONSTANT } = require("./../utils/constant");
+const Geographic = require('./Geographic'),
+    { Vec3 } = require('kiwi.matrix'),
+    { sin, cos, EPSILON1, EPSILON12 } = require('./../utils/revise'),
+    { PHYSICAL_CONSTANT } = require('./../utils/constant');
 /**
  * @class
  */
@@ -47,7 +45,7 @@ class Ellipsoid {
     /**
      * @type {Vec3}
      */
-    get radiiSquared(){
+    get radiiSquared() {
         return this._radiiSquared;
     }
     /**
@@ -180,7 +178,6 @@ class Ellipsoid {
         var longitude = Math.atan2(n.y, n.x);
         var latitude = Math.asin(n.z);//resprent value in radian 
         var height = Math.sign(h.clone().dot(spaceCoord)) * h.len();
-        //
         return new Geographic(longitude, latitude, height);
     }
     /**
@@ -192,7 +189,7 @@ class Ellipsoid {
             n = this.geodeticSurfaceNormalCartographic(geographic),
             k = radiiSquared.clone().multiply(n);
         const gamma = Math.sqrt(n.clone().dot(k));
-        k.scale(1/gamma);
+        k.scale(1 / gamma);
         n.scale(geographic.height);
         return k.add(n);
     }

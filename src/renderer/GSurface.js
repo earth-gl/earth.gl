@@ -1,23 +1,17 @@
 
-const PI_OVER_TWO = Math.PI / 2,
+const
     requestImage = require('./../utils/requestImage'),
     GTexture = require('./GTexture'),
     Geographic = require('./../core/Geographic'),
-    QuadtreeTile = require("./../core/QuadtreeTile"),
     GBufferView = require('./../object/GBufferView'),
     GAccessor = require('./../object/GAccessor'),
-    WGS84 = require("./../core/Ellipsoid").WGS84,
-    equal14 = require("./../utils/revise").equal14,
-    BoundingSphere = require("./../core/BoundingSphere"),
-    maximumRadius = require("./../core/Ellipsoid").WGS84.maximumRadius,
-    { Vec3, Mat4, Vec2 } = require("kiwi.matrix"),
-    clamp = require("./../utils/clamp"),
-    GUniform = require("./GUniform"),
-    GProgram = require("./GProgram"),
-    GBuffer = require("./GBuffer");
+    WGS84 = require('./../core/Ellipsoid').WGS84,
+    GUniform = require('./GUniform'),
+    GProgram = require('./GProgram'),
+    GBuffer = require('./GBuffer');
 //
-const fragText = require("./../shader/surface_fs.glsl");
-const vertText = require("./../shader/surface_vs.glsl");
+const fragText = require('./../shader/surface_fs.glsl');
+const vertText = require('./../shader/surface_vs.glsl');
 /**
  * request terrain data for cesium server
  * @class
@@ -57,8 +51,7 @@ class GSurface {
      * @param o
      */
     _updateTiles(o) {
-        const tileCaches = this._tileCaches,
-            { waitRendering } = o;
+        const { waitRendering } = o;
         //1. request images,len = waitRendering.length
         for (let i = 0, len = waitRendering.length; i < len; i++) {
             const qudatreeTile = waitRendering[i];
@@ -69,10 +62,10 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 8,
+        const lerp = 6,
             lerpFactor = 1 / lerp,
-            rangeX = boundary.width
-        rangeY = boundary.height;
+            rangeX = boundary.width,
+            rangeY = boundary.height;
         const start = boundary.southwest;
         let texcoords = [],
             vertices = [],
@@ -119,9 +112,9 @@ class GSurface {
         //check tile cached
         if (tileCaches[key]) return;
         //https://c.basemaps.cartocdn.com/light_all/
-        //openstreet map https://a.tile.openstreetmap.org
+        //https://a.tile.openstreetmap.org
         //https://services.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer/tile/
-        const baseUri = 'https://b.tile.openstreetmap.org/',
+        const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
             uri = baseUri + level + '/' + x + '/' + y+ '.png';
         //request image
         requestImage(uri).then(arraybuffer => {

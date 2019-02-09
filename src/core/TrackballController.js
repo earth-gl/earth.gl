@@ -2,13 +2,12 @@
  * earth.gl 核心操作交互
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
-const Quat = require("kiwi.matrix").Quat,
-    Vec2 = require("kiwi.matrix").Vec2,
-    Vec3 = require("kiwi.matrix").Vec3;
-
-const { preventDefault, stopPropagation } = require("../utils/domEvent"),
-    Eventable = require("./Eventable");
-
+const Eventable = require('./Eventable'),
+    { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
+    { preventDefault, stopPropagation } = require('./../utils/domEvent');
+/**
+ * @class
+ */
 class Trackball extends Eventable {
     /**
     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
@@ -29,7 +28,7 @@ class Trackball extends Eventable {
          */
         this.screen = {};
         /**
-         * 
+         * store rotate speeds in each level
          */
         this.rotateSpeeds = [];
         /**
@@ -256,8 +255,8 @@ class Trackball extends Eventable {
         this._zoomStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._zoomEnd = this._zoomStart.clone();
         //resgister document events
-        scene.on("mousemove", this.mousemove, this);
-        scene.on("mouseup", this.mouseup, this);
+        scene.on('mousemove', this.mousemove, this);
+        scene.on('mouseup', this.mouseup, this);
     }
     /**
      * 
@@ -276,9 +275,9 @@ class Trackball extends Eventable {
      */
     mouseup(event) {
         const scene = this.scene;
-        scene.off("mousemove", this.mousemove, this);
-        scene.off("mouseup", this.mouseup, this);
-        scene.fire("dragEnd", event, true);
+        scene.off('mousemove', this.mousemove, this);
+        scene.off('mouseup', this.mouseup, this);
+        scene.fire('dragEnd', event, true);
     }
     /**
      * 
