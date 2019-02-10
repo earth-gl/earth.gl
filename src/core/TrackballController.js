@@ -342,4 +342,3 @@ class Trackball extends Eventable {
 }
 
 module.exports = Trackball;
-

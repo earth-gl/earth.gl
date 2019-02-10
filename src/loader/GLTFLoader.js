@@ -10,6 +10,7 @@ const requestImage = require('./../utils/requestImage'),
     //renderer
     GSampler = require('./../renderer/GSampler');
 /**
+ * https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0
  * @author yellow date 2019/1/29
  * @class
  */
