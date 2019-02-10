@@ -1,4 +1,4 @@
-const GLMatrix = require("kiwi.matrix").GLMatrix;
+const GLMatrix = require('kiwi.matrix').GLMatrix;
 /**
  * represent position in geographic coordinate system
  * @class
@@ -11,7 +11,7 @@ class Geographic{
      * @param {Number} h ,represent in meters
      * @param {Boolean} parseRadian , defale false, parse lat ,lng value to degree
      */
-    constructor(lng,lat,h, parseRadian = false){
+    constructor(lng, lat, h, parseRadian = false){
         this._lng = parseRadian?GLMatrix.toDegree(lng):lng;
         this._lat = parseRadian?GLMatrix.toDegree(lat):lat;
         this._h = h;

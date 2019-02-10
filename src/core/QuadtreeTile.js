@@ -1,6 +1,3 @@
-const Rectangle = require("./Rectangle"),
-    MAX_RECTANGLE = require("./Rectangle").MAX_VALUE,
-    terrainTileSchema = require("./QuadtreeTileSchema").CESIUM_TERRAIN;
 /**
  * 瓦片，记录瓦片的rectangle等信息
  */
@@ -12,6 +9,7 @@ class QuadtreeTile {
      * @param {Number} options.level
      * @param {Number} [options.url]
      * @param {QuadtreeTile} [options.parent]
+     * @param {QuadtreeTileSchema} [options.quadtreeTileSchema]
      */
     constructor(options) {
         /**
@@ -19,7 +17,7 @@ class QuadtreeTile {
          * @typedef {import("./QuadtreeTileSchema")} QuadtreeTileSchema
          * @type {QuadtreeTileSchema}
          */
-        this._quadtreeTileSchema = terrainTileSchema;
+        this._quadtreeTileSchema = options.quadtreeTileSchema;
         /**
          * @type {Number}
          */
@@ -49,22 +47,13 @@ class QuadtreeTile {
      * @returns {Rectangle}
      */
     _calcuteBoundary(x, y, level) {
-        const rectangle = MAX_RECTANGLE,
-            tileSchema = this._quadtreeTileSchema,
-            xTiles = tileSchema.getNumberOfXTilesAtLevel(level),
-            yTiles = tileSchema.getNumberOfYTilesAtLevel(level),
-            xTileWidth = rectangle.width / xTiles,
-            yTileHeight = rectangle.height / yTiles,
-            west = x * xTileWidth + rectangle.west,
-            east = (x + 1) * xTileWidth + rectangle.west,
-            north = rectangle.north - y * yTileHeight,
-            south = rectangle.north - (y + 1) * yTileHeight;
-        return new Rectangle(west, south, east, north);
+        const tileSchema = this._quadtreeTileSchema;
+        return tileSchema.tileXYToRectangle(x, y, level);
     }
     /**
      * 
      */
-    get children(){
+    get children() {
         return [this.northwestChild, this.northeastChild, this.southwestChild, this.southeastChild];
     }
     /**
@@ -75,6 +64,7 @@ class QuadtreeTile {
             x: this.x * 2,
             y: this.y * 2 + 1,
             level: this.level + 1,
+            quadtreeTileSchema: this._quadtreeTileSchema,
             parent: this
         });
         return this._southwestChild;
@@ -87,6 +77,7 @@ class QuadtreeTile {
             x: this.x * 2 + 1,
             y: this.y * 2 + 1,
             level: this.level + 1,
+            quadtreeTileSchema: this._quadtreeTileSchema,
             parent: this
         });
         return this._southeastChild;
@@ -101,6 +92,7 @@ class QuadtreeTile {
             x: this.x * 2,
             y: this.y * 2,
             level: this.level + 1,
+            quadtreeTileSchema: this._quadtreeTileSchema,
             parent: this
         });
         return this._northwestChild;
@@ -115,6 +107,7 @@ class QuadtreeTile {
             x: this.x * 2 + 1,
             y: this.y * 2,
             level: this.level + 1,
+            quadtreeTileSchema: this._quadtreeTileSchema,
             parent: this
         });
         return this._northeastChild;

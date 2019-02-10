@@ -1,8 +1,8 @@
-const QuadtreeTile = require("./QuadtreeTile"),
-    ellipsoid = require("./Ellipsoid").WGS84,
-    maximumRadius = require("./Ellipsoid").WGS84.maximumRadius,
+const QuadtreeTile = require('./QuadtreeTile'),
+    ellipsoid = require('./Ellipsoid').WGS84,
+    maximumRadius = require('./Ellipsoid').WGS84.maximumRadius,
     Eventable = require('./Eventable'),
-    quadtreeTileSchema = require("./QuadtreeTileSchema").CESIUM_TERRAIN;
+    quadtreeTileSchema = require('./QuadtreeTileSchema').WEB_MERCATOR_TILING_SCHEME;
 /**
  * 预建瓦片规则
  * @class
@@ -43,10 +43,6 @@ class Quadtree extends Eventable {
          */
         this._zeroLevelTiles = [];
         /**
-         * @type {QuadtreeTile[]}
-         */
-        this._tileCaches=[];
-        /**
          * current zoom level
          * @type {Number}
          */
@@ -75,17 +71,15 @@ class Quadtree extends Eventable {
      */
     _registerEvents() {
         const gScene = this._gScene;
-        gScene.on('mouseup', this._updateQuadtreeTileByDistanceError, this);
+        gScene.on('zoomend loaded mouseup', this._updateQuadtreeTileByDistanceError, this);
     }
     /**
      * calctue tileset by distance error
      */
     _updateQuadtreeTileByDistanceError() {
-        const that = this;
+        const that = this,
             camera = this._camera,
-            maximumScreenSpaceError = this._maximumScreenSpaceError,
-            //compare with exist tiles, to achieve new tile
-            tileCache = this._titleCache;
+            maximumScreenSpaceError = this._maximumScreenSpaceError;
         //current Level
         let level = 0;
         //pick root tile
@@ -98,22 +92,22 @@ class Quadtree extends Eventable {
             const error = that._spaceError(quadtreeTile);
             if (error > maximumScreenSpaceError)
                 for (let i = 0; i < 4; i++)
-                    liter(quadtreeTile.children[i])
-            else{
+                    liter(quadtreeTile.children[i]);
+            else {
                 const litLevel = quadtreeTile.level;
-                level = litLevel>level? litLevel:level;
+                level = litLevel > level ? litLevel : level;
                 rawQuadtreeTiles.push(quadtreeTile);
             }
-        }
+        };
         //calcute from root tile
         for (let i = 0, len = rootTiles.length; i < len; i++) {
             const tile = rootTiles[i];
             liter(tile);
         }
         //filter level of tile
-        for(let i =0, len = rawQuadtreeTiles.length;i<len;i++){
+        for (let i = 0, len = rawQuadtreeTiles.length; i < len; i++) {
             const quadtreeTile = rawQuadtreeTiles[i];
-            quadtreeTile.level === level?renderingQuadtreeTiles.push(quadtreeTile):null;
+            quadtreeTile.level === level ? renderingQuadtreeTiles.push(quadtreeTile) : null;
         }
         //set current level
         this._level = level;
@@ -139,7 +133,12 @@ class Quadtree extends Eventable {
         var index = 0;
         for (var y = 0; y < numberOfLevelZeroTilesY; ++y)
             for (var x = 0; x < numberOfLevelZeroTilesX; ++x)
-                zeroLevelTiles[index++] = new QuadtreeTile({ x: x, y: y, level: 0 });
+                zeroLevelTiles[index++] = new QuadtreeTile({
+                    x: x,
+                    y: y,
+                    level: 0,
+                    quadtreeTileSchema: tileSchema
+                });
         return zeroLevelTiles;
     }
     /**
@@ -173,13 +172,17 @@ class Quadtree extends Eventable {
             sseDenominator = camera.sseDenominator,
             height = camera.height,
             cameraSpacePosition = camera.position,
-            center = quadtreeTile.boundary.center;
-        //2.投影点与目标tile的球面距离+相机距离球面距离
-        const spacePostion = ellipsoid.geographicToSpace(center);
-        const distance = cameraSpacePosition.clone().sub(spacePostion).len();
-        //3.计算error
-        const error = (maxGeometricError * height) / (distance * sseDenominator);
-        return error;
+            bounds = quadtreeTile.boundary.bounds;
+        //2.投影点与目标tile的球面距离+相机距离球面距离 bug
+        //2019/2/10 修正，改为与四角的距离取最大error
+        let err = 0;
+        for(let i=0, len = bounds.length; i<len;i++){
+            const spacePostion = ellipsoid.geographicToSpace(bounds[i]);
+            const distance = cameraSpacePosition.clone().sub(spacePostion).len();
+            const error = (maxGeometricError * height) / (distance * sseDenominator);
+            err = error>err?error:err;
+        }
+        return err;
     }
 }
 

@@ -286,6 +286,7 @@ class Trackball extends Eventable {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
+        const scene = this.scene;
         switch (event.deltaMode) {
             case 2: //zoom in pages
                 this._zoomStart._out[1] = event.deltaY * 0.025;
@@ -297,6 +298,8 @@ class Trackball extends Eventable {
                 this._zoomStart._out[1] -= event.deltaY * 0.00015;
                 break;
         }
+        console.log(event.deltaY);
+        scene.fire('zoomend', event, true);
     }
     /**
      * 

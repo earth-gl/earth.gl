@@ -93,6 +93,12 @@ class Rectangle {
         return north - south;
     }
     /**
+     * 
+     */
+    get bounds(){
+        return [this.southwest, this.northwest, this.northeast, this.southeast];
+    }
+    /**
      * get southwets in radians
      */
     get southwest() {

@@ -1,6 +1,5 @@
 
-const
-    requestImage = require('./../utils/requestImage'),
+const requestImage = require('./../utils/requestImage'),
     GTexture = require('./GTexture'),
     Geographic = require('./../core/Geographic'),
     GBufferView = require('./../object/GBufferView'),
@@ -62,27 +61,27 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 6,
-            lerpFactor = 1 / lerp,
+        const lerp = 6, factor = 1/lerp,
             rangeX = boundary.width,
-            rangeY = boundary.height;
-        const start = boundary.southwest;
+            rangeY = boundary.height,
+            start = boundary.southwest;
         let texcoords = [],
             vertices = [],
             indices = [];
         for (let x = 0; x <= lerp; x++)
             for (let y = 0; y <= lerp; y++) {
                 //convert to space
+                //bug!不能直接使用线性加减得到方框顶点，而是需要从投影米级坐标计算
                 const g1 = new Geographic(
-                    start.longitude + x * lerpFactor * rangeX,
-                    start.latitude + y * lerpFactor * rangeY,
+                    start.longitude + x * factor * rangeX,
+                    start.latitude + y * factor * rangeY,
                     0);
                 //convert to space coord
                 const spaceCoord = WGS84.geographicToSpace(g1);
                 //push vertices
                 vertices = vertices.concat(spaceCoord._out);
                 //texcoords
-                texcoords = texcoords.concat([x * lerpFactor, y * lerpFactor]);
+                texcoords = texcoords.concat([x * factor, y * factor]);
             }
         for (let x = 0; x < lerp; ++x)
             for (let y = 0; y < lerp; ++y) {
@@ -114,6 +113,7 @@ class GSurface {
         //https://c.basemaps.cartocdn.com/light_all/
         //https://a.tile.openstreetmap.org
         //https://services.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer/tile/
+        //   uri = baseUri + level + '/' + x + '/' + y+ '.png';
         const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
             uri = baseUri + level + '/' + x + '/' + y+ '.png';
         //request image

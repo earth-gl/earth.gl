@@ -48,11 +48,11 @@ class PerspectiveCamera extends Camera {
         /**
          * @type {Vec3}
          */
-        this._position = new Vec3().set(0, 0, 1);
+        this._position = new Vec3().set(0, 1, 0);
         /**
          * @type {Vec3}
          */
-        this._up = new Vec3().set(0, 1, 0);
+        this._up = new Vec3().set(0, 0, 1);
         /**
          * 更新投影矩阵
          */

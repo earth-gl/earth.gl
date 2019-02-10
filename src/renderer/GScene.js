@@ -117,7 +117,7 @@ class GScene extends Eventable {
     /**
      * get current zoom level
      */
-    getLevel(){
+    getLevel() {
         const quadtree = this._quadtree;
         return quadtree._level;
     }
@@ -132,8 +132,8 @@ class GScene extends Eventable {
             camera = this._camera,
             canvas = this._canvas,
             gl = this._gl;
-        //setting camera position at 2*raduis
-        camera.position = [0, 0, maximumRadius * 2.2];
+        //setting camera position at wuhan
+        camera.position = [-5441407.598258391, 12221601.56749016, 8664632.212488363];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -158,15 +158,11 @@ class GScene extends Eventable {
         const canvas = this._canvas,
             camera = this._camera;
         addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
-        this._trackball = new TrackballController(camera,this);
+        this._trackball = new TrackballController(camera, this);
         const trackball = this._trackball;
         trackball.update();
-    }
-    /**
-     * register events on GScene
-     */
-    _registerSceneEvents(){
-        
+        //
+        this.fire('loaded', {}, true);
     }
     /**
      * refrenece:
@@ -183,12 +179,12 @@ class GScene extends Eventable {
     /**
      * @type {Object} o
      */
-    add(o){
+    add(o) {
         const gl = this._gl,
             gltfs = this._gltfs;
-        if(o instanceof GLoader){
+        if (o instanceof GLoader) {
             gltfs.push(o);
-            o.init(gl,this);
+            o.init(gl, this);
         }
     }
     /**
@@ -216,7 +212,7 @@ class GScene extends Eventable {
         //render surface
         surface.render(camera);
         //render gltf
-        for(let i =0,len = gltfs.length;i<len;i++){
+        for (let i = 0, len = gltfs.length; i < len; i++) {
             const gltf = gltfs[i];
             gltf.render(camera);
         }

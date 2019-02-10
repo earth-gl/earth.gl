@@ -14,7 +14,7 @@ const tree = new GLoader(
     'ElmTree.gltf',
     {
         lng: 113.53,
-        lat: 29.58
+        lat: 29.98
     }
 );
 
