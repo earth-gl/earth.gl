@@ -34,7 +34,7 @@ class Trackball extends Eventable {
         /**
          * 
          */
-        this.zoomSpeed = 1.2;
+        this.zoomSpeeds = [];
         /**
          * 
          */
@@ -72,6 +72,10 @@ class Trackball extends Eventable {
          */
         this._lastAngle = 0;
         /**
+         * @type {Function}
+         */
+        this._zoomEnd = null;
+        /**
          * @type {Vec2}
          */
         this._zoomStart = new Vec2();
@@ -108,11 +112,13 @@ class Trackball extends Eventable {
      * 
      */
     _initialize() {
-        //rotation speed, above level 3, speed is normal
-        this.rotateSpeeds = [1.0, 1.0, 1.0, 1.0];
-        for (let i = 4; i <= 22; i++) {
-            const offset = i - 3;
-            this.rotateSpeeds[i] = 1.0 / (1 << offset);
+        for (let i = 0; i <= 24; i++) {
+            const offset = i;
+            this.rotateSpeeds[i] = 8.0 / (1 << offset);
+        }
+        for (let i = 0; i < 24; i++) {
+            const offset = i;
+            this.zoomSpeeds[i] = 64.0 / (1 << offset);
         }
         //camera clone
         this.target0 = this.target.clone();
@@ -161,9 +167,12 @@ class Trackball extends Eventable {
      * 
      */
     zoomCamera() {
-        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * this.zoomSpeed;
+        const level = this.scene.getLevel(),
+            zoomSpeed = this.zoomSpeeds[level];
+        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zoomSpeed;
         if (factor !== 1.0 && factor > 0.0) {
             this._eye.scale(factor);
+            console.log(factor);
         } else {
             this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
         }
@@ -286,7 +295,9 @@ class Trackball extends Eventable {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        const scene = this.scene;
+        //使用timeout方式，延后执行update
+        const scene = this.scene,
+            that = this;
         switch (event.deltaMode) {
             case 2: //zoom in pages
                 this._zoomStart._out[1] = event.deltaY * 0.025;
@@ -295,10 +306,14 @@ class Trackball extends Eventable {
                 this._zoomStart._out[1] -= event.deltaY * 0.01;
                 break;
             default: //undefined, 0, assume pixels
-                this._zoomStart._out[1] -= event.deltaY * 0.00015;
+                this._zoomStart._out[1] -= event.deltaY / 12500;
                 break;
         }
-        scene.fire('zoomend', event, true);
+        //fire event delay
+        this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
+            scene.fire('zoomend', event, true);
+            that._zoomEventEnd = null;
+        }, 800);
     }
     /**
      * 
@@ -311,7 +326,7 @@ class Trackball extends Eventable {
         this.rotateCamera();
         //2. zoom
         this.zoomCamera();
-        //update position and lookat center
+        //3. update position and lookat center
         camera.position = target.clone().add(this._eye).value;
         camera.lookAt(target.value);
         camera._update();

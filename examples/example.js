@@ -13,8 +13,8 @@ const tree = new GLoader(
     'http://localhost:5500/examples/ElmTree/',
     'ElmTree.gltf',
     {
-        lng: 113.53,
-        lat: 29.98
+        lng: 114.13,
+        lat: 30.58
     }
 );
 

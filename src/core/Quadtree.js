@@ -33,7 +33,7 @@ class Quadtree extends Eventable {
          * if less then maximumScreenSpaceError, the tile should be load
          * @type {Number}
          */
-        this._maximumScreenSpaceError = 2;
+        this._maximumScreenSpaceError = 2.0;
         /**
          * get maxiumu geometric error at level 0
          */
@@ -62,7 +62,7 @@ class Quadtree extends Eventable {
     _initialize() {
         //calcute geometric error
         const geometricError = this._geometricError;
-        for (var i = 0; i < 18; i++) geometricError[i] = this._computeMaximumGeometricError(i);
+        for (var i = 0; i < 24; i++) geometricError[i] = this._computeMaximumGeometricError(i);
         //calcute tile and rectangle
         this._zeroLevelTiles = this._computeZeroLevelTiles();
     }
@@ -111,7 +111,7 @@ class Quadtree extends Eventable {
         }
         //set current level
         this._level = level;
-        //fire updated
+        //
         this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
     }
     /**
@@ -176,11 +176,11 @@ class Quadtree extends Eventable {
         //2.投影点与目标tile的球面距离+相机距离球面距离 bug
         //2019/2/10 修正，改为与四角的距离取最大error
         let err = 0;
-        for(let i=0, len = bounds.length; i<len;i++){
+        for (let i = 0, len = bounds.length; i < len; i++) {
             const spacePostion = ellipsoid.geographicToSpace(bounds[i]);
             const distance = cameraSpacePosition.clone().sub(spacePostion).len();
             const error = (maxGeometricError * height) / (distance * sseDenominator);
-            err = error>err?error:err;
+            err = error > err ? error : err;
         }
         return err;
     }

@@ -61,7 +61,8 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 6, factor = 1/lerp,
+        const lerp = 8, 
+            factor = 1/lerp,
             rangeX = boundary.width,
             rangeY = boundary.height,
             start = boundary.southwest;

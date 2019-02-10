@@ -1,4 +1,4 @@
-const { Vec3 } = require("kiwi.matrix");
+const { Vec3 } = require('kiwi.matrix');
 
 /**
  * A plane in Hessian Normal Form defined by
