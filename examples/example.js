@@ -1,12 +1,12 @@
 const GScene = earth.gl.renderer.GScene,
     GLoader = earth.gl.GLoader;
-
+    
 const canvas = document.getElementById('mapCanvas');
 
 const scene = new GScene({
     canvas: canvas,
-    width: 800,
-    height: 600
+    width: 1000,
+    height: 625
 });
 
 const tree = new GLoader(

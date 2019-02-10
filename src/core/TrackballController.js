@@ -298,7 +298,6 @@ class Trackball extends Eventable {
                 this._zoomStart._out[1] -= event.deltaY * 0.00015;
                 break;
         }
-        console.log(event.deltaY);
         scene.fire('zoomend', event, true);
     }
     /**
