@@ -31,27 +31,27 @@ const scene = new GScene({
 
 // scene.add(ElmTree);
 
-const Monster = new GLoader(
-    'http://localhost:5500/examples/Monster/',
-    'Monster.gltf',
-    {
-        lng: 114.33,
-        lat: 30.58
-    }
-);
-
-scene.add(Monster);
-
-// const BoxAnimated = new GLoader(
-//     'http://localhost:5500/examples/BoxAnimated/',
-//     'BoxAnimated.gltf',
+// const Monster = new GLoader(
+//     'http://localhost:5500/examples/Monster/',
+//     'Monster.gltf',
 //     {
 //         lng: 114.33,
 //         lat: 30.58
 //     }
 // );
 
-// scene.add(BoxAnimated);
+// scene.add(Monster);
+
+const BoxAnimated = new GLoader(
+    'http://localhost:5500/examples/BoxAnimated/',
+    'BoxAnimated.gltf',
+    {
+        lng: 114.33,
+        lat: 30.58
+    }
+);
+
+scene.add(BoxAnimated);
 
 const update = function () {
     scene.render();

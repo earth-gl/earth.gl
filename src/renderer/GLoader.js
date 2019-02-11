@@ -1,5 +1,5 @@
 const fetch = require('./../utils/fetch'),
-    { GLMatrix, Vec3 } = require('kiwi.matrix'),
+    { GLMatrix, Vec3, Quat } = require('kiwi.matrix'),
     GProgram = require('./GProgram'),
     GUniform = require('./GUniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
@@ -134,14 +134,13 @@ class GLoader {
      */
     _initComponents(scene) {
         const nodes = [], //cache all nodes
+            sceneNodes = scene.nodes,
             //vertical = this._vertical,
             lat = this._lat,
             lng = this._lng,
             h = this._h,
             geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             spaceV3 = WGS84.geographicToSpace(geographic),
-            sceneNodes = scene.nodes,
-            //nodesCache = this._nodesCache,
             gProgram = this._gProgram;
         //change program
         gProgram.useProgram();
@@ -306,7 +305,7 @@ class GLoader {
                         //node.rotation = new Quat().set(...animationSampler._curValue._out);
                         break;
                     case 'translation':
-                        //node.translation = new Vec3().set(...animationSampler._curValue.clone().add(spaceV3)._out);
+                        //node.translation.add(new Vec3().set(...animationSampler._curValue));
                         break;
                     case 'scale':
                         //node.scale = new Vec3().set(...animationSampler._curValue._out);
