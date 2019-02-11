@@ -81,20 +81,14 @@ class GBufferView {
      * @param {Number} componentType, as gl.Float
      * @param {Number} typeSize, as VEC3 = 3, MAT4 = 16
      * @param {Number} count, the length of typed array buffer
-     * @param {Number} offset, offset of the typed array buffer
+     * @param {Number} byteOffset, offset of the typed array buffer
      */
-    toTypedArray(gProgram, componentType, typeSize, count, offset = 0) {
+    toTypedArray(gProgram, componentType, typeSize, count, byteOffset) {
         const data = this._data,
             bufferType = this._bufferType,
             drawType = this._drawType,
-            ArrayCtor = getArrayCtor(componentType);
-        let typedArrayBuffer;
-        if (offset % ArrayCtor.BYTES_PER_ELEMENT !== 0) {
-            const arrayBuffer = data.slice(offset, offset + count * typeSize * ArrayCtor.BYTES_PER_ELEMENT);
-            typedArrayBuffer =  new ArrayCtor(arrayBuffer, 0, count * typeSize);
-        } else {
-            typedArrayBuffer = new ArrayCtor(data, offset, count * typeSize);
-        }
+            ArrayCtor = getArrayCtor(componentType),
+            typedArrayBuffer = new ArrayCtor(data, byteOffset, count * typeSize);
         return new GBuffer(gProgram, typedArrayBuffer, bufferType, drawType);
     }
 }

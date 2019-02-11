@@ -102,6 +102,14 @@ class GScene extends Eventable {
          */
         this._gltfs = [];
         /**
+         * timestampe scale (delta time)
+         */
+        this._timeStampScale = 0.0001;
+        /**
+         * store current timestamp
+         */
+        this._timeStamp0 = performance.now();
+        /**
          * initialization
          */
         this._initialize();
@@ -192,7 +200,10 @@ class GScene extends Eventable {
      * https://github.com/mdn/webgl-examples/blob/ea1c73ff3ec8d069d890cda0495052bb44a8b073/tutorial/sample6/webgl-demo.js#L283
      */
     render() {
-        const gl = this._gl,
+        const timeStampScale = this._timeStampScale,
+            timeStamp0 = this._timeStamp0,
+            timeStamp = (performance.now() - timeStamp0) * timeStampScale,
+            gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
             gltfs = this._gltfs,
@@ -208,13 +219,13 @@ class GScene extends Eventable {
         //update camera
         trackball.update();
         //render earth
-        earth.render(camera);
+        earth.render(camera, timeStamp);
         //render surface
-        surface.render(camera);
+        surface.render(camera, timeStamp);
         //render gltf
         for (let i = 0, len = gltfs.length; i < len; i++) {
             const gltf = gltfs[i];
-            gltf.render(camera);
+            gltf.render(camera, timeStamp);
         }
         //
     }

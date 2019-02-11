@@ -1,3 +1,4 @@
+const GBuffer = require('./../renderer/GBuffer');
 /**
  * @class
  */

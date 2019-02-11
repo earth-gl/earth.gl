@@ -93,7 +93,8 @@ class GAccessor {
             componentType = this._componentType,
             typeSize = this._typeSize,
             count = this._count,
-            gBuffer = gBufferView.toTypedArray(gProgram, componentType, typeSize, count, 0);
+            byteOffset = this._byteOffset,
+            gBuffer = gBufferView.toTypedArray(gProgram, componentType, typeSize, count, byteOffset);
         return gBuffer;
     }
     /**
@@ -126,13 +127,15 @@ class GAccessor {
             gl = this._gl,
             location = gProgram.ActivateAttributes[attribName];
         //enable vertex attrib 
+        //warning this._byteOffset equal 0
+        //beacuse we have convert the arraybuffer to typedArrayBuffer by offset and length
         gl.vertexAttribPointer(
             location,
             this._typeSize,
             this._componentType,
             this._normalized,
             this._byteStride,
-            this._byteOffset
+            0
         );
         gl.enableVertexAttribArray(location);
         //store location
@@ -147,13 +150,15 @@ class GAccessor {
         //bind buffer
         this.bindBuffer();
         //turn on attribName
+        //warning this._byteOffset equal 0
+        //beacuse we have convert the arraybuffer to typedArrayBuffer by offset and length
         gl.vertexAttribPointer(
             location,
             this._typeSize,
             this._componentType,
             this._normalized,
             this._byteStride,
-            this._byteOffset
+            0
         );
         gl.enableVertexAttribArray(location);
     }

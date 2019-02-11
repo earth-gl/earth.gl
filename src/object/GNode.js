@@ -80,17 +80,42 @@ class GNode {
         } else {
             const translation = options.translation || [ 0.0, 0.0, 0.0],
                 rotation = options.rotation || [0.0, 0.0, 0.0, 0.0],
-                scale = options.scale || [1000.0, 1000.0, 1000.0];
+                scale = options.scale || [1000000.0, 1000000.0, 1000000.0];
             const q = new Quat().set(rotation[0], rotation[1], rotation[2], rotation[3]),
                 v = new Vec3().set(translation[0], translation[1], translation[2]),
                 s = new Vec3().set(scale[0], scale[1], scale[2]);
             modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
         }
         /**
+        * @type {Quat}
+        */
+        this.rotation = modelMatrix.getRotation();
+        /**
+         * @type {Vec3}
+         */
+        this.translation = modelMatrix.getTranslation();
+        /**
+         * @type {Vec3}
+         */
+        this.scale = modelMatrix.getScaling();
+        /**
          * model matrix from rotation traslation and scale
          * @type {Mat4}
          */
         this.modelMatrix = modelMatrix;
+    }
+    /**
+     * 
+     * @param {*} rotation 
+     * @param {*} translation 
+     * @param {*} scale 
+     */
+    updateModelMatrix(){
+        const q = this.rotation,
+            v = this.translation,
+            s = this.scale;
+        //create rotation and translation
+        this.modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
     }
     /**
      * init skin

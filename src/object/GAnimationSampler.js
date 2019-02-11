@@ -69,7 +69,7 @@ class GAnimationSampler {
      * get t index sampler
      * @param {*} t 
      */
-    getValue(t) {
+    update(t) {
         const endT = this._endT,
             interpolation = this.interpolation,
             inputMax = this._inputMax,

@@ -146,7 +146,7 @@ class GLTFLoader {
         const json = this._gltfJson,
             baseUri = this._baseUri;
         //glb reader
-        //if(json.buffer instanceof ArrayBuffer){ }
+        // if(json.buffer instanceof ArrayBuffer){ }
         //request buffers
         const fetchArrayBufferPromises = [];
         if (json.buffers) {
@@ -169,11 +169,15 @@ class GLTFLoader {
      * @returns {Promise}
      */
     load(program) {
-        const tasks = this.tasks,
+        const defaultScene = this.defaultScene,
+            tasks = this.tasks,
             that = this;
         return Promise.all(tasks).then(() => {
             that._postprocess(program);
-            return that._scenes;
+            return {
+                scene: that._scenes[defaultScene],
+                animations : that._animations
+            };
         });
     }
     /**
@@ -318,7 +322,8 @@ class GLTFLoader {
         for (let i = 0, len = this._nodes.length; i < len; i++) {
             const node = this._nodes[i];
             for (let j = 0, lenj = node.children ? node.children.length : 0; j < lenj; j++) {
-                node.children[j] = this._nodes[node.children[j]];
+                const childNodeId = node.children[j];
+                node.children[j] = this._nodes[childNodeId];
             }
         }
         //create scene
@@ -335,7 +340,7 @@ class GLTFLoader {
                 };
             }
         }
-        //read end
+        //
     }
 }
 

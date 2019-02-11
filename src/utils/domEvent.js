@@ -8,8 +8,8 @@
 /**
  * 
  */
-const splitWords = require("./splitWords").splitWords,
-    browser = require("./browser");
+const splitWords = require('./splitWords').splitWords,
+    browser = require('./browser');
 /**
  * Check if event type of the dom is listened by the handler
  * @param {*} obj 
@@ -18,10 +18,10 @@ const splitWords = require("./splitWords").splitWords,
  * @returns {Number} -the handler's index in the listener chain, returns -1 if not.
  */
 const listensDomEvent = function (obj, type, handler) {
-    if (!obj || !obj["Z__" + type] || !handler) {
+    if (!obj || !obj['Z__' + type] || !handler) {
         return -1;
     }
-    const handlers = obj["Z__" + type];
+    const handlers = obj['Z__' + type];
     for (let i = 0, len = handlers.length; i < len; i++) {
         if (handlers[i].src === handler) {
             return i;
@@ -54,21 +54,21 @@ const addDomEvent = function (obj, typeArr, handler, context) {
             continue;
         }
 
-        if (!obj["Z__" + type]) {
-            obj["Z__" + type] = [];
+        if (!obj['Z__' + type]) {
+            obj['Z__' + type] = [];
 
         }
         const hit = listensDomEvent(obj, type, handler);
         if (hit >= 0) {
             removeDomEvent(obj, type, handler);
         }
-        obj["Z__" + type].push({
+        obj['Z__' + type].push({
             callback: eventHandler,
             src: handler
         });
         //firefox
-        if (type === "mousewheel" && browser.gecko) {
-            type = "DOMMouseScroll";
+        if (type === 'mousewheel' && browser.gecko) {
+            type = 'DOMMouseScroll';
         }
         obj.addEventListener(type, eventHandler, false);
     }
@@ -103,16 +103,16 @@ const removeDomEvent = function (obj, typeArr, handler) {
             for (let j = 0, jlen = handlers.length; j < jlen; j++) {
                 doRemove(handlers[j].callback);
             }
-            delete obj["Z__" + type];
+            delete obj['Z__' + type];
             return this;
         }
         const hit = listensDomEvent(obj, type, handler);
         if (hit < 0) {
             return this;
         }
-        const hitHandler = obj["Z__" + type][hit];
+        const hitHandler = obj['Z__' + type][hit];
         doRemove(type, hitHandler.callback);
-        obj["Z__" + type].splice(hit, 1);
+        obj['Z__' + type].splice(hit, 1);
     }
     return this;
 };
