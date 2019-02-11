@@ -18,4 +18,14 @@ const equal14 = function (a, b) {
     return Math.abs(a - b) < 0.00000000000001;
 };
 
-module.exports = { sin, cos, equal14, EPSILON1, EPSILON12, EPSILON14 };
+const TYPE2NUMOFCOMPONENT = {
+    'SCALAR': 1,
+    'VEC2': 2,
+    'VEC3': 3,
+    'VEC4': 4,
+    'MAT2': 4,
+    'MAT3': 9,
+    'MAT4': 16
+};
+
+module.exports = { TYPE2NUMOFCOMPONENT, sin, cos, equal14, EPSILON1, EPSILON12, EPSILON14 };

@@ -1,4 +1,4 @@
-const GPrimitive = require("./GPrimitive");
+const GPrimitive = require('./GPrimitive');
 /**
  * 
  */
@@ -6,9 +6,13 @@ class GMesh{
     /**
      * 
      * @param {String|Number} meshID 
+     * @param {Object} resource
+     * @param {Object} [resource.json]
+     * @param {Object} [resource.accessors]
+     * @param {Object} [resource.materials]
      * @param {Object} options 
      */
-    constructor(meshID, options, resource){
+    constructor(meshID, resource, options){
         /**
          * @type {Number}
          */

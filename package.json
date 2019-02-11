@@ -34,7 +34,7 @@
     "babel-preset-env": "^1.7.0",
     "glslify": "^7.0.0",
     "gulp": "^4.0.0",
-    "kiwi.matrix": "^0.3.8",
+    "kiwi.matrix": "^0.3.9",
     "node-fetch": "^2.3.0",
     "requirejs": "^2.3.6",
     "rollup": "^1.0.0",

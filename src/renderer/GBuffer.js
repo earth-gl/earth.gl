@@ -45,6 +45,12 @@ class GBuffer {
         return buffer;
     }
     /**
+     * @type {TypedArrayBuffer}
+     */
+    get typedArrayBuffer(){
+        return this._data;
+    }
+    /**
      * active current buffer
      */
     bindBuffer() {

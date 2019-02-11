@@ -7,6 +7,7 @@ const requestImage = require('./../utils/requestImage'),
     GMaterial = require('./../object/GMaterial'),
     GAccessor = require('./../object/GAccessor'),
     GBufferView = require('./../object/GBufferView'),
+    GAnimation = require('./../object/GAnimation'),
     //renderer
     GSampler = require('./../renderer/GSampler');
 /**
@@ -17,24 +18,24 @@ const requestImage = require('./../utils/requestImage'),
 class GLTFLoader {
     /**
      * 
-     * @param {*} gltf 
+     * @param {*} gltfJson 
      * @param {Object} [options]
      * @param {Function} [options.requestImage] 
      * @param {String} options.uri
      */
-    constructor(gltf, options = {}) {
+    constructor(gltfJson, options = {}) {
         /**
          * json settings
          */
-        this._json = gltf;
+        this._gltfJson = gltfJson;
         /**
          * scene id
          */
-        this.defaultScene = gltf.scene !== undefined ? gltf.scene : 0;
+        this.defaultScene = gltfJson.scene !== undefined ? gltfJson.scene : 0;
         /**
          * version id
          */
-        this.version = Number(gltf.asset.version);
+        this.version = Number(gltfJson.asset.version);
         /**
          * requestImage function
          */
@@ -50,11 +51,11 @@ class GLTFLoader {
         /**
          * 
          */
-        this.extensions = gltf.extensions !== undefined ? gltf.extensions : null;
+        this.extensions = gltfJson.extensions !== undefined ? gltfJson.extensions : null;
         /**
          * 
          */
-        this.extras = gltf.extras !== undefined ? gltf.extras : null;
+        this.extras = gltfJson.extras !== undefined ? gltfJson.extras : null;
         /**
          * 
          */
@@ -64,74 +65,74 @@ class GLTFLoader {
         /**
          * 
          */
-        if (gltf.accessors) {
-            this._accessors = new Array(gltf.accessors.length);
+        if (gltfJson.accessors) {
+            this._accessors = new Array(gltfJson.accessors.length);
         }
         /**
          * 
          */
-        if (gltf.bufferViews) {
-            this._bufferViews = new Array(gltf.bufferViews.length);
+        if (gltfJson.bufferViews) {
+            this._bufferViews = new Array(gltfJson.bufferViews.length);
         }
         /**
          * 
          */
-        if (gltf.scenes) {
-            this._scenes = new Array(gltf.scenes.length);   // store Scene object
+        if (gltfJson.scenes) {
+            this._scenes = new Array(gltfJson.scenes.length);   // store Scene object
         }
         /**
          * 
          */
-        if (gltf.nodes) {
-            this._nodes = new Array(gltf.nodes.length);    // store Node object
+        if (gltfJson.nodes) {
+            this._nodes = new Array(gltfJson.nodes.length);    // store Node object
         }
         /**
          * 
          */
-        if (gltf.meshes) {
-            this._meshes = new Array(gltf.meshes.length);    // store mesh object
+        if (gltfJson.meshes) {
+            this._meshes = new Array(gltfJson.meshes.length);    // store mesh object
         }
         /**
          * 
          */
-        if (gltf.materials) {
-            this._materials = new Array(gltf.materials.length);  // store material object
+        if (gltfJson.materials) {
+            this._materials = new Array(gltfJson.materials.length);  // store material object
         }
         /**
          * 
          */
-        if (gltf.textures) {
-            this._textures = new Array(gltf.textures.length);
+        if (gltfJson.textures) {
+            this._textures = new Array(gltfJson.textures.length);
         }
         /**
          * 
          */
-        if (gltf.samplers) {
-            this._samplers = new Array(gltf.samplers.length);
+        if (gltfJson.samplers) {
+            this._samplers = new Array(gltfJson.samplers.length);
         }
         /**
          * 
          */
-        if (gltf.images) {
-            this._images = new Array(gltf.images.length);
+        if (gltfJson.images) {
+            this._images = new Array(gltfJson.images.length);
         }
         /**
          * 
          */
-        if (gltf.skins) {
-            this._skins = new Array(gltf.skins.length);
+        if (gltfJson.skins) {
+            this._skins = new Array(gltfJson.skins.length);
         }
         /**
          * 
          */
-        if (gltf.animations) {
-            this._animations = new Array(gltf.animations.length);
+        if (gltfJson.animations) {
+            this._animations = new Array(gltfJson.animations.length);
         }
         /**
          * 
          */
-        if (gltf.cameras) {
-            this._cameras = new Array(gltf.cameras.length);
+        if (gltfJson.cameras) {
+            this._cameras = new Array(gltfJson.cameras.length);
         }
         /**
          * initial resource
@@ -142,7 +143,7 @@ class GLTFLoader {
      * 
      */
     _initialization() {
-        const json = this._json,
+        const json = this._gltfJson,
             baseUri = this._baseUri;
         //glb reader
         //if(json.buffer instanceof ArrayBuffer){ }
@@ -219,89 +220,98 @@ class GLTFLoader {
      * https://github.com/shrekshao/minimal-gltf-loader/blob/21a758c0ebc8f62e053682344610392a39012a36/src/minimal-gltf-loader.js#L1005
      */
     _postprocess(program) {
-        const glTF = this._json,
+        const GLTF = this._gltfJson,
             gl = program._gl;
         // cameras
-        if (glTF.cameras) {
-            for (let i = 0, len = glTF.cameras.length; i < len; i++) {
-                glTF.cameras[i] = new Camera(this.glTF.json.cameras[i]);
+        if (GLTF.cameras) {
+            for (let i = 0, len = GLTF.cameras.length; i < len; i++) {
+                GLTF.cameras[i] = new Camera(this.glTF.json.cameras[i]);
             }
         }
         // bufferviews
-        if (glTF.bufferViews) {
-            for (let i = 0, len = glTF.bufferViews.length; i < len; i++) {
-                const bJson = glTF.bufferViews[i];
+        if (GLTF.bufferViews) {
+            for (let i = 0, len = GLTF.bufferViews.length; i < len; i++) {
+                const bufferViewJson = GLTF.bufferViews[i];
                 this._bufferViews[i] = new GBufferView(
                     gl,
-                    this._buffers[bJson.buffer],
-                    bJson.byteLength,
+                    this._buffers[bufferViewJson.buffer],
+                    bufferViewJson.byteLength,
                     {
-                        bufferType: bJson.target,
+                        bufferType: bufferViewJson.target,
                         drawType: gl.STATIC_DRAW,
-                        byteOffset: bJson.byteOffset,
-                        byteStride: bJson.byteStride
+                        byteOffset: bufferViewJson.byteOffset,
+                        byteStride: bufferViewJson.byteStride
                     });
             }
         }
         //accessors
-        if (glTF.accessors) {
-            for (let i = 0, len = glTF.accessors.length; i < len; i++) {
-                const aJson = glTF.accessors[i];
-                const bvid = aJson.bufferView;
+        if (GLTF.accessors) {
+            for (let i = 0, len = GLTF.accessors.length; i < len; i++) {
+                const accessorJson = GLTF.accessors[i];
+                const bvid = accessorJson.bufferView;
                 const bufferView = this._bufferViews[bvid];
                 this._accessors[i] = new GAccessor(
                     program,
                     bufferView,
-                    aJson.componentType,
-                    aJson.type,
-                    aJson.count,
+                    accessorJson.componentType,
+                    accessorJson.type,
+                    accessorJson.count,
                     {
-                        byteOffset: aJson.byteOffset,
-                        normalized: aJson.normalized,
-                        min: aJson.min,
-                        max: aJson.max
+                        byteOffset: accessorJson.byteOffset,
+                        normalized: accessorJson.normalized,
+                        min: accessorJson.min,
+                        max: accessorJson.max
                     });
             }
         }
         //materials
-        if (glTF.materials) {
-            for (let i = 0, len = glTF.materials.length; i < len; i++) {
-                const mJson = glTF.materials[i];
-                this._materials[i] = new GMaterial(mJson);
+        if (GLTF.materials) {
+            for (let i = 0, len = GLTF.materials.length; i < len; i++) {
+                const materialJson = GLTF.materials[i];
+                this._materials[i] = new GMaterial(materialJson);
             }
         }
         //samplers
-        if (glTF.samplers) {
-            for (let i = 0, len = glTF.samplers.length; i < len; i++) {
-                const sJson = glTF.samplers[i];
-                this._samplers[i] = new GSampler(sJson);
+        if (GLTF.samplers) {
+            for (let i = 0, len = GLTF.samplers.length; i < len; i++) {
+                const samplerJson = GLTF.samplers[i];
+                this._samplers[i] = new GSampler(samplerJson);
             }
         }
         //textures
-        if (glTF.textures) {
-            for (let i = 0, len = glTF.textures.length; i < len; i++) {
+        if (GLTF.textures) {
+            for (let i = 0, len = GLTF.textures.length; i < len; i++) {
                 //const tJson = glTF.textures[i];
                 //this._textures[i] = new GTexture(tJson);
             }
         }
         //mesh
-        if (glTF.meshes) {
-            for (let i = 0, len = glTF.meshes.length; i < len; i++) {
-                const mJson = glTF.meshes[i];
-                this._meshes[i] = new GMesh(i, mJson, {
-                    json: glTF,
+        if (GLTF.meshes) {
+            for (let i = 0, len = GLTF.meshes.length; i < len; i++) {
+                const meshJson = GLTF.meshes[i];
+                this._meshes[i] = new GMesh(i, {
+                    json: GLTF,
                     accessors: this._accessors,
                     materials: this._materials
-                });
+                }, meshJson);
             }
         }
         //node
-        if (glTF.nodes) {
-            for (let i = 0, len = glTF.nodes.length; i < len; i++) {
-                const nJson = glTF.nodes[i];
-                this._nodes[i] = new GNode(i, nJson, {
+        if (GLTF.nodes) {
+            for (let i = 0, len = GLTF.nodes.length; i < len; i++) {
+                const nJson = GLTF.nodes[i];
+                this._nodes[i] = new GNode(i, {
                     meshes: this._meshes
-                });
+                }, nJson);
+            }
+        }
+        //animations
+        if (GLTF.animations) {
+            for (let i = 0, len = GLTF.animations.length; i < len; i++) {
+                const animJson = GLTF.animations[i];
+                this._animations[i] = new GAnimation({
+                    accessors: this._accessors
+                }, animJson);
             }
         }
         //node: hook up children
@@ -311,10 +321,10 @@ class GLTFLoader {
                 node.children[j] = this._nodes[node.children[j]];
             }
         }
-        //create scene }{debug
-        if (glTF.scenes) {
-            for (let i = 0, len = glTF.scenes.length; i < len; i++) {
-                const sJson = glTF.scenes[i];
+        //create scene
+        if (GLTF.scenes) {
+            for (let i = 0, len = GLTF.scenes.length; i < len; i++) {
+                const sJson = GLTF.scenes[i];
                 const nodes = new Array(sJson.nodes.length);
                 for (let j = 0, len = sJson.nodes.length; j < len; j++) {
                     nodes[i] = this._nodes[sJson.nodes[i]];
@@ -325,7 +335,7 @@ class GLTFLoader {
                 };
             }
         }
-        //
+        //read end
     }
 }
 

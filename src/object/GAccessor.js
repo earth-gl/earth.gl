@@ -1,17 +1,8 @@
-const GBuffer = require('./../renderer/GBuffer');
 /**
  * convert type to number  
  * 枚举
  */
-const TYPE2NUMOFCOMPONENT = {
-    'SCALAR': 1,
-    'VEC2': 2,
-    'VEC3': 3,
-    'VEC4': 4,
-    'MAT2': 4,
-    'MAT3': 9,
-    'MAT4': 16
-};
+const { TYPE2NUMOFCOMPONENT } = require('./../utils/revise');
 /**
  * 与GBuffer搭配，为Buffer设置attribName的读取方式等
  * @class
@@ -104,6 +95,13 @@ class GAccessor {
             count = this._count,
             gBuffer = gBufferView.toTypedArray(gProgram, componentType, typeSize, count, 0);
         return gBuffer;
+    }
+    /**
+     * get typedArrayBuffer, e.g: Float32Array, Uint16Array
+     */
+    get typedArrayBuffer(){
+        const gBuffer = this._gBuffer;
+        return gBuffer.typedArrayBuffer;
     }
     /**
      * 

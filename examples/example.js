@@ -9,27 +9,27 @@ const scene = new GScene({
     height: 625
 });
 
-const datePalmTree = new GLoader(
-    'http://localhost:5500/examples/DatePalmTree/',
-    'DatePalmTree.gltf',
-    {
-        lng: 114.13,
-        lat: 30.58
-    }
-);
+// const datePalmTree = new GLoader(
+//     'http://localhost:5500/examples/DatePalmTree/',
+//     'DatePalmTree.gltf',
+//     {
+//         lng: 114.13,
+//         lat: 30.58
+//     }
+// );
 
-scene.add(datePalmTree);
+// scene.add(datePalmTree);
 
-const ElmTree = new GLoader(
-    'http://localhost:5500/examples/ElmTree/',
-    'ElmTree.gltf',
-    {
-        lng: 114.53,
-        lat: 30.58
-    }
-);
+// const ElmTree = new GLoader(
+//     'http://localhost:5500/examples/ElmTree/',
+//     'ElmTree.gltf',
+//     {
+//         lng: 114.53,
+//         lat: 30.58
+//     }
+// );
 
-scene.add(ElmTree);
+// scene.add(ElmTree);
 
 const ATrangle = new GLoader(
     'http://localhost:5500/examples/ATrangle/',

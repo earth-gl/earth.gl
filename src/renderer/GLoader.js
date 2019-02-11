@@ -1,5 +1,5 @@
 const fetch = require('./../utils/fetch'),
-    { GLMatrix, Mat4 } = require('kiwi.matrix'),
+    { GLMatrix } = require('kiwi.matrix'),
     GProgram = require('./GProgram'),
     GUniform = require('./GUniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
