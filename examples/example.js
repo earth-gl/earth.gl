@@ -31,17 +31,17 @@ const scene = new GScene({
 
 // scene.add(ElmTree);
 
-// const Monster = new GLoader(
-//     'http://localhost:5500/examples/Monster/',
-//     'Monster.gltf',
-//     {
-//         lng: 114.33,
-//         lat: 30.58,
-//         scale: 10000.0
-//     }
-// );
+const Monster = new GLoader(
+    'http://localhost:5500/examples/Monster/',
+    'Monster.gltf',
+    {
+        lng: 114.33,
+        lat: 31.08,
+        scale: 1000.0
+    }
+);
 
-// scene.add(Monster);
+scene.add(Monster);
 
 const BoxAnimated = new GLoader(
     'http://localhost:5500/examples/BoxAnimated/',
@@ -55,16 +55,17 @@ const BoxAnimated = new GLoader(
 
 scene.add(BoxAnimated);
 
-// const ATrangle = new GLoader(
-//     'http://localhost:5500/examples/ATrangle/',
-//     'AnimatedTriangle.gltf',
-//     {
-//         lng: 114.33,
-//         lat: 30.58
-//     }
-// );
+const ATrangle = new GLoader(
+    'http://localhost:5500/examples/ATrangle/',
+    'AnimatedTriangle.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        scale: 10000.0
+    }
+);
 
-// scene.add(ATrangle);
+scene.add(ATrangle);
 
 const update = function () {
     scene.render();
