@@ -1,4 +1,4 @@
-const { Vec4 } = require('kiwi.matrix'),
+const { Vec4, Quat } = require('kiwi.matrix'),
     { TYPE2NUMOFCOMPONENT } = require('./../utils/revise');
 
 /**
@@ -53,9 +53,9 @@ class GAnimationSampler {
          */
         this._curIdx = 0;
         /**
-         * 
+         * @type {Vec4 | Quat}
          */
-        this._curValue = new Vec4();
+        this._curValue;
         /**
          * 
          */
@@ -85,13 +85,16 @@ class GAnimationSampler {
             t -= inputMax;
             this._curIdx = 0;
         }
+        //
         const count = TYPE2NUMOFCOMPONENT[this.output._type];
-        let i = this._curIdx;
-        let o = i * count;
-        let on = o + count;
-        let u = Math.max(0, t - this._inputTypedArray[i]) / (this._inputTypedArray[i + 1] - this._inputTypedArray[i]);
-        const fv4 = new Vec4();
-        const sv4 = new Vec4();
+        //calcute interpolation value
+        let i = this._curIdx,
+            o = i * count,
+            on = o + count,
+            u = Math.max(0, t - this._inputTypedArray[i]) / (this._inputTypedArray[i + 1] - this._inputTypedArray[i]),
+            fv4 = new Vec4(),
+            sv4 = new Vec4();
+        //output
         for (let j = 0; j < count; j++) {
             fv4._out[j] = this._outputTypedArray[o + j];
             sv4._out[j] = this._outputTypedArray[on + j];
@@ -99,7 +102,7 @@ class GAnimationSampler {
         //calcute _curValue by lerp function
         switch (interpolation) {
             case 'LINEAR':
-                this._curValue.lerp(fv4, sv4, u);
+                this._curValue = count===4? new Quat().slerp(fv4, sv4, u): new Vec4().lerp(fv4, sv4, u);
                 break;
             default:
                 break;

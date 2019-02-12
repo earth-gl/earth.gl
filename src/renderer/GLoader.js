@@ -1,5 +1,5 @@
 const fetch = require('./../utils/fetch'),
-    { GLMatrix, Vec3, Quat } = require('kiwi.matrix'),
+    { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
     GProgram = require('./GProgram'),
     GUniform = require('./GUniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
@@ -21,6 +21,7 @@ class GLoader {
      * @param {Number} [options.lat]
      * @param {Number} [options.h] represent hight in meters, default is 0
      * @param {Boolean} [options.vertical] object rotate to vertical surface
+     * @param {Number} [options.scale] scale, default scale: 1000000.0
      */
     constructor(root, modelFilename, options = {}) {
         /**
@@ -60,6 +61,14 @@ class GLoader {
          */
         this._vertical = options.vertical == undefined ? true : options.vertical;
         /**
+         * @type {Number}
+         */
+        this._scaleV1 = options.scale == undefined ? 1.0:options.scale;
+        /**
+         * @type {Vec3}
+         */
+        this._scaleV3 = new Vec3().set(this._scaleV1, this._scaleV1, this._scaleV1);
+        /**
          * gltf extensions
          */
         this._extensions = null;
@@ -98,9 +107,37 @@ class GLoader {
          */
         this._gProgram = new GProgram(gl, vertText, fragText);
         /**
+         * initial geoTransform
+         */
+        this._initTransforms();
+        /**
          * initial request
          */
         this._initialRequest();
+    }
+    /**
+     * initial
+     */
+    _initTransforms(){
+        const lat = this._lat,
+            lng = this._lng,
+            h = this._h,
+            geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
+            geoTranslation = WGS84.geographicToSpace(geographic),
+            geoRotateZ = GLMatrix.toRadian(lng - 90),
+            geoRotateX = GLMatrix.toRadian(lat);
+        /**
+         * @type {Vec3}
+         */
+        this._geoTranslation = geoTranslation;
+        /**
+         * @type {Number} represent in radius
+         */
+        this._geoRotateZ = geoRotateZ;
+        /**
+         * @type {Number} represent in radius
+         */
+        this._geoRotateX = geoRotateX;
     }
     /**
      * 
@@ -126,6 +163,8 @@ class GLoader {
                 that._scene = GLTF.scene;
                 //store animations
                 that._animations = GLTF.animations || [];
+                //store nodes
+                that._nodes = GLTF.nodes || [];
             });
         });
     }
@@ -133,21 +172,12 @@ class GLoader {
      * 
      */
     _initComponents(scene) {
-        const nodes = [], //cache all nodes
-            sceneNodes = scene.nodes,
-            //vertical = this._vertical,
-            lat = this._lat,
-            lng = this._lng,
-            h = this._h,
-            geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
-            spaceV3 = WGS84.geographicToSpace(geographic),
+        const sceneNodes = scene.nodes,
             gProgram = this._gProgram;
         //change program
         gProgram.useProgram();
         //liter node
         const processNode = (node) => {
-            //cache node
-            nodes.push(node);
             //process mesh
             if (node.mesh) {
                 const mesh = node.mesh;
@@ -179,104 +209,67 @@ class GLoader {
                 });
             }
             //process child node
-            if (node.children.forEach(node => {
-                processNode(node);
-            }));
+            if (node.children) {
+                node.children.forEach(node => {
+                    processNode(node);
+                });
+            }
         };
         //prepare nodes
         sceneNodes.forEach((node) => {
-            node.translation = new Vec3().set(...node.translation.clone().add(spaceV3)._out);
             processNode(node);
-            // if(node.mesh){
-            //     const mesh = node.mesh;
-            //     mesh.primitives.forEach(primitive => {
-            //         //1.bind vertex buffer
-            //         const posAccessor = primitive.attributes['POSITION'];
-            //         posAccessor.bindBuffer();
-            //         posAccessor.bufferData();
-            //         posAccessor.link('a_position');
-            //         //2.bind index buffer
-            //         const indicesBuffer = primitive.indicesBuffer;
-            //         indicesBuffer.bindBuffer();
-            //         indicesBuffer.bufferData();
-            //         //3.uniform
-            //         const uProject = new GUniform(gProgram, 'u_projectionMatrix'),
-            //             uView = new GUniform(gProgram, 'u_viewMatrix'),
-            //             uModel = new GUniform(gProgram, 'u_modelMatrix');
-            //         //4.cache mesh
-            //         primitive.cache = {
-            //             uProject: uProject,
-            //             uView: uView,
-            //             uModel: uModel,
-            //             accessor: posAccessor,
-            //             indicesBuffer: indicesBuffer,
-            //             mode: primitive.mode,
-            //             indicesLength: primitive.indicesLength,
-            //             indicesComponentType: primitive.indicesComponentType,
-            //             indicesOffset: primitive.indicesOffset
-            //         };
-            //const translation = spaceV3.clone().add(node.modelMatrix.getTranslation());
-            //let modelMatrix = node.modelMatrix.clone().setTranslation(translation);
-            //rotate to surface vertical
-            // if (vertical) {
-            //     //按照经度旋转
-            //     modelMatrix = modelMatrix.clone().rotateZ(GLMatrix.toRadian(lng - 90));
-            //     //rotate model matrix
-            //     modelMatrix = modelMatrix.clone().rotateX(GLMatrix.toRadian(lat));
-            // }
-            // primitivesCache.push({
-            //     uProject: uProject,
-            //     uView: uView,
-            //     uModel: uModel,
-            //     accessor: posAccessor,
-            //     indicesBuffer: indicesBuffer,
-            //     mode: primitive.mode,
-            //     indicesLength: primitive.indicesLength,
-            //     indicesComponentType: primitive.indicesComponentType,
-            //     indicesOffset: primitive.indicesOffset
-            // });
-            //     });
-            // }
         });
-        /**
-         * process nodes
-         */
-        this._nodes = nodes;
     }
     _drawNode(node, camera, parentMatrix) {
         //gl context
         const that = this,
             gl = this._gl;
-        //update model matrix
-        node.updateModelMatrix();
         let matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
         if (node.mesh !== null) {
             const primitives = node.mesh.primitives;
             primitives.forEach(primitive => {
-                const primitiveCache = primitive.cache;
-                const { vAccessor,
+                const cache = primitive.cache;
+                const {
+                    vAccessor,
                     indicesBuffer,
                     mode,
                     indicesLength,
                     indicesComponentType,
                     uProject,
                     uView,
-                    uModel } = primitiveCache;
+                    uModel
+                } = cache;
                 //relink
                 vAccessor.relink();
                 indicesBuffer.bindBuffer();
+                //model matrix
+                //const modelMatrix = matrix.clone();
+                //geo translation and geo rotate tanslation rotate
+                //const translation = geoTranslation.clone().add(modelMatrix.getTranslation());
+                //modelMatrix.setTranslation(translation);
+                //scaling matrix
+                //modelMatrix.scale(scaleV3);
+                //rotate vertical surface
+                // if (vertical) {
+                //     modelMatrix.rotateZ(geoRotateZ);
+                //     modelMatrix.rotateX(geoRotateX);
+                // }
                 //uniform
                 uProject.assignValue(camera.ProjectionMatrix);
                 uView.assignValue(camera.ViewMatrix);
                 uModel.assignValue(matrix.value);
+                //uModel.assignValue(matrix.value);
                 //draw elements
                 gl.drawElements(mode, indicesLength, indicesComponentType, 0);
             });
         }
-        //draw nodes
-        node.children.forEach(node => {
-            that._drawNode(node, camera, matrix);
-        });
+        //childeren
+        if (node.children) {
+            //draw nodes
+            node.children.forEach(node => {
+                that._drawNode(node, camera, matrix);
+            });
+        }
     }
     /**
      * 
@@ -284,6 +277,10 @@ class GLoader {
      */
     render(camera, timeStamp) {
         const that = this,
+            geoTranslation = this._geoTranslation,
+            geoRotateZ = this._geoRotateZ,
+            geoRotateX = this._geoRotateX,
+            scaleV3 = this._scaleV3,
             gProgram = this._gProgram,
             nodes = this._nodes,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
@@ -302,77 +299,41 @@ class GLoader {
                 const node = nodes[channel.target.nodeID];
                 switch (channel.target.path) {
                     case 'rotation':
-                        //node.rotation = new Quat().set(...animationSampler._curValue._out);
+                        node.rotation = new Quat().set(...animationSampler._curValue._out);
                         break;
                     case 'translation':
-                        //node.translation.add(new Vec3().set(...animationSampler._curValue));
+                        node.translation = new Vec3().set(...animationSampler._curValue._out);
                         break;
                     case 'scale':
-                        //node.scale = new Vec3().set(...animationSampler._curValue._out);
+                        node.scale = new Vec3().set(...animationSampler._curValue._out);
                         break;
                     default:
                         break;
                 }
+                //update model matrix
+                node.updateModelMatrix();
             }
         }
-        // if (sceneNodes.length > 0) {
-        //     that._drawNode(sceneNodes[0], camera, null);
-        // }
-        //darw scene nodes
+        //root matrix
+        const matrix = Mat4.fromRotationTranslation(new Quat(), geoTranslation);
+        matrix.scale(scaleV3);
+        matrix.rotateZ(geoRotateZ);
+        matrix.rotateX(geoRotateX);
+        //draw nodes
         sceneNodes.forEach(node => {
-            that._drawNode(node, camera, null);
+            //node.scale = scaleV3;
+            //1. set translation
+            //node.translation = geoTranslation.clone().add(node.modelMatrix.getTranslation());
+            //modelMatrix.setTranslation(translation);
+            //2. rotation
+            //node.rotation = node.modelMatrix.clone().rotateZ(geoRotateZ).rotateX(geoRotateX).getRotation();
+            //3. scaling
+            //node.scale = scaleV3;
+            //4. update model matrix
+            //node.updateModelMatrix();
+            //5. draw node
+            that._drawNode(node, camera, matrix);
         });
-        //darw nodes
-        // for (let key in nodesCache) {
-        //     const nodeCache = nodesCache[key],
-        //         node = nodeCache.node,
-        //         primitivesCache = nodeCache.primitivesCache;
-        //     for (let i = 0, len = primitivesCache.length; i < len; i++) {
-        //         const primitiveCache = primitivesCache[i];
-        //         const { accessor,
-        //             indicesBuffer,
-        //             mode,
-        //             indicesLength,
-        //             indicesComponentType,
-        //             indicesOffset,
-        //             uProject,
-        //             uView,
-        //             uModel } = primitiveCache;
-        //         //update model matrix
-        //         node.updateModelMatrix();
-        //         //relink
-        //         accessor.relink();
-        //         indicesBuffer.bindBuffer();
-        //         uProject.assignValue(camera.ProjectionMatrix);
-        //         uView.assignValue(camera.ViewMatrix);
-        //         uModel.assignValue(node.modelMatrix.value);
-        //         //draw elements
-        //         gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
-        //     }
-        // }
-        // for (let i = 0, len = nodesCache.length; i < len; i++) {
-        //     const nodeCache = nodesCache[i];
-        //     const { accessor,
-        //         indicesBuffer,
-        //         mode,
-        //         indicesLength,
-        //         indicesComponentType,
-        //         indicesOffset,
-        //         uProject,
-        //         uView,
-        //         modelMatrix,
-        //         uModel } = nodeCache;
-        //     //
-        //     node
-        //     //relink
-        //     accessor.relink();
-        //     indicesBuffer.bindBuffer();
-        //     uProject.assignValue(camera.ProjectionMatrix);
-        //     uView.assignValue(camera.ViewMatrix);
-        //     uModel.assignValue(modelMatrix);
-        //     //draw elements
-        //     gl.drawElements(mode, indicesLength, indicesComponentType, indicesOffset);
-        // }
     }
 }
 

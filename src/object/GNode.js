@@ -68,41 +68,22 @@ class GNode {
      */
     _initialMatrix() {
         const options = this.nodeJson;
-        let modelMatrix;
         if (options.matrix) {
-            const matrix = options.matrix;
-            modelMatrix = new Mat4().set(
-                matrix[0], matrix[1], matrix[2], matrix[3],
-                matrix[4], matrix[5], matrix[6], matrix[7], matrix[8],
-                matrix[9], matrix[10], matrix[11], matrix[12],
-                matrix[13], matrix[14], matrix[15]
-            );
+            const matrix = options.matrix,
+                modelMatrix = new Mat4().set(...matrix);
+            this.rotation = modelMatrix.getRotation();
+            this.translation = modelMatrix.getTranslation();
+            this.scale = modelMatrix.getScaling();
         } else {
-            const translation = options.translation || [ 0.0, 0.0, 0.0],
-                rotation = options.rotation || [0.0, 0.0, 0.0, 0.0],
-                scale = options.scale || [1000000.0, 1000000.0, 1000000.0];
-            const q = new Quat().set(rotation[0], rotation[1], rotation[2], rotation[3]),
-                v = new Vec3().set(translation[0], translation[1], translation[2]),
-                s = new Vec3().set(scale[0], scale[1], scale[2]);
-            modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
+            const rotation = options.rotation || [0.0, 0.0, 0.0, 1.0],
+                translation = options.translation || [ 0.0, 0.0, 0.0],
+                scale = options.scale || [1.0, 1.0, 1.0];
+            this.rotation = new Quat().set(...rotation),
+            this.translation = new Vec3().set(...translation),
+            this.scale = new Vec3().set(...scale);
         }
-        /**
-        * @type {Quat}
-        */
-        this.rotation = modelMatrix.getRotation();
-        /**
-         * @type {Vec3}
-         */
-        this.translation = modelMatrix.getTranslation();
-        /**
-         * @type {Vec3}
-         */
-        this.scale = modelMatrix.getScaling();
-        /**
-         * model matrix from rotation traslation and scale
-         * @type {Mat4}
-         */
-        this.modelMatrix = modelMatrix;
+        //update model matrix
+        this.updateModelMatrix();
     }
     /**
      * 
@@ -111,24 +92,14 @@ class GNode {
      * @param {*} scale 
      */
     updateModelMatrix(){
-        const q = this.rotation,
-            v = this.translation,
-            s = this.scale;
+        const rotation = this.rotation,
+            translation = this.translation,
+            scale = this.scale;
+        //from rotation and translation
+        const modelMatrix = Mat4.fromRotationTranslation(rotation, translation);
+        modelMatrix.scale(scale);
         //create rotation and translation
-        this.modelMatrix = Mat4.fromRotationTranslationScale(q, v, s);
-    }
-    /**
-     * init skin
-     */
-    _initExtension(){
-                //if (options.extensions !== undefined) {
-        //     if (options.extensions.gl_avatar !== undefined && curLoader.enableGLAvatar === true) {
-        //         var linkedSkinID = curLoader.skeletonGltf.json.extensions.gl_avatar.skins[options.extensions.gl_avatar.skin.name];
-        //         var linkedSkin = curLoader.skeletonGltf.skins[linkedSkinID];
-        //         this.skin = new SkinLink(curLoader.glTF, linkedSkin, options.extensions.gl_avatar.skin.inverseBindMatrices);
-        //     }
-        // }
-        // // TODO: morph targets weights
+        this.modelMatrix = modelMatrix;
     }
 }
 

@@ -176,6 +176,7 @@ class GLTFLoader {
             that._postprocess(program);
             return {
                 scene: that._scenes[defaultScene],
+                nodes: that._nodes,
                 animations : that._animations
             };
         });
@@ -332,7 +333,7 @@ class GLTFLoader {
                 const sJson = GLTF.scenes[i];
                 const nodes = new Array(sJson.nodes.length);
                 for (let j = 0, len = sJson.nodes.length; j < len; j++) {
-                    nodes[i] = this._nodes[sJson.nodes[i]];
+                    nodes[j] = this._nodes[sJson.nodes[j]];
                 }
                 this._scenes[i] = {
                     name: sJson.name,

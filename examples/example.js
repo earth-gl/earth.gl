@@ -1,6 +1,6 @@
 const GScene = earth.gl.renderer.GScene,
     GLoader = earth.gl.GLoader;
-    
+
 const canvas = document.getElementById('mapCanvas');
 
 const scene = new GScene({
@@ -36,7 +36,8 @@ const scene = new GScene({
 //     'Monster.gltf',
 //     {
 //         lng: 114.33,
-//         lat: 30.58
+//         lat: 30.58,
+//         scale: 10000.0
 //     }
 // );
 
@@ -47,11 +48,23 @@ const BoxAnimated = new GLoader(
     'BoxAnimated.gltf',
     {
         lng: 114.33,
-        lat: 30.58
+        lat: 30.58,
+        scale: 10000.0
     }
 );
 
 scene.add(BoxAnimated);
+
+// const ATrangle = new GLoader(
+//     'http://localhost:5500/examples/ATrangle/',
+//     'AnimatedTriangle.gltf',
+//     {
+//         lng: 114.33,
+//         lat: 30.58
+//     }
+// );
+
+// scene.add(ATrangle);
 
 const update = function () {
     scene.render();
