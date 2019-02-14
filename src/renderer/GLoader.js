@@ -131,7 +131,6 @@ class GLoader {
         // calcute root matrix
         const matrix = Mat4.fromRotationTranslationScale(new Quat(), geoTranslation, scaleV3);
         //matrix.setTranslation(geoTranslation);
-        // matrix.scale(scaleV3);
         matrix.rotateZ(geoRotateZ);
         matrix.rotateX(geoRotateX);
         //return the geo matrix

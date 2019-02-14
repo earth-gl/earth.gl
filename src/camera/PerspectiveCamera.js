@@ -164,6 +164,10 @@ class PerspectiveCamera extends Camera {
          *
          */
         this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
+        /**
+         * 
+         */
+        this._normalMatrix  = this._viewProjectionMatrix.clone().invert().transpose();
     }
     /**
      * 
