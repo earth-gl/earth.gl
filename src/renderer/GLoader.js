@@ -124,7 +124,7 @@ class GLoader {
             scaleV3 = this._scaleV3,
             lat = this._lat,
             lng = this._lng,
-            h = (this._h/scaleV1 - 1) * scaleV1,
+            h = (this._h/scaleV1 - 1.0) * scaleV1, //set hight according to the scale 
             geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             geoTranslation = WGS84.geographicToSpace(geographic),
             geoRotateZ = GLMatrix.toRadian(lng - 90),
