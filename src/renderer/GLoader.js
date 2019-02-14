@@ -63,7 +63,7 @@ class GLoader {
         /**
          * @type {Number}
          */
-        this._scaleV1 = options.scale == undefined ? 1.0:options.scale;
+        this._scaleV1 = options.scale == undefined ? 1.0 : options.scale;
         /**
          * @type {Vec3}
          */
@@ -109,35 +109,34 @@ class GLoader {
         /**
          * initial geoTransform
          */
-        this._initTransforms();
+        this._geoTransformMatrix = this._updateGeoTransform();
         /**
          * initial request
          */
         this._initialRequest();
     }
     /**
-     * initial
+     * update the geo transform matrix, support (surface vertical) and (surface location)
      */
-    _initTransforms(){
-        const lat = this._lat,
+    _updateGeoTransform() {
+        //update the geotransform matrix
+        const scaleV1 = this._scaleV1,
+            scaleV3 = this._scaleV3,
+            lat = this._lat,
             lng = this._lng,
-            h = this._h,
+            h = (this._h/scaleV1 - 1) * scaleV1,
             geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             geoTranslation = WGS84.geographicToSpace(geographic),
             geoRotateZ = GLMatrix.toRadian(lng - 90),
             geoRotateX = GLMatrix.toRadian(lat);
-        /**
-         * @type {Vec3}
-         */
-        this._geoTranslation = geoTranslation;
-        /**
-         * @type {Number} represent in radius
-         */
-        this._geoRotateZ = geoRotateZ;
-        /**
-         * @type {Number} represent in radius
-         */
-        this._geoRotateX = geoRotateX;
+        // calcute root matrix
+        const matrix = Mat4.fromScaling(scaleV3);
+        matrix.setTranslation(geoTranslation);
+        // matrix.scale(scaleV3);
+        matrix.rotateZ(geoRotateZ);
+        matrix.rotateX(geoRotateX);
+        //return the geo matrix
+        return matrix;
     }
     /**
      * 
@@ -242,18 +241,6 @@ class GLoader {
                 //relink
                 vAccessor.relink();
                 indicesBuffer.bindBuffer();
-                //model matrix
-                //const modelMatrix = matrix.clone();
-                //geo translation and geo rotate tanslation rotate
-                //const translation = geoTranslation.clone().add(modelMatrix.getTranslation());
-                //modelMatrix.setTranslation(translation);
-                //scaling matrix
-                //modelMatrix.scale(scaleV3);
-                //rotate vertical surface
-                // if (vertical) {
-                //     modelMatrix.rotateZ(geoRotateZ);
-                //     modelMatrix.rotateX(geoRotateX);
-                // }
                 //uniform
                 uProject.assignValue(camera.ProjectionMatrix);
                 uView.assignValue(camera.ViewMatrix);
@@ -277,10 +264,7 @@ class GLoader {
      */
     render(camera, timeStamp) {
         const that = this,
-            geoTranslation = this._geoTranslation,
-            geoRotateZ = this._geoRotateZ,
-            geoRotateX = this._geoRotateX,
-            scaleV3 = this._scaleV3,
+            geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
             nodes = this._nodes,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
@@ -314,25 +298,9 @@ class GLoader {
                 node.updateModelMatrix();
             }
         }
-        //root matrix
-        const matrix = Mat4.fromRotationTranslation(new Quat(), geoTranslation);
-        matrix.scale(scaleV3);
-        matrix.rotateZ(geoRotateZ);
-        matrix.rotateX(geoRotateX);
         //draw nodes
         sceneNodes.forEach(node => {
-            //node.scale = scaleV3;
-            //1. set translation
-            //node.translation = geoTranslation.clone().add(node.modelMatrix.getTranslation());
-            //modelMatrix.setTranslation(translation);
-            //2. rotation
-            //node.rotation = node.modelMatrix.clone().rotateZ(geoRotateZ).rotateX(geoRotateX).getRotation();
-            //3. scaling
-            //node.scale = scaleV3;
-            //4. update model matrix
-            //node.updateModelMatrix();
-            //5. draw node
-            that._drawNode(node, camera, matrix);
+            that._drawNode(node, camera, geoTransformMatrix);
         });
     }
 }
