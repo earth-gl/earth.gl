@@ -120,8 +120,7 @@ class GLoader {
      */
     _updateGeoTransform() {
         //update the geotransform matrix
-        const scaleV1 = this._scaleV1,
-            scaleV3 = this._scaleV3,
+        const scaleV3 = this._scaleV3,
             lat = this._lat,
             lng = this._lng,
             h = this._h, //set hight according to the scale 
