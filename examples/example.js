@@ -37,6 +37,7 @@ const Monster = new GLoader(
     {
         lng: 114.01,
         lat: 30.58,
+        h:1000000,
         scale: 10000.0
     }
 );
@@ -47,9 +48,9 @@ const BoxAnimated = new GLoader(
     'http://localhost:5500/examples/BoxAnimated/',
     'BoxAnimated.gltf',
     {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0,
+        lng: 0.01,
+        lat: 33.58,
+        h: 1000000,
         scale: 100000.0
     }
 );
@@ -76,7 +77,7 @@ const castle = new GLoader(
     {
         lng: 114.01,
         lat: 30.58,
-        h: 0, 
+        h: 1000000, 
         scale: 1000000.0
     }
 );

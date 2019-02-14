@@ -124,14 +124,14 @@ class GLoader {
             scaleV3 = this._scaleV3,
             lat = this._lat,
             lng = this._lng,
-            h = (this._h/scaleV1 - 1.0) * scaleV1, //set hight according to the scale 
+            h = this._h, //set hight according to the scale 
             geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             geoTranslation = WGS84.geographicToSpace(geographic),
             geoRotateZ = GLMatrix.toRadian(lng - 90),
             geoRotateX = GLMatrix.toRadian(lat);
         // calcute root matrix
-        const matrix = Mat4.fromScaling(scaleV3);
-        matrix.setTranslation(geoTranslation);
+        const matrix = Mat4.fromRotationTranslationScale(new Quat(), geoTranslation, scaleV3);
+        //matrix.setTranslation(geoTranslation);
         // matrix.scale(scaleV3);
         matrix.rotateZ(geoRotateZ);
         matrix.rotateX(geoRotateX);
