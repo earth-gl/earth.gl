@@ -1,4 +1,5 @@
 const requestImage = require('./../utils/requestImage'),
+    { isBase64, base64ToArrayBuffer } = require('./../utils/typedArray'),
     fetch = require('./../utils/fetch'),
     Camera = require('./../camera/Camera'),
     //objects
@@ -151,7 +152,12 @@ class GLTFLoader {
         const fetchArrayBufferPromises = [];
         if (json.buffers) {
             for (const bid in json.buffers) {
-                fetchArrayBufferPromises.push(this._fetchArrayBuffer(baseUri + json.buffers[bid].uri, bid));
+                const rawStr = json.buffers[bid].uri;
+                if (isBase64(rawStr)) {
+                    fetchArrayBufferPromises.push(this._fetchArrayBufferFormBase64(rawStr, bid));
+                } else {
+                    fetchArrayBufferPromises.push(this._fetchArrayBuffer(baseUri + rawStr, bid));
+                }
             }
         }
         //request images
@@ -177,7 +183,7 @@ class GLTFLoader {
             return {
                 scene: that._scenes[defaultScene],
                 nodes: that._nodes,
-                animations : that._animations
+                animations: that._animations
             };
         });
     }
@@ -216,6 +222,17 @@ class GLTFLoader {
         return fetch(url, {
             responseType: 'arraybuffer'
         }).then(response => {
+            return response.arrayBuffer();
+        }).then(buffer => {
+            that._buffers[bid] = buffer;
+        });
+    }
+    /**
+     * 
+     */
+    _fetchArrayBufferFormBase64(url, bid) {
+        const that = this;
+        return fetch(url).then(response => {
             return response.arrayBuffer();
         }).then(buffer => {
             that._buffers[bid] = buffer;

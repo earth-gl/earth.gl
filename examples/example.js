@@ -9,6 +9,18 @@ const scene = new GScene({
     height: 625
 });
 
+const tree = new GLoader(
+    'http://localhost:5500/examples/Tree/',
+    'tree.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 10000.0
+    });
+
+scene.add(tree);
+
 // const datePalmTree = new GLoader(
 //     'http://localhost:5500/examples/DatePalmTree/',
 //     'DatePalmTree.gltf',
@@ -31,58 +43,58 @@ const scene = new GScene({
 
 // scene.add(ElmTree);
 
-const Monster = new GLoader(
-    'http://localhost:5500/examples/Monster/',
-    'Monster.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0,
-        scale: 10000.0
-    }
-);
+// const Monster = new GLoader(
+//     'http://localhost:5500/examples/Monster/',
+//     'Monster.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 10000.0
+//     }
+// );
 
-scene.add(Monster);
+// scene.add(Monster);
 
-const BoxAnimated = new GLoader(
-    'http://localhost:5500/examples/BoxAnimated/',
-    'BoxAnimated.gltf',
-    {
-        lng: 0.01,
-        lat: 33.58,
-        h: 0,
-        scale: 100000.0
-    }
-);
+// const BoxAnimated = new GLoader(
+//     'http://localhost:5500/examples/BoxAnimated/',
+//     'BoxAnimated.gltf',
+//     {
+//         lng: 0.01,
+//         lat: 33.58,
+//         h: 0,
+//         scale: 100000.0
+//     }
+// );
 
-scene.add(BoxAnimated);
+// scene.add(BoxAnimated);
 
-const ATrangle = new GLoader(
-    'http://localhost:5500/examples/ATrangle/',
-    'AnimatedTriangle.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0, 
-        scale: 1000000.0,
-        vertical: false,
-    }
-);
+// const ATrangle = new GLoader(
+//     'http://localhost:5500/examples/ATrangle/',
+//     'AnimatedTriangle.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 1000000.0,
+//         vertical: false,
+//     }
+// );
 
-scene.add(ATrangle);
+// scene.add(ATrangle);
 
-const castle = new GLoader(
-    'http://localhost:5500/examples/Castle/',
-    'model.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0, 
-        scale: 1000000.0
-    }
-);
+// const castle = new GLoader(
+//     'http://localhost:5500/examples/Castle/',
+//     'model.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 1000000.0
+//     }
+// );
 
-scene.add(castle);
+// scene.add(castle);
 
 const update = function () {
     scene.render();
