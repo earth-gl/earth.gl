@@ -104,7 +104,7 @@ class GScene extends Eventable {
         /**
          * timestampe scale (delta time)
          */
-        this._timeStampScale = 0.001;
+        this._timeStampScale = 0.0001;
         /**
          * store current timestamp
          */

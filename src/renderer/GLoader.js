@@ -227,11 +227,17 @@ class GLoader {
             processNode(node);
         });
     }
+    /**
+     * iter draw node and children
+     * @param {*} node 
+     * @param {*} camera 
+     * @param {*} parentMatrix 
+     */
     _drawNode(node, camera, parentMatrix) {
         //gl context
-        const that = this,
-            gl = this._gl;
-        let matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
+        const gl = this._gl,
+             matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
+        //draw mesh
         if (node.mesh !== null) {
             const primitives = node.mesh.primitives;
             primitives.forEach(primitive => {
@@ -253,18 +259,13 @@ class GLoader {
                 uProject.assignValue(camera.ProjectionMatrix);
                 uView.assignValue(camera.ViewMatrix);
                 uModel.assignValue(matrix.value);
-                //uModel.assignValue(matrix.value);
                 //draw elements
                 gl.drawElements(mode, indicesLength, indicesComponentType, 0);
             });
         }
-        //childeren
-        if (node.children) {
-            //draw nodes
-            node.children.forEach(node => {
-                that._drawNode(node, camera, matrix);
-            });
-        }
+        //draw children
+        for (let i = 0, len = !node.children ? 0 : node.children.length; i < len; i++)
+            this._drawNode(node.children[i], camera, matrix);
     }
     /**
      * 
@@ -300,20 +301,19 @@ class GLoader {
      * @param {Camera} camera 
      */
     render(camera, timeStamp) {
-        const that = this,
-            animId = this._animId,
+        const animId = this._animId,
             geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
-            nodes = this._nodes,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
+        //change program
         gProgram.useProgram();
         //apply animations, default runs animation 0
-        if (animations[animId]) this._applyAnimation(animations[animId], timeStamp);
+        if (animations[animId])
+            this._applyAnimation(animations[animId], timeStamp);
         //draw nodes
-        sceneNodes.forEach(node => {
-            that._drawNode(node, camera, geoTransformMatrix);
-        });
+        for (let i = 0, len = sceneNodes.length; i < len; i++)
+            this._drawNode(sceneNodes[i], camera, geoTransformMatrix);
     }
 }
 

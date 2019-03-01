@@ -19,10 +19,6 @@ class GChannel {
          */
         this._channelJson = options;
         /**
-         * 
-         */
-        this.c = options;
-        /**
          * @type {GAnimationSampler}
          */
         this.sampler = resource.samplers[options.sampler];

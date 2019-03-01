@@ -23,7 +23,7 @@ class GAnimationSampler {
         /**
          * LINEAR/STEP/CATMULLROMSPLINE/CUBICSPLINE
          */
-        this.interpolation = options.interpolation !== undefined ? options.interpolation : 'LINEAR';
+        this._interpolation = options.interpolation !== undefined ? options.interpolation : 'LINEAR';
         /**
          * @type {GAccessor}
          */
@@ -70,21 +70,19 @@ class GAnimationSampler {
      * @param {*} t 
      */
     update(t) {
-        const endT = this._endT,
-            interpolation = this.interpolation,
-            inputMax = this._inputMax,
-            len = this._inputTypedArray.length;
-        if (t > endT) {
-            t -= inputMax * Math.ceil((t - endT) / inputMax);
+        if (t > this._endT) {
+            t -= this._inputMax * Math.ceil((t - this._endT) / this._inputMax);
             this._curIdx = 0;
         }
+        const len = this._inputTypedArray.length;
         while (this._curIdx <= len - 2 && t >= this._inputTypedArray[this._curIdx + 1]) {
             this._curIdx++;
         }
         if (this._curIdx >= len - 1) {
-            t -= inputMax;
+            t -= this._inputMax;
             this._curIdx = 0;
         }
+        //the size of data
         const count = TYPE2NUMOFCOMPONENT[this.output._type];
         //calcute interpolation value
         let i = this._curIdx,
@@ -99,9 +97,10 @@ class GAnimationSampler {
             sv4._out[j] = this._outputTypedArray[on + j];
         }
         //calcute _curValue by lerp function
-        switch (interpolation) {
+        switch (this._interpolation) {
             case 'LINEAR':
                 this._curValue = count===4? new Quat().slerp(fv4, sv4, u): new Vec4().lerp(fv4, sv4, u);
+                //this._curValue = new Vec4().lerp(fv4, sv4, u);
                 break;
             default:
                 break;
