@@ -25,7 +25,7 @@ class GChannel {
         /**
          * @type {GAnimationSampler}
          */
-        this.animationSampler = resource.animationSamplers[options.sampler];
+        this.sampler = resource.samplers[options.sampler];
         /**
          * @type {GTarget}
          */

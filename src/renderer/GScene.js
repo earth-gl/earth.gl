@@ -202,7 +202,7 @@ class GScene extends Eventable {
     render() {
         const timeStampScale = this._timeStampScale,
             timeStamp0 = this._timeStamp0,
-            timeStamp = (performance.now() - timeStamp0) * timeStampScale,
+            timeStamp = (performance.now() - timeStamp0) * timeStampScale || 0,
             gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
@@ -227,7 +227,6 @@ class GScene extends Eventable {
             const gltf = gltfs[i];
             gltf.render(camera, timeStamp);
         }
-        //
     }
 }
 

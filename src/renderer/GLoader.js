@@ -22,6 +22,7 @@ class GLoader {
      * @param {Number} [options.h] represent hight in meters, default is 0
      * @param {Boolean} [options.vertical] object rotate to vertical surface
      * @param {Number} [options.scale] scale, default scale: 1000000.0
+     * @param {Number} [options.animId]  default is 0
      */
     constructor(root, modelFilename, options = {}) {
         /**
@@ -68,6 +69,10 @@ class GLoader {
          * @type {Vec3}
          */
         this._scaleV3 = new Vec3().set(this._scaleV1, this._scaleV1, this._scaleV1);
+        /**
+         * @type {Number}
+         */
+        this._animId = options.animId || 0;
         /**
          * gltf extensions
          */
@@ -184,6 +189,11 @@ class GLoader {
                     vAccessor.bindBuffer();
                     vAccessor.bufferData();
                     vAccessor.link('a_position');
+                    //2.bind normal buffer
+                    const nAccessor = primitive.attributes['NORMAL'];
+                    nAccessor.bindBuffer();
+                    nAccessor.bufferData();
+                    nAccessor.link('a_normal');
                     //2.bind index buffer
                     const indicesBuffer = primitive.indicesBuffer;
                     indicesBuffer.bindBuffer();
@@ -258,44 +268,48 @@ class GLoader {
     }
     /**
      * 
+     * @param {*} animation 
+     */
+    _applyAnimation(animation, timeStamp) {
+        const nodes = this._nodes;
+        for (let j = 0, len2 = animation.samplers.length; j < len2; j++) {
+            const animationSampler = animation.samplers[j];
+            animationSampler.update(timeStamp);
+        }
+        for (let j = 0, len2 = animation.channels.length; j < len2; j++) {
+            const channel = animation.channels[j],
+                animationSampler = channel.sampler,
+                node = nodes[channel.target.nodeID];
+            switch (channel.target.path) {
+                case 'rotation':
+                    node.rotation = new Quat().set(...animationSampler._curValue._out);
+                    break;
+                case 'translation':
+                    node.translation = new Vec3().set(...animationSampler._curValue._out);
+                    break;
+                case 'scale':
+                    node.scale = new Vec3().set(...animationSampler._curValue._out);
+                    break;
+            }
+            //update model matrix
+            node.updateModelMatrix();
+        }
+    }
+    /**
+     * 
      * @param {Camera} camera 
      */
     render(camera, timeStamp) {
         const that = this,
+            animId = this._animId,
             geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
             nodes = this._nodes,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
         gProgram.useProgram();
-        //apply animations, default runs all animations
-        for (let i = 0, len = animations.length; i < len; i++) {
-            const animation = animations[i];
-            for (let j = 0, len2 = animation.animationSamplers.length; j < len2; j++) {
-                const animationSampler = animation.animationSamplers[j];
-                animationSampler.update(timeStamp);
-            }
-            for (let j = 0, len2 = animation.channels.length; j < len2; j++) {
-                const channel = animation.channels[j];
-                const animationSampler = channel.animationSampler;
-                const node = nodes[channel.target.nodeID];
-                switch (channel.target.path) {
-                    case 'rotation':
-                        node.rotation = new Quat().set(...animationSampler._curValue._out);
-                        break;
-                    case 'translation':
-                        node.translation = new Vec3().set(...animationSampler._curValue._out);
-                        break;
-                    case 'scale':
-                        node.scale = new Vec3().set(...animationSampler._curValue._out);
-                        break;
-                    default:
-                        break;
-                }
-                //update model matrix
-                node.updateModelMatrix();
-            }
-        }
+        //apply animations, default runs animation 0
+        if (animations[animId]) this._applyAnimation(animations[animId], timeStamp);
         //draw nodes
         sceneNodes.forEach(node => {
             that._drawNode(node, camera, geoTransformMatrix);

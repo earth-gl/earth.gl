@@ -85,7 +85,6 @@ class GAnimationSampler {
             t -= inputMax;
             this._curIdx = 0;
         }
-        //
         const count = TYPE2NUMOFCOMPONENT[this.output._type];
         //calcute interpolation value
         let i = this._curIdx,

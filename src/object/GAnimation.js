@@ -28,7 +28,7 @@ class GAnimation {
          * animation samplers
          * @type {GAnimationSampler[]}
          */
-        this.animationSamplers = [];
+        this.samplers = [];
         /**
          * @type {GChannel[]}
          */
@@ -55,12 +55,12 @@ class GAnimation {
         //load animationsampler
         for (let i = 0, len = animJson.samplers.length; i < len; i++) {
             const samplerJson = animJson.samplers[i];
-            this.animationSamplers[i] = new GAnimationSampler(resource, samplerJson);
+            this.samplers[i] = new GAnimationSampler(resource, samplerJson);
         }
         //load channel
         for (let i = 0, len = animJson.channels.length; i < len; i++) {
             const channelJson = animJson.channels[i];
-            this.channels[i] = new GChannel({ animationSamplers: this.animationSamplers }, channelJson);
+            this.channels[i] = new GChannel({ samplers: this.samplers }, channelJson);
         }
     }
 }

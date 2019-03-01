@@ -5,21 +5,21 @@ const canvas = document.getElementById('mapCanvas');
 
 const scene = new GScene({
     canvas: canvas,
-    width: 1000,
-    height: 625
+    width: 800,
+    height: 600
 });
 
-const tree = new GLoader(
-    'http://localhost:5500/examples/Tree/',
-    'tree.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0,
-        scale: 10000.0
-    });
+// const tree = new GLoader(
+//     'http://localhost:5500/examples/Tree/',
+//     'tree.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 10000.0
+//     });
 
-scene.add(tree);
+// scene.add(tree);
 
 // const datePalmTree = new GLoader(
 //     'http://localhost:5500/examples/DatePalmTree/',
@@ -43,27 +43,27 @@ scene.add(tree);
 
 // scene.add(ElmTree);
 
-// const Monster = new GLoader(
-//     'http://localhost:5500/examples/Monster/',
-//     'Monster.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 10000.0
-//     }
-// );
+const Monster = new GLoader(
+    'http://localhost:5500/examples/Monster/',
+    'Monster.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 100000.0
+    }
+);
 
-// scene.add(Monster);
+scene.add(Monster);
 
 // const BoxAnimated = new GLoader(
 //     'http://localhost:5500/examples/BoxAnimated/',
 //     'BoxAnimated.gltf',
 //     {
-//         lng: 0.01,
+//         lng: 114.012,
 //         lat: 33.58,
 //         h: 0,
-//         scale: 100000.0
+//         scale: 1000000.0
 //     }
 // );
 
