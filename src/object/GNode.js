@@ -41,7 +41,11 @@ class GNode {
         /**
          * init as id, then hook up to skin object later
          */
-        this.skin = options.skin !== undefined ? options.skin : null;
+        this.skinIdx = options.skin !== undefined ? options.skin : null;
+        /**
+         * @type {GSkin}
+         */
+        this.skin = null;
         /**
          * 
          */

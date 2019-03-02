@@ -6,8 +6,10 @@ const fetch = require('./../utils/fetch'),
     Geographic = require('./../core/Geographic'),
     GLTFLoader = require('./../loader/GLTFLoader');
 //shaders 
-const fragText = require('./../shader/standard-fs.glsl');
-const vertText = require('./../shader/standard-vs.glsl');
+const standard_fragText = require('./../shader/standard-fs.glsl');
+const standard_vertText = require('./../shader/standard-vs.glsl');
+const bone_fragText = require('./../shader/bone-fs.glsl');
+const bone_vertText = require('./../shader/bone-vs.glsl');
 /**
  * @class
  */
@@ -108,9 +110,9 @@ class GLoader {
          */
         this._gScene = gScene;
         /**
-         * 
+         * @type {GProgram}
          */
-        this._gProgram = new GProgram(gl, vertText, fragText);
+        this._gProgram = null;
         /**
          * initial geoTransform
          */
@@ -119,6 +121,38 @@ class GLoader {
          * initial request
          */
         this._initialRequest();
+    }
+    /**
+     * 
+     */
+    _initialRequest() {
+        const that = this,
+            gl = this._gl,
+            root = this.root,
+            modelFilename = this.modelFilename;
+        fetch(root + modelFilename, {
+            responseType: 'json'
+        }).then(response => {
+            return response.json();
+        }).then(json => {
+            //create program according to skin
+            const gProgram = that._gProgram = json.skins.length > 0 ? new GProgram(gl, bone_vertText, bone_fragText) : new GProgram(gl, standard_vertText, standard_fragText),
+                uri = root + modelFilename,
+                loader = new GLTFLoader(json, { uri: uri });
+            //initalization loader resource
+            loader.load(gProgram).then(GLTF => {
+                //prerocess scene nodes
+                that._initComponents(GLTF.scene);
+                //store scene
+                that._scene = GLTF.scene;
+                //store animations
+                that._animations = GLTF.animations || [];
+                //store nodes
+                that._nodes = GLTF.nodes || [];
+                //store skins
+                that._skins = GLTF.skins || [];
+            });
+        });
     }
     /**
      * update the geo transform matrix, support (surface vertical) and (surface location)
@@ -140,35 +174,6 @@ class GLoader {
         matrix.rotateX(geoRotateX);
         //return the geo matrix
         return matrix;
-    }
-    /**
-     * 
-     */
-    _initialRequest() {
-        const that = this,
-            root = this.root,
-            program = this._gProgram,
-            modelFilename = this.modelFilename;
-        fetch(root + modelFilename, {
-            responseType: 'json'
-        }).then(response => {
-            return response.json();
-        }).then(json => {
-            const uri = root + modelFilename;
-            const loader = new GLTFLoader(json, {
-                uri: uri
-            });
-            loader.load(program).then(GLTF => {
-                //prerocess scene nodes
-                that._initComponents(GLTF.scene);
-                //store scene
-                that._scene = GLTF.scene;
-                //store animations
-                that._animations = GLTF.animations || [];
-                //store nodes
-                that._nodes = GLTF.nodes || [];
-            });
-        });
     }
     /**
      * 
@@ -236,7 +241,7 @@ class GLoader {
     _drawNode(node, camera, parentMatrix) {
         //gl context
         const gl = this._gl,
-             matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
+            matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
         //draw mesh
         if (node.mesh !== null) {
             const primitives = node.mesh.primitives;
@@ -295,19 +300,44 @@ class GLoader {
     }
     /**
      * 
+     */
+    _applySkin(skin, t) {
+        // for (let i = 0; i < skin.joints.length; ++i) {
+        //     const joint = skin.joints[i];
+        //     // if there is no matrix saved for this joint
+        //     if (!origMatrices.has(joint)) {
+        //       // save a matrix for joint
+        //       origMatrices.set(joint, joint.source.getMatrix());
+        //     }
+        //     // get the original matrix
+        //     const origMatrix = origMatrices.get(joint);
+        //     // rotate it
+        //     const m = origMatrix.xRotate(t);
+        //     // decompose it back into position, rotation, scale
+        //     // into the joint
+        //     m4.decompose(m, joint.source.position, joint.source.rotation, joint.source.scale);
+        //   }
+    }
+    /**
+     * 
      * @param {Camera} camera 
      */
-    render(camera, timeStamp) {
+    render(camera, t) {
         const animId = this._animId,
             geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
+            skins = this._skins,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
+        if (!gProgram) return;
         //change program
         gProgram.useProgram();
+        //apply skin, use 0 to test function
+        if (skins[0])
+            this._applySkin(skins[0], t);
         //apply animations, default runs animation 0
         if (animations[animId])
-            this._applyAnimation(animations[animId], timeStamp);
+            this._applyAnimation(animations[animId], t);
         //draw nodes
         for (let i = 0, len = sceneNodes.length; i < len; i++)
             this._drawNode(sceneNodes[i], camera, geoTransformMatrix);

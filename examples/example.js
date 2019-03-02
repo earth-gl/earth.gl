@@ -43,18 +43,57 @@ const scene = new GScene({
 
 // scene.add(ElmTree);
 
-const Monster = new GLoader(
-    'http://localhost:5500/examples/Monster/',
-    'Monster.gltf',
+// const AnimatedMorphCube = new GLoader(
+//     'http://localhost:5500/examples/GLTFS/AnimatedMorphCube/',
+//     'AnimatedMorphCube.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 1000000.0
+//     }
+// );
+
+// scene.add(AnimatedMorphCube);
+
+const RiggedSimple = new GLoader(
+    'http://localhost:5500/examples/GLTFS/RiggedSimple/',
+    'RiggedSimple.gltf',
     {
         lng: 114.01,
         lat: 30.58,
         h: 0,
-        scale: 100000.0
+        scale: 10000.0
     }
 );
 
-scene.add(Monster);
+scene.add(RiggedSimple);
+
+// const InterpolationTest = new GLoader(
+//     'http://localhost:5500/examples/GLTFS/InterpolationTest/',
+//     'InterpolationTest.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 1000000.0
+//     }
+// );
+
+// scene.add(InterpolationTest);
+
+// const Monster = new GLoader(
+//     'http://localhost:5500/examples/Monster/',
+//     'Monster.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 100000.0
+//     }
+// );
+
+// scene.add(Monster);
 
 // const BoxAnimated = new GLoader(
 //     'http://localhost:5500/examples/BoxAnimated/',

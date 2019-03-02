@@ -9,8 +9,8 @@ const requestImage = require('./../utils/requestImage'),
     GProgram = require('./GProgram'),
     GBuffer = require('./GBuffer');
 //
-const fragText = require('./../shader/surface_fs.glsl');
-const vertText = require('./../shader/surface_vs.glsl');
+const fragText = require('./../shader/surface-fs.glsl');
+const vertText = require('./../shader/surface-vs.glsl');
 /**
  * request terrain data for cesium server
  * @class

@@ -1,8 +1,9 @@
 const requestImage = require('./../utils/requestImage'),
-    { isBase64, base64ToArrayBuffer } = require('./../utils/typedArray'),
+    { isBase64 } = require('./../utils/typedArray'),
     fetch = require('./../utils/fetch'),
     Camera = require('./../camera/Camera'),
     //objects
+    GSkin = require('./../object/GSkin'),
     GNode = require('./../object/GNode'),
     GMesh = require('./../object/GMesh'),
     GMaterial = require('./../object/GMaterial'),
@@ -183,6 +184,7 @@ class GLTFLoader {
             return {
                 scene: that._scenes[defaultScene],
                 nodes: that._nodes,
+                skins: that._skins,
                 animations: that._animations
             };
         });
@@ -327,15 +329,6 @@ class GLTFLoader {
                 }, nJson);
             }
         }
-        //animations
-        if (GLTF.animations) {
-            for (let i = 0, len = GLTF.animations.length; i < len; i++) {
-                const animJson = GLTF.animations[i];
-                this._animations[i] = new GAnimation({
-                    accessors: this._accessors
-                }, animJson);
-            }
-        }
         //node: hook up children
         for (let i = 0, len = this._nodes.length; i < len; i++) {
             const node = this._nodes[i];
@@ -358,7 +351,27 @@ class GLTFLoader {
                 };
             }
         }
-        //
+        //animations
+        if (GLTF.animations) {
+            for (let i = 0, len = GLTF.animations.length; i < len; i++) {
+                const animJson = GLTF.animations[i];
+                this._animations[i] = new GAnimation({
+                    accessors: this._accessors
+                }, animJson);
+            }
+        }
+        //skin
+        if (GLTF.skins) {
+            for (let i = 0, leni = GLTF.skins.length; i < leni; i++) {
+                this._skins[i] = new GSkin({ nodes: this._nodes, accessors: this._accessors }, GLTF.skins[i], i);
+            }
+        }
+        //jonit skin
+        for (let i = 0, len = this._nodes.length; i < len; i++) {
+            const node = this._nodes[i],
+                skinIdx = node.skinIdx;
+            node.skin = this._skins[skinIdx] || null;
+        }
     }
 }
 
