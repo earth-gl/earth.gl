@@ -43,31 +43,31 @@ const scene = new GScene({
 
 // scene.add(ElmTree);
 
-// const Monster = new GLoader(
-//     'http://localhost:5500/examples/Monster/',
-//     'Monster.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 100000.0
-//     }
-// );
-
-// scene.add(Monster);
-
-const BoxAnimated = new GLoader(
-    'http://localhost:5500/examples/BoxAnimated/',
-    'BoxAnimated.gltf',
+const Monster = new GLoader(
+    'http://localhost:5500/examples/Monster/',
+    'Monster.gltf',
     {
-        lng: 114.012,
-        lat: 33.58,
+        lng: 114.01,
+        lat: 30.58,
         h: 0,
-        scale: 1000000.0
+        scale: 100000.0
     }
 );
 
-scene.add(BoxAnimated);
+scene.add(Monster);
+
+// const BoxAnimated = new GLoader(
+//     'http://localhost:5500/examples/BoxAnimated/',
+//     'BoxAnimated.gltf',
+//     {
+//         lng: 114.012,
+//         lat: 33.58,
+//         h: 0,
+//         scale: 1000000.0
+//     }
+// );
+
+// scene.add(BoxAnimated);
 
 // const ATrangle = new GLoader(
 //     'http://localhost:5500/examples/ATrangle/',
@@ -76,8 +76,8 @@ scene.add(BoxAnimated);
 //         lng: 114.01,
 //         lat: 30.58,
 //         h: 0,
-//         scale: 1000000.0,
-//         vertical: false,
+//         scale: 2000000.0,
+//         vertical: true,
 //     }
 // );
 

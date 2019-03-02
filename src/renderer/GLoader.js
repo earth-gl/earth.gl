@@ -190,10 +190,10 @@ class GLoader {
                     vAccessor.bufferData();
                     vAccessor.link('a_position');
                     //2.bind normal buffer
-                    const nAccessor = primitive.attributes['NORMAL'];
-                    nAccessor.bindBuffer();
-                    nAccessor.bufferData();
-                    nAccessor.link('a_normal');
+                    // const nAccessor = primitive.attributes['NORMAL'];
+                    // nAccessor.bindBuffer();
+                    // nAccessor.bufferData();
+                    // nAccessor.link('a_normal');
                     //2.bind index buffer
                     const indicesBuffer = primitive.indicesBuffer;
                     indicesBuffer.bindBuffer();
@@ -273,23 +273,20 @@ class GLoader {
      */
     _applyAnimation(animation, timeStamp) {
         const nodes = this._nodes;
-        for (let j = 0, len2 = animation.samplers.length; j < len2; j++) {
-            const animationSampler = animation.samplers[j];
-            animationSampler.update(timeStamp);
-        }
+        //channel samplers update
         for (let j = 0, len2 = animation.channels.length; j < len2; j++) {
             const channel = animation.channels[j],
                 animationSampler = channel.sampler,
                 node = nodes[channel.target.nodeID];
             switch (channel.target.path) {
                 case 'rotation':
-                    node.rotation = new Quat().set(...animationSampler._curValue._out);
+                    node.rotation = animationSampler.getUpdatedQuaternion(timeStamp);
                     break;
                 case 'translation':
-                    node.translation = new Vec3().set(...animationSampler._curValue._out);
+                    node.translation = animationSampler.getUpdatedAnimateion(timeStamp);
                     break;
                 case 'scale':
-                    node.scale = new Vec3().set(...animationSampler._curValue._out);
+                    node.scale = animationSampler.getUpdatedAnimateion(timeStamp);
                     break;
             }
             //update model matrix

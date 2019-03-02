@@ -104,7 +104,7 @@ class GScene extends Eventable {
         /**
          * timestampe scale (delta time)
          */
-        this._timeStampScale = 0.0001;
+        this._timeStampScale = 0.001;
         /**
          * store current timestamp
          */
@@ -223,10 +223,9 @@ class GScene extends Eventable {
         //render surface
         surface.render(camera, timeStamp);
         //render gltf
-        for (let i = 0, len = gltfs.length; i < len; i++) {
-            const gltf = gltfs[i];
+        gltfs.forEach((gltf)=>{
             gltf.render(camera, timeStamp);
-        }
+        });
     }
 }
 
