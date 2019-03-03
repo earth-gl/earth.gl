@@ -193,16 +193,34 @@ class GLoader {
             if (node.mesh) {
                 const mesh = node.mesh;
                 mesh.primitives.forEach(primitive => {
-                    //1.bind vertex buffer
+                    //1.position attribute
                     const vAccessor = primitive.attributes['POSITION'];
-                    vAccessor.bindBuffer();
-                    vAccessor.bufferData();
-                    vAccessor.link('a_position');
-                    //2.bind normal buffer
-                    // const nAccessor = primitive.attributes['NORMAL'];
-                    // nAccessor.bindBuffer();
-                    // nAccessor.bufferData();
-                    // nAccessor.link('a_normal');
+                    if(vAccessor){
+                        vAccessor.bindBuffer();
+                        vAccessor.bufferData();
+                        vAccessor.link('a_position');
+                    }
+                    //2.normal attribute
+                    const nAccessor = primitive.attributes['NORMAL'];
+                    if(nAccessor){
+                        nAccessor.bindBuffer();
+                        nAccessor.bufferData();
+                        nAccessor.link('a_normal');
+                    }
+                    //3.skin joints
+                    const jAccessor = primitive.attributes['JOINTS_0'];
+                    if(jAccessor){
+                        jAccessor.bindBuffer();
+                        jAccessor.bufferData();
+                        jAccessor.link('a_joints_0');
+                    }
+                    //4.skin weights
+                    const wAccessor = primitive.attributes['WEIGHTS_0'];
+                    if(wAccessor){
+                        wAccessor.bindBuffer();
+                        wAccessor.bufferData();
+                        wAccessor.link('a_weights_0');
+                    }
                     //2.bind index buffer
                     const indicesBuffer = primitive.indicesBuffer;
                     indicesBuffer.bindBuffer();
@@ -213,14 +231,23 @@ class GLoader {
                         uModel = new GUniform(gProgram, 'u_modelMatrix');
                     //4.cache mesh
                     primitive.cache = {
-                        uProject: uProject,
-                        uView: uView,
-                        uModel: uModel,
-                        vAccessor: vAccessor,
-                        indicesBuffer: indicesBuffer,
+                        attributes:{
+                            vAccessor,
+                            nAccessor,
+                            jAccessor,
+                            wAccessor
+                        },
+                        uniforms:{
+                            uProject,
+                            uView,
+                            uModel
+                        },
+                        indices:{
+                            indicesBuffer,
+                            indicesLength: primitive.indicesLength,
+                            indicesComponentType:primitive.indicesComponentType
+                        },
                         mode: primitive.mode,
-                        indicesLength: primitive.indicesLength,
-                        indicesComponentType: primitive.indicesComponentType
                     };
                 });
             }
@@ -252,24 +279,21 @@ class GLoader {
             primitives.forEach(primitive => {
                 const cache = primitive.cache;
                 const {
-                    vAccessor,
-                    indicesBuffer,
-                    mode,
-                    indicesLength,
-                    indicesComponentType,
-                    uProject,
-                    uView,
-                    uModel
+                    attributes,
+                    uniforms,
+                    indices,
+                    mode
                 } = cache;
                 //relink
-                vAccessor.relink();
-                indicesBuffer.bindBuffer();
+                for(let key in attributes) attributes[key]?attributes.relink():null;
+                //indices
+                indices.indicesBuffer.bindBuffer();
                 //uniform
-                uProject.assignValue(camera.ProjectionMatrix);
-                uView.assignValue(camera.ViewMatrix);
-                uModel.assignValue(matrix.value);
+                uniforms.uProject.assignValue(camera.ProjectionMatrix);
+                uniforms.uView.assignValue(camera.ViewMatrix);
+                uniforms.uModel.assignValue(matrix.value);
                 //draw elements
-                gl.drawElements(mode, indicesLength, indicesComponentType, 0);
+                gl.drawElements(mode, indices.indicesLength, indices.indicesComponentType, 0);
             });
         }
         //draw children
@@ -313,11 +337,11 @@ class GLoader {
             const jointNode  = skin.joints[i];
             // if there is no matrix saved for this joint
             // rotate it
-            const m = origMatrix.xRotate(t);
+            //const m = origMatrix.xRotate(t);
             // decompose it back into position, rotation, scale
             // into the joint
             m4.decompose(m, joint.source.position, joint.source.rotation, joint.source.scale);
-          }
+        }
     }
     /**
      * 
