@@ -330,18 +330,7 @@ class GLoader {
      * 
      */
     _applySkin(skin, t) {
-        const angle = Math.sin(t)*0.8;
-        const node = skin.skeleton;
-        const inverseTransformMat4 = node.modelMatrix.clone().invert();
-        for (let i = 0; i < skin.joints.length; ++i) {
-            const jointNode  = skin.joints[i];
-            // if there is no matrix saved for this joint
-            // rotate it
-            //const m = origMatrix.xRotate(t);
-            // decompose it back into position, rotation, scale
-            // into the joint
-            m4.decompose(m, joint.source.position, joint.source.rotation, joint.source.scale);
-        }
+ 
     }
     /**
      * 

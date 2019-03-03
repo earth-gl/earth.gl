@@ -28,7 +28,7 @@ class GSkin {
         /**
          * 
          */
-        this.jointMatrices = [];
+        this.jointMatrix = [];
         /**
          * @type {Float32Array}
          */
@@ -40,15 +40,11 @@ class GSkin {
         /**
          * @type {Mat4[]}
          */
-        this.inverseBindMatrices = [];
+        this.inverseBindMatrix = [];
         /**
          * @type {Float32Array} rawdatas of matrix
          */
         this.inverseBindMatricesData = options.inverseBindMatrices !== undefined ? resource.accessors[options.inverseBindMatrices].typedArrayBuffer : null;
-        /**
-         * @type {typedArrayBuffer}
-         */
-
         /**
          * 
          * @type {GNode}
@@ -72,10 +68,10 @@ class GSkin {
      */
     _processMatrix() {
         //create views for each joint and inverseBindMatrix
-        const inverseBindMatrices = this.inverseBindMatrices,
+        const inverseBindMatrices = this.inverseBindMatrix,
             inverseBindMatricesData = this.inverseBindMatricesData,
             jointData = this.jointData,
-            jointMatrices = this.jointMatrices;
+            jointMatrices = this.jointMatrix;
         for (let i = 0; i < this.joints.length; ++i) {
             const start = i * 16;
             inverseBindMatrices.push(new Mat4().set(...inverseBindMatricesData.slice(start, start + 16)));
@@ -86,25 +82,21 @@ class GSkin {
      * update skin matrix by timestamp
      * @param {Number} t 
      */
-    updateSkeleton(t) {
+    updateJointMatrix() {
         const joints = this.joints,
-            jointMatrices = this.jointMatrices,
-            skeleton = this.skeleton,
-            modleMatrix = skeleton.modleMatrix,
-            inverseBindMatrices = this.inverseBindMatrices,
-            modleMatrixInverse = modleMatrix.clone().invert();
+            jointMatrix = this.jointMatrix,
+            inverseBindMatrix = this.inverseBindMatrix,
+            inverseTransformMat4 = this.skeleton.modleMatrix.clone().invert();
         //go through each jonit and get its current modelmatrix
         //apply the inverse bind matrices and store the entire result in the texture
         //update jonit matrix 
-        for (let j = 0; j < joints.length; ++j) {
-            const joint = joints[j];
-            const dst = jointMatrices[j];
-            const dist = modleMatrixInverse.clone().multiply(joint.modleMatrix);
-            dist.multiply(inverseBindMatrices[j]);
+        for (let i = 0; i < joints.length; ++i) {
+            const jointNode = joints[i];
+            let mat4 = jointNode.modleMatrix.clone().multlpy(inverseBindMatrix[i]);
+            mat4 = inverseTransformMat4.multlpy(mat4);
+            jointMatrix[i] = mat4;
         }
-        //todo texture
     }
-
 }
 
 module.exports = GSkin;

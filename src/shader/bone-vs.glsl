@@ -34,7 +34,8 @@ attribute vec4 a_weights_0;
 
 void main() { 
     v_color = vec4(a_position,1.0);
-    mat4 skinMatrix = a_weights_0.x * u_jointMatrix[int(a_joints_0.x)] +
+    mat4 skinMatrix = 
+        a_weights_0.x * u_jointMatrix[int(a_joints_0.x)] +
         a_weights_0.y * u_jointMatrix[int(a_joints_0.y)] +
         a_weights_0.z * u_jointMatrix[int(a_joints_0.z)] +
         a_weights_0.w * u_jointMatrix[int(a_joints_0.w)];
