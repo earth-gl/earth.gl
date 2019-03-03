@@ -1,8 +1,7 @@
 /**
- * 
+ * @class
  */
 class GSampler{
-
     constructor(options){
         this.name = options.name !== undefined ? options.name : null;
         this.magFilter = options.magFilter !== undefined ? options.magFilter : null;
@@ -13,11 +12,6 @@ class GSampler{
         this.extras = options.extras !== undefined ? options.extras : null;
         this.sampler = null;
     }
-
-    apply(){
-
-    }
-
 }
 
 module.exports = GSampler;

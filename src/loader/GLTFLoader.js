@@ -3,15 +3,15 @@ const requestImage = require('./../utils/requestImage'),
     fetch = require('./../utils/fetch'),
     Camera = require('./../camera/Camera'),
     //objects
+    GSampler = require('./../object/GSampler'),
+    GTexture = require('./../object/GTexture'),
     GSkin = require('./../object/GSkin'),
     GNode = require('./../object/GNode'),
     GMesh = require('./../object/GMesh'),
     GMaterial = require('./../object/GMaterial'),
     GAccessor = require('./../object/GAccessor'),
     GBufferView = require('./../object/GBufferView'),
-    GAnimation = require('./../object/GAnimation'),
-    //renderer
-    GSampler = require('./../renderer/GSampler');
+    GAnimation = require('./../object/GAnimation');
 /**
  * https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0
  * @author yellow date 2019/1/29
@@ -305,8 +305,8 @@ class GLTFLoader {
         //textures
         if (GLTF.textures) {
             for (let i = 0, len = GLTF.textures.length; i < len; i++) {
-                //const tJson = glTF.textures[i];
-                //this._textures[i] = new GTexture(tJson);
+                const tJson = glTF.textures[i];
+                this._textures[i] = new GTexture({ samplers: this._samplers, images: this._images }, tJson);
             }
         }
         //mesh

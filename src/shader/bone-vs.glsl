@@ -17,33 +17,23 @@ attribute vec3 a_position;
 attribute vec3 a_normal;
 //纹理坐标
 uniform sampler2D u_texture;
-
+//传递颜色
 varying vec4 v_color;
-
+//传递法线坐标
 varying vec3 v_normal;
 
-#define ROW0_U ((0.5 + 0.0) / 4.)
-#define ROW1_U ((0.5 + 1.0) / 4.)
-#define ROW2_U ((0.5 + 2.0) / 4.)
-#define ROW3_U ((0.5 + 3.0) / 4.)
+//skin
+//定义joint matrix, 最长matrix
+uniform JointMatrix
+{
+    mat4 matrix[65];
+} u_jointMatrix;
 
-//skin 权重
-attribute vec4 a_weights;
-//连接结点
-attribute vec4 a_joints;
-//texture
-uniform sampler2D u_jointTexture;
-//总连接点数目
-uniform float u_numJoints;
 
-mat4 getBoneMatrix(float jointNdx) {
-  float v = (jointNdx + 0.5) / u_numJoints;
-  return mat4(
-    texture2D(u_jointTexture, vec2(ROW0_U, v)),
-    texture2D(u_jointTexture, vec2(ROW1_U, v)),
-    texture2D(u_jointTexture, vec2(ROW2_U, v)),
-    texture2D(u_jointTexture, vec2(ROW3_U, v)));
-}
+
+in vec4 joint0;
+in vec4 weight0;
+
 
 void main() { 
     v_color = vec4(a_position,1.0);

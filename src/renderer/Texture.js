@@ -1,12 +1,13 @@
 /**
  * @author yellow date 2019/2/3
+ * @modify date 2019/3/3 unify gltf texture object
  * @class
  */
-class GTexture {
+class Texture {
     /**
      * 
      * @param {WebGLRenderingContext} gl
-     * @param {Uint8Array} pixel
+     * @param {Uint8Array} source
      * @param {Number} width
      * @param {Number} height
      * @param {Number} format gl.RGBA
@@ -14,7 +15,7 @@ class GTexture {
      * @param {Number} srcType gl.UNSIGNED_BYTE
      * @param {Number} textureTyp] default is gl.TEXTURE_2D
      */
-    constructor(gl, pixel, width, height, format, srcFormat, srcType, textureType) {
+    constructor(gl, source, width, height, format, srcFormat, srcType, textureType) {
         /**
          * @type {WebGLRenderingContext}
          */
@@ -26,7 +27,7 @@ class GTexture {
         /**
          * @type {Uint8Array}
          */
-        this._pixel = pixel;
+        this._pixel = source;
         /**
          * @type {Number}
          */
@@ -112,4 +113,4 @@ class GTexture {
     }
 }
 
-module.exports = GTexture;
+module.exports = Texture;

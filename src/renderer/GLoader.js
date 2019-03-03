@@ -95,6 +95,10 @@ class GLoader {
          * @type {GAnimation[]}
          */
         this._animations = [];
+        /**
+         * @type {GSkin[]}
+         */
+        this._skins = [];
     }
     /**
      * 
@@ -302,21 +306,18 @@ class GLoader {
      * 
      */
     _applySkin(skin, t) {
-        // for (let i = 0; i < skin.joints.length; ++i) {
-        //     const joint = skin.joints[i];
-        //     // if there is no matrix saved for this joint
-        //     if (!origMatrices.has(joint)) {
-        //       // save a matrix for joint
-        //       origMatrices.set(joint, joint.source.getMatrix());
-        //     }
-        //     // get the original matrix
-        //     const origMatrix = origMatrices.get(joint);
-        //     // rotate it
-        //     const m = origMatrix.xRotate(t);
-        //     // decompose it back into position, rotation, scale
-        //     // into the joint
-        //     m4.decompose(m, joint.source.position, joint.source.rotation, joint.source.scale);
-        //   }
+        const angle = Math.sin(t)*0.8;
+        const node = skin.skeleton;
+        const inverseTransformMat4 = node.modelMatrix.clone().invert();
+        for (let i = 0; i < skin.joints.length; ++i) {
+            const jointNode  = skin.joints[i];
+            // if there is no matrix saved for this joint
+            // rotate it
+            const m = origMatrix.xRotate(t);
+            // decompose it back into position, rotation, scale
+            // into the joint
+            m4.decompose(m, joint.source.position, joint.source.rotation, joint.source.scale);
+          }
     }
     /**
      * 

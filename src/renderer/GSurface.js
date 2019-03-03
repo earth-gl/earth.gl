@@ -1,6 +1,6 @@
 
 const requestImage = require('./../utils/requestImage'),
-    GTexture = require('./GTexture'),
+    Texture = require('./Texture'),
     Geographic = require('./../core/Geographic'),
     GBufferView = require('./../object/GBufferView'),
     GAccessor = require('./../object/GAccessor'),
@@ -183,7 +183,7 @@ class GSurface {
             iBuffer.bindBuffer();
             iBuffer.bufferData();
             //create texture image2d
-            const gTexture = new GTexture(
+            const gTexture = new Texture(
                 gl,
                 arraybuffer,
                 width,
