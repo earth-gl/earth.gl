@@ -305,7 +305,7 @@ class GLTFLoader {
         //textures
         if (GLTF.textures) {
             for (let i = 0, len = GLTF.textures.length; i < len; i++) {
-                const tJson = glTF.textures[i];
+                const tJson = GLTF.textures[i];
                 this._textures[i] = new GTexture({ samplers: this._samplers, images: this._images }, tJson);
             }
         }

@@ -23,7 +23,7 @@ varying vec4 v_color;
 varying vec3 v_normal;
 
 //joint matrix
-uniform mat4 u_jointMatrix[2];
+uniform mat4 u_jointMatrix[64];
 //jonits
 attribute vec4 a_joints_0;
 //weights
@@ -36,6 +36,5 @@ void main() {
         a_weights_0.y * u_jointMatrix[int(a_joints_0.y)] +
         a_weights_0.z * u_jointMatrix[int(a_joints_0.z)] +
         a_weights_0.w * u_jointMatrix[int(a_joints_0.w)];
-    mat4 modelSkinMatrix = u_modelMatrix * skinMatrix;
-    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, modelSkinMatrix, a_position);
+    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix) * skinMatrix * vec4(a_position, 1.0);
 }

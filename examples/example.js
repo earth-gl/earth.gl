@@ -56,18 +56,31 @@ const scene = new GScene({
 
 // scene.add(AnimatedMorphCube);
 
-const RiggedSimple = new GLoader(
-    'http://localhost:5500/examples/GLTFS/RiggedSimple/',
-    'RiggedSimple.gltf',
+// const RiggedSimple = new GLoader(
+//     'http://localhost:5500/examples/GLTFS/RiggedSimple/',
+//     'RiggedSimple.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 500000.0
+//     }
+// );
+
+// scene.add(RiggedSimple);
+
+const CesiumMan = new GLoader(
+    'http://localhost:5500/examples/GLTFS/CesiumMan/',
+    'CesiumMan.gltf',
     {
         lng: 114.01,
         lat: 30.58,
         h: 0,
-        scale: 1000000.0
+        scale: 500000.0
     }
 );
 
-scene.add(RiggedSimple);
+scene.add(CesiumMan);
 
 // const InterpolationTest = new GLoader(
 //     'http://localhost:5500/examples/GLTFS/InterpolationTest/',

@@ -25,5 +25,5 @@ varying vec3 v_normal;
 void main() { 
     //v_normal = normalize((u_nromalMatrix * vec4(a_normal, 0)).xyz);
     v_color = vec4(a_position,1.0);
-    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix, a_position);
+    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix) *vec4(a_position, 1.0);
 }

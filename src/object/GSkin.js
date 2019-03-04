@@ -26,13 +26,9 @@ class GSkin {
          */
         this.joints = (options.joints || []).map(ndx => resource.nodes[ndx]);
         /**
-         * 
-         */
-        this.jointMatrix = new Float32Array(this.joints.length * 16);
-        /**
          * @type {Float32Array}
          */
-        this.jointData = new Float32Array(this.joints.length * 16);
+        this.jointMatrixData = new Float32Array(this.joints.length * 16);
         /**
          * @type {GTexture}
          */
@@ -62,10 +58,6 @@ class GSkin {
          * process inverse bindmatrix
          */
         this._processMatrix();
-        /**
-         * calcute joint matrix
-         */
-        this._processJonitMatrix();
     }
     /**
      * 
@@ -83,13 +75,13 @@ class GSkin {
     /**
      * update the joint matrix
      */
-    _processJonitMatrix() {
+    _processJonitMatrix(inverseTransformMat4) {
         //create views for each joint and inverseBindMatrix
         const joints = this.joints,
             inverseBindMatrix = this.inverseBindMatrix,
-            jointMatrix = this.jointMatrix;
+            jointMatrixData = this.jointMatrixData;
         //update joint matrix
-        const inverseTransformMat4 = this.skeleton.modelMatrix.clone().invert();
+        //const inverseTransformMat4 = this.skeleton.modelMatrix.clone().invert();
         //go through each jonit and get its current modelmatrix
         //apply the inverse bind matrices and store the entire result in the texture
         //update jonit matrix 
@@ -97,7 +89,7 @@ class GSkin {
             const jointNode = joints[i];
             let jmatrix = jointNode.modelMatrix.clone().multiply(inverseBindMatrix[i]);
             jmatrix = inverseTransformMat4.clone().multiply(jmatrix);
-            jointMatrix.set(jmatrix.value,i*16);
+            jointMatrixData.set(jmatrix.value,i*16);
         }
     }
 }
