@@ -40,9 +40,9 @@ const Monster = new GLoader(
     'Monster.gltf',
     {
         lng: 114.01,
-        lat: 66.58,
+        lat: 30.58,
         h: 0,
-        scale: 1000.0
+        scale: 10000.0
     }
 );
 
@@ -55,7 +55,7 @@ const BoxAnimated = new GLoader(
         lng: 114.01,
         lat: 30.58,
         h: 0,
-        scale: 1000000.0,
+        scale: 100000.0,
         vertical: true,
     }
 );
