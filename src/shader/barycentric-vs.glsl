@@ -16,5 +16,5 @@ varying vec2 v_barycentric;
 
 void main() { 
     v_barycentric = a_barycentric;
-    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix) *vec4(a_position, 1.0);
+    gl_Position = targetpos(u_projectionMatrix, u_viewMatrix, u_modelMatrix)*vec4(a_position, 1.0);
 }

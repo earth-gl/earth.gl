@@ -9,53 +9,6 @@ const scene = new GScene({
     height: 600
 });
 
-// const tree = new GLoader(
-//     'http://localhost:5500/examples/Tree/',
-//     'tree.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 10000.0
-//     });
-
-// scene.add(tree);
-
-// const datePalmTree = new GLoader(
-//     'http://localhost:5500/examples/DatePalmTree/',
-//     'DatePalmTree.gltf',
-//     {
-//         lng: 179.13,
-//         lat: 30.58
-//     }
-// );
-
-// scene.add(datePalmTree);
-
-// const ElmTree = new GLoader(
-//     'http://localhost:5500/examples/ElmTree/',
-//     'ElmTree.gltf',
-//     {
-//         lng: 114.53,
-//         lat: 30.58
-//     }
-// );
-
-// scene.add(ElmTree);
-
-// const AnimatedMorphCube = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/AnimatedMorphCube/',
-//     'AnimatedMorphCube.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 1000000.0
-//     }
-// );
-
-// scene.add(AnimatedMorphCube);
-
 // const RiggedSimple = new GLoader(
 //     'http://localhost:5500/examples/GLTFS/RiggedSimple/',
 //     'RiggedSimple.gltf',
@@ -69,18 +22,18 @@ const scene = new GScene({
 
 // scene.add(RiggedSimple);
 
-const CesiumMan = new GLoader(
-    'http://localhost:5500/examples/GLTFS/CesiumMan/',
-    'CesiumMan.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0,
-        scale: 500000.0
-    }
-);
+// const CesiumMan = new GLoader(
+//     'http://localhost:5500/examples/GLTFS/CesiumMan/',
+//     'CesiumMan.gltf',
+//     {
+//         lng: 114.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 500000.0
+//     }
+// );
 
-scene.add(CesiumMan);
+// scene.add(CesiumMan);
 
 // const InterpolationTest = new GLoader(
 //     'http://localhost:5500/examples/GLTFS/InterpolationTest/',
@@ -96,7 +49,7 @@ scene.add(CesiumMan);
 // scene.add(InterpolationTest);
 
 // const Monster = new GLoader(
-//     'http://localhost:5500/examples/Monster/',
+//     'http://localhost:5500/examples/GLTFS/Monster/',
 //     'Monster.gltf',
 //     {
 //         lng: 114.01,
@@ -108,21 +61,22 @@ scene.add(CesiumMan);
 
 // scene.add(Monster);
 
-// const BoxAnimated = new GLoader(
-//     'http://localhost:5500/examples/BoxAnimated/',
-//     'BoxAnimated.gltf',
+// const ElmTree = new GLoader(
+//     'http://localhost:5500/examples/GLTFS/ElmTree/',
+//     'ElmTree.gltf',
 //     {
-//         lng: 114.012,
-//         lat: 33.58,
+//         lng: 114.01,
+//         lat: 30.58,
 //         h: 0,
-//         scale: 1000000.0
+//         scale: 1000000.0,
+//         vertical: true,
 //     }
 // );
 
-// scene.add(BoxAnimated);
+// scene.add(ElmTree);
 
 // const ATrangle = new GLoader(
-//     'http://localhost:5500/examples/ATrangle/',
+//     'http://localhost:5500/examples/GLTFS/ATrangle/',
 //     'AnimatedTriangle.gltf',
 //     {
 //         lng: 114.01,
@@ -134,19 +88,6 @@ scene.add(CesiumMan);
 // );
 
 // scene.add(ATrangle);
-
-// const castle = new GLoader(
-//     'http://localhost:5500/examples/Castle/',
-//     'model.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 1000000.0
-//     }
-// );
-
-// scene.add(castle);
 
 const update = function () {
     scene.render();

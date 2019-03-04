@@ -140,7 +140,7 @@ class GLoader {
             return response.json();
         }).then(json => {
             //create program according to skin
-            const gProgram = that._gProgram = json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
+            const gProgram = that._gProgram = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
                 uri = root + modelFilename,
                 loader = new GLTFLoader(json, { uri: uri });
             //initalization loader resource
@@ -275,14 +275,14 @@ class GLoader {
      */
     _drawNode(node, camera, parentMatrix) {
         //gl context
-        const gl = this._gl,
-            matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
-        if(node.skin){
-            const skin = node.skin,
-                inverseTransformMat4 = node.modelMatrix.clone();
-                //inverseTransformMat4 = matrix.clone().invert();
-            skin._processJonitMatrix(inverseTransformMat4);
-        }
+        const gl = this._gl;
+        let matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
+        // if (node.skin) {
+        //     const skin = node.skin,
+        //         //inverseTransformMat4 = node.modelMatrix.clone().invert();
+        //         inverseTransformMat4 = matrix.clone().invert();
+        //     skin._processJonitMatrix(inverseTransformMat4);
+        // }
         //draw mesh
         if (node.mesh) {
             const primitives = node.mesh.primitives;
@@ -301,11 +301,11 @@ class GLoader {
                 jAccessor ? jAccessor.relink() : null;
                 wAccessor ? wAccessor.relink() : null;
                 //indices
-                const { indicesBuffer, indicesComponentType, indicesLength } = indices;
-                indicesBuffer ? indicesBuffer.bindBuffer() : null;
+                const { indicesBuffer, indicesLength, indicesComponentType } = indices;
+                indicesBuffer.bindBuffer();
                 //uniform
                 const { uJoint, uProject, uView, uModel } = uniforms;
-                uJoint ? uJoint.assignValue(node.skin.jointMatrixData) : null;
+                uJoint && node.skin ? uJoint.assignValue(node.skin.jointMatrixData) : null;
                 uProject ? uProject.assignValue(camera.ProjectionMatrix) : null;
                 uView ? uView.assignValue(camera.ViewMatrix) : null;
                 uModel ? uModel.assignValue(matrix.value) : null;
@@ -349,7 +349,6 @@ class GLoader {
      */
     render(camera, t) {
         const animId = this._animId,
-            geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
@@ -361,7 +360,7 @@ class GLoader {
             this._applyAnimation(animations[animId], t);
         //draw nodes
         for (let i = 0, len = sceneNodes.length; i < len; i++)
-            this._drawNode(sceneNodes[i], camera, geoTransformMatrix);
+            this._drawNode(sceneNodes[i], camera, this._geoTransformMatrix.clone());
     }
 }
 
