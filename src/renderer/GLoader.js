@@ -201,12 +201,12 @@ class GLoader {
                         vAccessor.link('a_position');
                     }
                     //2.normal attribute
-                    const nAccessor = primitive.attributes['NORMAL'];
-                    if (nAccessor) {
-                        nAccessor.bindBuffer();
-                        nAccessor.bufferData();
-                        nAccessor.link('a_normal');
-                    }
+                    // const nAccessor = primitive.attributes['NORMAL'];
+                    // if (nAccessor) {
+                    //     nAccessor.bindBuffer();
+                    //     nAccessor.bufferData();
+                    //     nAccessor.link('a_normal');
+                    // }
                     //3.skin joints
                     const jAccessor = primitive.attributes['JOINTS_0'];
                     if (jAccessor) {
@@ -236,7 +236,7 @@ class GLoader {
                     primitive.cache = {
                         attributes: {
                             vAccessor,
-                            nAccessor,
+                            //nAccessor,
                             jAccessor,
                             wAccessor
                         },
@@ -274,15 +274,17 @@ class GLoader {
      * @param {*} parentMatrix 
      */
     _drawNode(node, camera, parentMatrix) {
-        //gl context
-        const gl = this._gl;
-        let matrix = parentMatrix === null ? node.modelMatrix.clone() : parentMatrix.clone().multiply(node.modelMatrix);
-        // if (node.skin) {
-        //     const skin = node.skin,
-        //         //inverseTransformMat4 = node.modelMatrix.clone().invert();
-        //         inverseTransformMat4 = matrix.clone().invert();
-        //     skin._processJonitMatrix(inverseTransformMat4);
-        // }
+        //gl context, set the node.matrix as a store
+        const gl = this._gl,
+            geoTransformMatrix = this._geoTransformMatrix.clone(),
+            matrix = node.matrix = parentMatrix ? parentMatrix.clone().multiply(node.modelMatrix) : node.modelMatrix.clone();
+        if (node.skin) {
+            //}{ bug todo
+            const skin = node.skin,
+                //inverseTransformMat4 = node.modelMatrix.clone().invert();
+                inverseTransformMat4 = matrix.clone().invert();
+            skin._processJonitMatrix(inverseTransformMat4);
+        }
         //draw mesh
         if (node.mesh) {
             const primitives = node.mesh.primitives;
@@ -308,7 +310,7 @@ class GLoader {
                 uJoint && node.skin ? uJoint.assignValue(node.skin.jointMatrixData) : null;
                 uProject ? uProject.assignValue(camera.ProjectionMatrix) : null;
                 uView ? uView.assignValue(camera.ViewMatrix) : null;
-                uModel ? uModel.assignValue(matrix.value) : null;
+                uModel ? uModel.assignValue(geoTransformMatrix.multiply(matrix).value) : null;
                 //draw elements
                 gl.drawElements(mode, indicesLength, indicesComponentType, 0);
             });
@@ -360,7 +362,7 @@ class GLoader {
             this._applyAnimation(animations[animId], t);
         //draw nodes
         for (let i = 0, len = sceneNodes.length; i < len; i++)
-            this._drawNode(sceneNodes[i], camera, this._geoTransformMatrix.clone());
+            this._drawNode(sceneNodes[i], camera);
     }
 }
 

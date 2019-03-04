@@ -365,12 +365,12 @@ class GLTFLoader {
             for (let i = 0, leni = GLTF.skins.length; i < leni; i++) {
                 this._skins[i] = new GSkin({ nodes: this._nodes, accessors: this._accessors }, GLTF.skins[i], i);
             }
-        }
-        //jonit skin
-        for (let i = 0, len = this._nodes.length; i < len; i++) {
-            const node = this._nodes[i],
-                skinIdx = node.skinIdx;
-            node.skin = this._skins[skinIdx] || null;
+            //jonit skin
+            for (let i = 0, len = this._nodes.length; i < len; i++) {
+                const node = this._nodes[i],
+                    skinIdx = node.skinIdx;
+                node.skin = this._skins[skinIdx] || null;
+            }
         }
     }
 }

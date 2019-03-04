@@ -87,7 +87,7 @@ class GSkin {
         //update jonit matrix 
         for (let i = 0; i < joints.length; i++) {
             const jointNode = joints[i];
-            let jmatrix = jointNode.modelMatrix.clone().multiply(inverseBindMatrix[i]);
+            let jmatrix = jointNode.matrix.clone().multiply(inverseBindMatrix[i]);
             jmatrix = inverseTransformMat4.clone().multiply(jmatrix);
             jointMatrixData.set(jmatrix.value,i*16);
         }

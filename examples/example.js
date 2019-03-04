@@ -35,31 +35,32 @@ const scene = new GScene({
 
 // scene.add(CesiumMan);
 
-// const InterpolationTest = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/InterpolationTest/',
-//     'InterpolationTest.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 1000000.0
-//     }
-// );
+const Monster = new GLoader(
+    'http://localhost:5500/examples/GLTFS/Monster/',
+    'Monster.gltf',
+    {
+        lng: 114.01,
+        lat: 66.58,
+        h: 0,
+        scale: 1000.0
+    }
+);
 
-// scene.add(InterpolationTest);
+scene.add(Monster);
 
-// const Monster = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/Monster/',
-//     'Monster.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 100000.0
-//     }
-// );
+const BoxAnimated = new GLoader(
+    'http://localhost:5500/examples/GLTFS/BoxAnimated/',
+    'BoxAnimated.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 1000000.0,
+        vertical: true,
+    }
+);
 
-// scene.add(Monster);
+scene.add(BoxAnimated);
 
 // const ElmTree = new GLoader(
 //     'http://localhost:5500/examples/GLTFS/ElmTree/',
@@ -68,7 +69,7 @@ const scene = new GScene({
 //         lng: 114.01,
 //         lat: 30.58,
 //         h: 0,
-//         scale: 1000000.0,
+//         scale: 100000.0,
 //         vertical: true,
 //     }
 // );

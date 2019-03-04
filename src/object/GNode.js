@@ -63,6 +63,10 @@ class GNode {
          */
         this.aabb = null;
         /**
+         * create a identity matrix to store the trans data
+         */
+        this.matrix = new Mat4().identity();
+        /**
          * initial model matrix
          */
         this._initialMatrix();
