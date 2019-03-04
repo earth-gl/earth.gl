@@ -4,10 +4,17 @@ const Global = earth.gl.scene.Global,
 
 const canvas = document.getElementById('mapCanvas');
 
+const width = window.innerWidth-20;
+const height = window.innerHeight-20;
+
+canvas.style.width = `${width}px`;
+canvas.style.height = `${height}px`;
+
+
 const scene = new Global({
     canvas: canvas,
-    width: 800,
-    height: 600
+    width: width,
+    height: height
 });
 
 const surface = new Surface();
@@ -60,40 +67,24 @@ const BoxAnimated = new GLTFLoader(
         lng: 114.01,
         lat: 37.58,
         h: 0.0,
-        scale: 100000.0,
-        vertical: true,
+        scale: 100000.0
     }
 );
 
 scene.add(BoxAnimated);
 
-// const ElmTree = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/ElmTree/',
-//     'ElmTree.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 100000.0,
-//         vertical: true,
-//     }
-// );
+const ElmTree = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/ElmTree/',
+    'ElmTree.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 10000.0
+    }
+);
 
-// scene.add(ElmTree);
-
-// const ATrangle = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/ATrangle/',
-//     'AnimatedTriangle.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 2000000.0,
-//         vertical: true,
-//     }
-// );
-
-// scene.add(ATrangle);
+scene.add(ElmTree);
 
 const update = function () {
     scene.render();
