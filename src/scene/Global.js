@@ -29,7 +29,7 @@ const merge = require('../utils/merge'),
  * scene render object
  */
 const Surface = require('./Surface'),
-    GLoader = require('../loader/GLTFLoader');
+    GLTFLoader = require('../loader/GLTFLoader');
 /**
  * 
  */
@@ -104,6 +104,10 @@ class Global extends Eventable {
          */
         this._gltfs = [];
         /**
+         * @type {Array}
+         */
+        this._surfaces=[];
+        /**
          * timestampe scale (delta time)
          */
         this._timeStampScale = 0.001;
@@ -115,10 +119,6 @@ class Global extends Eventable {
          * initialization
          */
         this._initialize();
-        /**
-         * 加载显示资源
-         */
-        this._initComponents();
         /**
          * 注册dom时间，操作相机矩阵
          */
@@ -153,15 +153,6 @@ class Global extends Eventable {
     /**
      * 
      */
-    _initComponents() {
-        const quadtree = this._quadtree,
-            gl = this._gl;
-        //create surface
-        this._surface = new Surface(gl, quadtree);
-    }
-    /**
-     * 
-     */
     _registerDomEvents() {
         const canvas = this._canvas,
             camera = this._camera;
@@ -189,11 +180,18 @@ class Global extends Eventable {
      */
     add(o) {
         const gl = this._gl,
+            quadtree = this._quadtree,
+            surfaces = this._surfaces,
             gltfs = this._gltfs;
-        if (o instanceof GLoader) {
+        if (o instanceof GLTFLoader) {
             gltfs.push(o);
-            o.init(gl, this);
+            o._init(gl, this);
+        }else if(o instanceof Surface){
+            surfaces.push(o);
+            o._init(gl, quadtree);
         }
+        //broadcast events
+        quadtree.broadcast();
     }
     /**
      * reference
@@ -207,7 +205,7 @@ class Global extends Eventable {
             trackball = this._trackball,
             camera = this._camera,
             gltfs = this._gltfs,
-            surface = this._surface;
+            surfaces = this._surfaces;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -215,12 +213,14 @@ class Global extends Eventable {
         gl.depthFunc(gl.LEQUAL);
         gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        //update camera
+        //update trackball and camera
         trackball.update();
         //render surface
-        surface.render(camera, timeStamp);
+        surfaces.forEach(surface=>{
+            surface.render(camera, timeStamp);
+        });
         //render gltf
-        gltfs.forEach((gltf)=>{
+        gltfs.forEach(gltf=>{
             gltf.render(camera, timeStamp);
         });
     }

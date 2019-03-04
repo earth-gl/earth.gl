@@ -1,4 +1,5 @@
 const Global = require('./scene/Global'),
+    Surface = require('./scene/Surface'),
     GLTFLoader = require('./loader/GLTFLoader'),
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
@@ -10,8 +11,9 @@ module.exports = {
         Loader:{
             GLTFLoader: GLTFLoader
         },
-        renderer: {
-            Global: Global
+        scene: {
+            Global: Global,
+            Surface:Surface
         },
     }
 };

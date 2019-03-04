@@ -42,7 +42,7 @@ class GLoader {
         /**
          * @type {GProgram}
          */
-        this._gProgram = null;
+        this._program = null;
         /**
          * gltf scene
          */
@@ -104,7 +104,7 @@ class GLoader {
      * 
      * @param {WebGLRenderingContext} gl 
      */
-    init(gl, gScene) {
+    _init(gl, global) {
         /**
          * set gl context
          */
@@ -112,11 +112,11 @@ class GLoader {
         /**
          * @type {GScene}
          */
-        this._gScene = gScene;
+        this._global = global;
         /**
          * @type {GProgram}
          */
-        this._gProgram = null;
+        this._program = null;
         /**
          * initial geoTransform
          */
@@ -140,7 +140,7 @@ class GLoader {
             return response.json();
         }).then(json => {
             //create program according to skin
-            const gProgram = that._gProgram = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
+            const gProgram = that._program = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
                 uri = root + modelFilename,
                 loader = new GLTF(json, { uri: uri });
             //initalization loader resource
@@ -184,7 +184,7 @@ class GLoader {
      */
     _initComponents(scene) {
         const sceneNodes = scene.nodes,
-            gProgram = this._gProgram;
+            gProgram = this._program;
         //change program
         gProgram.useProgram();
         //liter node
@@ -351,7 +351,7 @@ class GLoader {
      */
     render(camera, t) {
         const animId = this._animId,
-            gProgram = this._gProgram,
+            gProgram = this._program,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
         if (!gProgram) return;

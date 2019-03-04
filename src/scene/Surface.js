@@ -1,20 +1,20 @@
 
-//util func
-const requestImage = require('../utils/requestImage');
-//core
-const Geographic = require('../core/Geographic'),
-    WGS84 = require('../core/Ellipsoid').WGS84;
-//object
-const GBufferView = require('../object/GBufferView'),
-    GAccessor = require('../object/GAccessor');
-//render unit
-const Texture = require('./../renderer/Texture'),
+    //util func
+const requestImage = require('../utils/requestImage'),
+    //core
+    Geographic = require('../core/Geographic'),
+    WGS84 = require('../core/Ellipsoid').WGS84,
+    //object
+    GBufferView = require('../object/GBufferView'),
+    GAccessor = require('../object/GAccessor'),
+    //render unit
+    Texture = require('./../renderer/Texture'),
     Uniform = require('./../renderer/Uniform'),
     Buffer = require('./../renderer/Buffer'),
-    Program = require('./../renderer/Program');
-//shader glsl file
-const fragText = require('./../shader/surface-fs.glsl');
-const vertText = require('./../shader/surface-vs.glsl');
+    Program = require('./../renderer/Program'),
+    //shader glsl file
+    fragText = require('./../shader/surface-fs.glsl'),
+    vertText = require('./../shader/surface-vs.glsl');
 /**
  * request terrain data for cesium server
  * @class
@@ -24,23 +24,30 @@ class GSurface {
      * @typedef {import("../core/Quadtree")} Quadtree
      * @param {Quadtree} quadtree 
      */
-    constructor(gl, quadtree) {
+    constructor() {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = gl;
+        this._gl = null;
         /**
          * @type {Quadtree}
          */
-        this._quadtree = quadtree;
+        this._quadtree = null;
         /**
          * @type {Object[]}
          * key-value: key=level-x-y, value:{program,buffer}
          */
         this._tileCaches = {};
-        /**
-         * listen to quadtree fire events
-         */
+
+    }
+    /**
+     * 
+     * @param {*} gl 
+     * @param {*} quadtree 
+     */
+    _init(gl, quadtree){
+        this._gl = gl;
+        this._quadtree = quadtree;
         this._registerEvents();
     }
     /**

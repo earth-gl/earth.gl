@@ -1,4 +1,5 @@
-const Global = earth.gl.renderer.Global,
+const Global = earth.gl.scene.Global,
+    Surface = earth.gl.scene.Surface,
     GLTFLoader = earth.gl.Loader.GLTFLoader;
 
 const canvas = document.getElementById('mapCanvas');
@@ -8,6 +9,10 @@ const scene = new Global({
     width: 800,
     height: 600
 });
+
+const surface = new Surface();
+
+scene.add(surface);
 
 const RiggedSimple = new GLTFLoader(
     'http://localhost:5500/examples/GLTFS/RiggedSimple/',

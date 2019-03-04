@@ -48,6 +48,10 @@ class Quadtree extends Eventable {
          */
         this._level = 0;
         /**
+         * @type {Array} current tiles wait rendering
+         */
+        this._renderingQuadtreeTiles = [];
+        /**
          * register events
          */
         this._registerEvents();
@@ -55,6 +59,13 @@ class Quadtree extends Eventable {
          * initialize geometric errors at each level
          */
         this._initialize();
+    }
+    /**
+     * broadcast the events again
+     */
+    broadcast(){
+        const renderingQuadtreeTiles = this._renderingQuadtreeTiles;
+        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
     }
     /**
      * 
@@ -83,7 +94,7 @@ class Quadtree extends Eventable {
         //current Level
         let level = 0;
         //pick root tile
-        const rootTiles = this.pickZeroLevelQuadtreeTiles(camera.position);
+        const rootTiles = this._pickZeroLevelQuadtreeTiles(camera.position);
         //wait rendering
         const rawQuadtreeTiles = [];
         const renderingQuadtreeTiles = [];
@@ -111,6 +122,8 @@ class Quadtree extends Eventable {
         }
         //set current level
         this._level = level;
+        //store for fire again
+        this._renderingQuadtreeTiles = renderingQuadtreeTiles;
         //
         this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
     }
@@ -145,7 +158,7 @@ class Quadtree extends Eventable {
      * @type {Vec3}
      * @returns {QuadtreeTile[]} tiles
      */
-    pickZeroLevelQuadtreeTiles(cameraSpacePosition) {
+    _pickZeroLevelQuadtreeTiles(cameraSpacePosition) {
         //zero
         const zeroLevelTiles = this._zeroLevelTiles,
             pickedZeroLevelTiles = [];
