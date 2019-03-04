@@ -1,15 +1,12 @@
+/* eslint-disable */
 const Global = earth.gl.scene.Global,
     Surface = earth.gl.scene.Surface,
     GLTFLoader = earth.gl.Loader.GLTFLoader;
-
 const canvas = document.getElementById('mapCanvas');
-
 const width = window.innerWidth-20;
 const height = window.innerHeight-20;
-
 canvas.style.width = `${width}px`;
 canvas.style.height = `${height}px`;
-
 
 const scene = new Global({
     canvas: canvas,
