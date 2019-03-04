@@ -1,21 +1,17 @@
-const GProgram = require('./renderer/GProgram'),
-    GBuffer = require('./renderer/GBuffer'),
-    GUniform = require('./renderer/GUniform'),
-    GScene = require('./renderer/GScene'),
-    GLoader = require('./renderer/GLoader'),
+const Global = require('./scene/Global'),
+    GLTFLoader = require('./loader/GLTFLoader'),
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
 module.exports = {
     gl: {
         camera: {
-            PerspectiveCamera: PerspectiveCamera,
+            PerspectiveCamera: PerspectiveCamera
         },
-        GLoader:GLoader,
+        Loader:{
+            GLTFLoader: GLTFLoader
+        },
         renderer: {
-            GScene: GScene,
-            GProgram: GProgram,
-            GBuffer: GBuffer,
-            GUniform: GUniform
+            Global: Global
         },
     }
 };

@@ -2,7 +2,7 @@
  * @author yellow date 2019/1/29
  * @class
  */
-class GBuffer {
+class Buffer {
     /**
      * 
      * @param {GProgram} gProgram 
@@ -71,4 +71,4 @@ class GBuffer {
     }
 }
 
-module.exports = GBuffer;
+module.exports = Buffer;

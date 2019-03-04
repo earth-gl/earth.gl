@@ -1,14 +1,18 @@
 
-const requestImage = require('./../utils/requestImage'),
-    Texture = require('./Texture'),
-    Geographic = require('./../core/Geographic'),
-    GBufferView = require('./../object/GBufferView'),
-    GAccessor = require('./../object/GAccessor'),
-    WGS84 = require('./../core/Ellipsoid').WGS84,
-    GUniform = require('./GUniform'),
-    GProgram = require('./GProgram'),
-    GBuffer = require('./GBuffer');
-//
+//util func
+const requestImage = require('../utils/requestImage');
+//core
+const Geographic = require('../core/Geographic'),
+    WGS84 = require('../core/Ellipsoid').WGS84;
+//object
+const GBufferView = require('../object/GBufferView'),
+    GAccessor = require('../object/GAccessor');
+//render unit
+const Texture = require('./../renderer/Texture'),
+    Uniform = require('./../renderer/Uniform'),
+    Buffer = require('./../renderer/Buffer'),
+    Program = require('./../renderer/Program');
+//shader glsl file
 const fragText = require('./../shader/surface-fs.glsl');
 const vertText = require('./../shader/surface-vs.glsl');
 /**
@@ -17,7 +21,7 @@ const vertText = require('./../shader/surface-vs.glsl');
  */
 class GSurface {
     /**
-     * @typedef {import("./../core/Quadtree")} Quadtree
+     * @typedef {import("../core/Quadtree")} Quadtree
      * @param {Quadtree} quadtree 
      */
     constructor(gl, quadtree) {
@@ -121,7 +125,7 @@ class GSurface {
         requestImage(uri).then(arraybuffer => {
             //create program
             const tileCache = {},
-                gProgram = new GProgram(gl, vertText, fragText);
+                gProgram = new Program(gl, vertText, fragText);
             const { vertices, indices, texcoords } = this._lerp(boundary);
             gProgram.useProgram();
             //create vertices buffer
@@ -175,7 +179,7 @@ class GSurface {
             tAccessor.bufferData();
             tAccessor.link('a_texcoord');
             //create indices buffer
-            const iBuffer = new GBuffer(
+            const iBuffer = new Buffer(
                 gProgram,
                 new Uint16Array(indices),
                 gl.ELEMENT_ARRAY_BUFFER,
@@ -195,10 +199,10 @@ class GSurface {
             gTexture.bindTexture();
             gTexture.texImage2D();
             //uniform
-            const uTexture = new GUniform(gProgram, 'u_texture'),
-                uProjection = new GUniform(gProgram, 'u_projectionMatrix'),
-                uView = new GUniform(gProgram, 'u_viewMatrix'),
-                uModel = new GUniform(gProgram, 'u_modelMatrix');
+            const uTexture = new Uniform(gProgram, 'u_texture'),
+                uProjection = new Uniform(gProgram, 'u_projectionMatrix'),
+                uView = new Uniform(gProgram, 'u_viewMatrix'),
+                uModel = new Uniform(gProgram, 'u_modelMatrix');
             //cache resource
             tileCache.gProgram = gProgram;
             tileCache.vAccessor = vAccessor;

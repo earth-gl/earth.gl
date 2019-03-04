@@ -1,41 +1,41 @@
-const GScene = earth.gl.renderer.GScene,
-    GLoader = earth.gl.GLoader;
+const Global = earth.gl.renderer.Global,
+    GLTFLoader = earth.gl.Loader.GLTFLoader;
 
 const canvas = document.getElementById('mapCanvas');
 
-const scene = new GScene({
+const scene = new Global({
     canvas: canvas,
     width: 800,
     height: 600
 });
 
-// const RiggedSimple = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/RiggedSimple/',
-//     'RiggedSimple.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 500000.0
-//     }
-// );
+const RiggedSimple = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/RiggedSimple/',
+    'RiggedSimple.gltf',
+    {
+        lng: 115.01,
+        lat: 30.58,
+        h: 0,
+        scale: 50000.0
+    }
+);
 
-// scene.add(RiggedSimple);
+scene.add(RiggedSimple);
 
-// const CesiumMan = new GLoader(
-//     'http://localhost:5500/examples/GLTFS/CesiumMan/',
-//     'CesiumMan.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 500000.0
-//     }
-// );
+const CesiumMan = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/CesiumMan/',
+    'CesiumMan.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 500000.0
+    }
+);
 
-// scene.add(CesiumMan);
+scene.add(CesiumMan);
 
-const Monster = new GLoader(
+const Monster = new GLTFLoader(
     'http://localhost:5500/examples/GLTFS/Monster/',
     'Monster.gltf',
     {
@@ -48,13 +48,13 @@ const Monster = new GLoader(
 
 scene.add(Monster);
 
-const BoxAnimated = new GLoader(
+const BoxAnimated = new GLTFLoader(
     'http://localhost:5500/examples/GLTFS/BoxAnimated/',
     'BoxAnimated.gltf',
     {
         lng: 114.01,
-        lat: 30.58,
-        h: 0,
+        lat: 37.58,
+        h: 0.0,
         scale: 100000.0,
         vertical: true,
     }

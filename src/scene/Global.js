@@ -18,16 +18,18 @@
  * 3. 可自定义加载建筑
  * 4. 提供camera distance，用于确定lod
  */
-const merge = require('./../utils/merge'),
+const merge = require('../utils/merge'),
     TrackballController = require('../core/TrackballController'),
-    maximumRadius = require('./../core/Ellipsoid').WGS84.maximumRadius,
-    Eventable = require('./../core/Eventable'),
-    GGlobal = require('./GGlobal'),
-    GLoader = require('./GLoader'),
-    Quadtree = require('./../core/Quadtree'),
-    GSurface = require('./GSurface'),
-    PerspectiveCamera = require('./../camera/PerspectiveCamera'),
+    maximumRadius = require('../core/Ellipsoid').WGS84.maximumRadius,
+    Eventable = require('../core/Eventable'),
+    Quadtree = require('../core/Quadtree'),
+    PerspectiveCamera = require('../camera/PerspectiveCamera'),
     { addDomEvent, domEventNames } = require('../utils/domEvent');
+/**
+ * scene render object
+ */
+const Surface = require('./Surface'),
+    GLoader = require('../loader/GLTFLoader');
 /**
  * 
  */
@@ -43,7 +45,7 @@ const CONTEXT_OPTIONS = {
 /**
  * @class Scene
  */
-class GScene extends Eventable {
+class Global extends Eventable {
     /**
      * 
      * @param {Object} [options]
@@ -154,10 +156,8 @@ class GScene extends Eventable {
     _initComponents() {
         const quadtree = this._quadtree,
             gl = this._gl;
-        //create earth
-        this._earth = new GGlobal(gl);
         //create surface
-        this._surface = new GSurface(gl, quadtree);
+        this._surface = new Surface(gl, quadtree);
     }
     /**
      * 
@@ -200,15 +200,14 @@ class GScene extends Eventable {
      * https://github.com/mdn/webgl-examples/blob/ea1c73ff3ec8d069d890cda0495052bb44a8b073/tutorial/sample6/webgl-demo.js#L283
      */
     render() {
-        const timeStampScale = this._timeStampScale,
+        const gl = this._gl,
+            timeStampScale = this._timeStampScale,
             timeStamp0 = this._timeStamp0,
             timeStamp = (performance.now() - timeStamp0) * timeStampScale || 0,
-            gl = this._gl,
             trackball = this._trackball,
             camera = this._camera,
             gltfs = this._gltfs,
-            surface = this._surface,
-            earth = this._earth;
+            surface = this._surface;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -218,8 +217,6 @@ class GScene extends Eventable {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update camera
         trackball.update();
-        //render earth
-        earth.render(camera, timeStamp);
         //render surface
         surface.render(camera, timeStamp);
         //render gltf
@@ -229,4 +226,4 @@ class GScene extends Eventable {
     }
 }
 
-module.exports = GScene;
+module.exports = Global;
