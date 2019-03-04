@@ -63,7 +63,7 @@ const RiggedSimple = new GLoader(
         lng: 114.01,
         lat: 30.58,
         h: 0,
-        scale: 10000.0
+        scale: 1000000.0
     }
 );
 

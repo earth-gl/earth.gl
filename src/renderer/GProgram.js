@@ -130,6 +130,27 @@ class GProgram {
             this._uniforms[info.name] = { location: gl.getUniformLocation(program,info.name) , type: info.type, size: info.size };
         }
     }
+    /**
+     * force to get unifrom location
+     * @param {String} name 
+     */
+    getUniformLocation(name){
+        const gl = this._gl,
+            program = this._program,
+            uniforms = this._uniforms,
+            location = gl.getUniformLocation(program,name);
+        if(location){
+            const info = {};
+            const typedArray = gl.getUniform(program,location);
+            //todo }{ wait supplement. convert to uniform info 
+            if((typedArray instanceof Float32Array)&&typedArray.length===16){
+                info.type = gl.FLOAT_MAT4;
+                info.size = 16;
+            }
+            uniforms[name] = { location: location , type: info.type, size: info.size };
+        }
+        return uniforms[name];
+    }
 }
 
 module.exports = GProgram;

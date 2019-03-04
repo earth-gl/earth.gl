@@ -221,11 +221,15 @@ class GLoader {
                         wAccessor.bufferData();
                         wAccessor.link('a_weights_0');
                     }
-                    //2.bind index buffer
+                    //5.bind index buffer
                     const indicesBuffer = primitive.indicesBuffer;
                     indicesBuffer.bindBuffer();
                     indicesBuffer.bufferData();
-                    //3.uniform
+                    //6.uniform
+                    //5.1 skin jontmatrix unifrom
+                    const jointMatrixData = node.skin?node.skin.jointMatrix:[];
+                    const uJoint = new GUniform(gProgram,'u_jointMatrix');
+                    //5.2 camera uniform
                     const uProject = new GUniform(gProgram, 'u_projectionMatrix'),
                         uView = new GUniform(gProgram, 'u_viewMatrix'),
                         uModel = new GUniform(gProgram, 'u_modelMatrix');
@@ -238,6 +242,7 @@ class GLoader {
                             wAccessor
                         },
                         uniforms:{
+                            uJoint,
                             uProject,
                             uView,
                             uModel
@@ -247,6 +252,7 @@ class GLoader {
                             indicesLength: primitive.indicesLength,
                             indicesComponentType:primitive.indicesComponentType
                         },
+                        jointMatrixData,
                         mode: primitive.mode,
                     };
                 });
@@ -282,13 +288,16 @@ class GLoader {
                     attributes,
                     uniforms,
                     indices,
-                    mode
+                    mode,
+                    jointMatrixData,
                 } = cache;
                 //relink
-                for(let key in attributes) attributes[key]?attributes.relink():null;
+                for(let key in attributes) 
+                    attributes[key]?attributes[key].relink():null;
                 //indices
                 indices.indicesBuffer.bindBuffer();
                 //uniform
+                uniforms.uJoint.assignValue(jointMatrixData);
                 uniforms.uProject.assignValue(camera.ProjectionMatrix);
                 uniforms.uView.assignValue(camera.ViewMatrix);
                 uniforms.uModel.assignValue(matrix.value);
@@ -328,27 +337,17 @@ class GLoader {
     }
     /**
      * 
-     */
-    _applySkin(skin, t) {
- 
-    }
-    /**
-     * 
      * @param {Camera} camera 
      */
     render(camera, t) {
         const animId = this._animId,
             geoTransformMatrix = this._geoTransformMatrix,
             gProgram = this._gProgram,
-            skins = this._skins,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
         if (!gProgram) return;
         //change program
         gProgram.useProgram();
-        //apply skin, use 0 to test function
-        if (skins[0])
-            this._applySkin(skins[0], t);
         //apply animations, default runs animation 0
         if (animations[animId])
             this._applyAnimation(animations[animId], t);

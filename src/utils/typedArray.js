@@ -11,7 +11,7 @@ var ComponentType2ByteSize = {
 /**
  * 
  */
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 // Use a lookup table to find the index.
 const lookup = new Uint8Array(256);
 for (var i = 0; i < CHARS.length; i++) {

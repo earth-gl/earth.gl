@@ -22,15 +22,12 @@ varying vec4 v_color;
 //传递法线坐标
 varying vec3 v_normal;
 
-
-
-//定义joint matrix, 假设最多有65个bone
-uniform mat4 u_jointMatrix[65];
+//joint matrix
+uniform mat4 u_jointMatrix[2];
 //jonits
 attribute vec4 a_joints_0;
 //weights
 attribute vec4 a_weights_0;
-
 
 void main() { 
     v_color = vec4(a_position,1.0);

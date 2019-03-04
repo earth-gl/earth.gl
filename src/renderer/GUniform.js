@@ -41,7 +41,8 @@ class GUniform {
         const gl = this._gl,
             uniformName = this._uniformName,
             program = this._program,
-            uniform = program.ActivateUniforms[uniformName];
+            uniform = program.ActivateUniforms[uniformName] || program.getUniformLocation (uniformName);
+        if(!uniform) return;
         if (uniform.type === gl.FLOAT_MAT4)
             this._funcName = 'uniformMatrix4fv';
         else if(uniform.type === gl.SAMPLER_2D){
