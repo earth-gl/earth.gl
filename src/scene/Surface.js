@@ -21,10 +21,10 @@ const requestImage = require('../utils/requestImage'),
  */
 class GSurface {
     /**
-     * @typedef {import("../core/Quadtree")} Quadtree
-     * @param {Quadtree} quadtree 
+     * @param {Object} options
+     * @param {String} options.uri the tile uri, such as 'https://c.basemaps.cartocdn.com/light_all/'
      */
-    constructor() {
+    constructor(options) {
         /**
          * @type {WebGLRenderingContext}
          */
@@ -38,12 +38,11 @@ class GSurface {
          * key-value: key=level-x-y, value:{program,buffer}
          */
         this._tileCaches = {};
-
     }
     /**
-     * 
-     * @param {*} gl 
-     * @param {*} quadtree 
+     * @typedef {import("../core/Quadtree")} Quadtree
+     * @param {WebGLRenderingContext} gl 
+     * @param {Quadtree} quadtree 
      */
     _init(gl, quadtree) {
         this._gl = gl;

@@ -16,7 +16,7 @@ const skin_vertText = require('./../shader/gltf-skin-vs.glsl');
 class GLoader {
     /**
      * 
-     * @param {String} root the root url of gltf, as 'http://139.129.7.130/models/DamagedHelmet/glTF/'
+     * @param {String} rootUri the root uri of gltf, as 'http://139.129.7.130/models/DamagedHelmet/glTF/'
      * @param {String} modelFilename the model file name, as 'DamagedHelmet.gltf'
      * @param {Object} [options]
      * @param {Number} [options.lng] 
@@ -26,13 +26,13 @@ class GLoader {
      * @param {Number} [options.scale] scale, default scale: 1000000.0
      * @param {Number} [options.animId]  default is 0
      */
-    constructor(root, modelFilename, options = {}) {
+    constructor(rootUri, modelFilename, options = {}) {
         /**
-         * 
+         * @type {String} the root uri of gltf
          */
-        this.root = root;
+        this.rootUri = rootUri;
         /**
-         * 
+         * @type {String} the model file name
          */
         this.modelFilename = modelFilename;
         /**
@@ -101,8 +101,8 @@ class GLoader {
         this._skins = [];
     }
     /**
-     * 
      * @param {WebGLRenderingContext} gl 
+     * @param {Global} global object
      */
     _init(gl, global) {
         /**
@@ -127,12 +127,12 @@ class GLoader {
         this._initialRequest();
     }
     /**
-     * 
+     * inital gltf configures
      */
     _initialRequest() {
         const that = this,
             gl = this._gl,
-            root = this.root,
+            root = this.rootUri,
             modelFilename = this.modelFilename;
         fetch(root + modelFilename, {
             responseType: 'json'
