@@ -1,9 +1,9 @@
 
-    //util func
+//util func
 const requestImage = require('../utils/requestImage'),
     //core
     Geographic = require('../core/Geographic'),
-    WGS84 = require('../core/Ellipsoid').WGS84,
+    { WGS84 } = require('../core/Ellipsoid'),
     //object
     GBufferView = require('../object/GBufferView'),
     GAccessor = require('../object/GAccessor'),
@@ -45,7 +45,7 @@ class GSurface {
      * @param {*} gl 
      * @param {*} quadtree 
      */
-    _init(gl, quadtree){
+    _init(gl, quadtree) {
         this._gl = gl;
         this._quadtree = quadtree;
         this._registerEvents();
@@ -72,8 +72,8 @@ class GSurface {
      * interpolation
      */
     _lerp(boundary) {
-        const lerp = 8, 
-            factor = 1/lerp,
+        const lerp = 8,
+            factor = 1 / lerp,
             rangeX = boundary.width,
             rangeY = boundary.height,
             start = boundary.southwest;
@@ -127,7 +127,7 @@ class GSurface {
         //https://services.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer/tile/
         //   uri = baseUri + level + '/' + x + '/' + y+ '.png';
         const baseUri = 'https://c.basemaps.cartocdn.com/light_all/',
-            uri = baseUri + level + '/' + x + '/' + y+ '.png';
+            uri = baseUri + level + '/' + x + '/' + y + '.png';
         //request image
         requestImage(uri).then(arraybuffer => {
             //create program
