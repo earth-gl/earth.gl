@@ -1,10 +1,12 @@
 const { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
-    fetch = require('../utils/fetch'),
-    GProgram = require('../renderer/Program'),
-    GUniform = require('../renderer/Uniform'),
-    WGS84 = require('../core/Ellipsoid').WGS84,
-    Geographic = require('../core/Geographic'),
-    GLTF = require('../core/GLTF');
+    fetch = require('./../utils/fetch'),
+    isObject = require('./../utils/isObject'),
+    GProgram = require('./../renderer/Program'),
+    GUniform = require('./../renderer/Uniform'),
+    WGS84 = require('./../core/Ellipsoid').WGS84,
+    Geographic = require('./../core/Geographic'),
+    GLBLoader = require('./GLBLoader'),
+    GLTF = require('./../core/GLTF');
 //shaders 
 const noskin_fragText = require('./../shader/gltf-noskin-fs.glsl');
 const noskin_vertText = require('./../shader/gltf-noskin-vs.glsl');
@@ -16,8 +18,10 @@ const skin_vertText = require('./../shader/gltf-skin-vs.glsl');
 class GLoader {
     /**
      * 
-     * @param {String} rootUri the root uri of gltf, as 'http://139.129.7.130/models/DamagedHelmet/glTF/'
-     * @param {String} modelFilename the model file name, as 'DamagedHelmet.gltf'
+     * @param {String} rootUrl the root uri of gltf, as 'http://139.129.7.130/models/DamagedHelmet/glTF/'
+     * @param {String|Object} model the model file name or GLB object, as 'DamagedHelmet.gltf' or { buffer, byteOffset }
+     * @param {ArrayBuffer} [model.buffer]
+     * @param {Number} [model.byteOffset]
      * @param {Object} [options]
      * @param {Number} [options.lng] 
      * @param {Number} [options.lat]
@@ -26,15 +30,15 @@ class GLoader {
      * @param {Number} [options.scale] scale, default scale: 1000000.0
      * @param {Number} [options.animId]  default is 0
      */
-    constructor(rootUri, modelFilename, options = {}) {
+    constructor(rootUrl, model, options = {}) {
         /**
          * @type {String} the root uri of gltf
          */
-        this.rootUri = rootUri;
+        this.rootUrl = rootUrl;
         /**
          * @type {String} the model file name
          */
-        this.modelFilename = modelFilename;
+        this.model = model;
         /**
          * @type {WebGLRenderingContext}
          */
@@ -132,19 +136,39 @@ class GLoader {
     _initialRequest() {
         const that = this,
             gl = this._gl,
-            root = this.rootUri,
-            modelFilename = this.modelFilename;
-        fetch(root + modelFilename, {
+            url = this.rootUrl,
+            model = this.model;
+        if (isObject(model)) {
+            this._createGLTFFromGLB(model);
+        } else{
+            const jsonUrl = url+model;
+            this._createGLTFFromJson(jsonUrl);
+        }
+    }
+    /**
+     * 
+     * @param {*} glb 
+     */
+    _createGLTFFromGLB(glb){
+        const { json, glbBuffer } = GLBLoader.load(glb.buffer, glb.byteOffset);
+    }
+    /**
+     * 
+     * @param {String} url 
+     */
+    _createGLTFFromJson(url){
+        const gl = this._gl,
+            that = this;
+        fetch(url, {
             responseType: 'json'
         }).then(response => {
             return response.json();
         }).then(json => {
             //create program according to skin
             const gProgram = that._program = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
-                uri = root + modelFilename,
-                loader = new GLTF(json, { uri: uri });
+                objectLoader = new GLTF(json, { url: url });
             //initalization loader resource
-            loader.load(gProgram).then(GLTF => {
+            objectLoader.load(gProgram).then(GLTF => {
                 //prerocess scene nodes
                 that._initComponents(GLTF.scene);
                 //store scene

@@ -23,7 +23,7 @@ class GLTFLoader {
      * @param {*} gltfJson 
      * @param {Object} [options]
      * @param {Function} [options.requestImage] 
-     * @param {String} options.uri
+     * @param {String} options.url
      */
     constructor(gltfJson, options = {}) {
         /**
@@ -61,8 +61,8 @@ class GLTFLoader {
         /**
          * 
          */
-        if (options.uri) {
-            this._baseUri = this._getBaseUri(options.uri);
+        if (options.url) {
+            this._baseUrl = this._getBaseUri(options.url);
         }
         /**
          * 
@@ -146,7 +146,7 @@ class GLTFLoader {
      */
     _initialization() {
         const json = this._gltfJson,
-            baseUri = this._baseUri;
+            baseUri = this._baseUrl;
         //glb reader
         // if(json.buffer instanceof ArrayBuffer){ }
         //request buffers

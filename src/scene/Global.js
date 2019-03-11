@@ -189,6 +189,9 @@ class Global extends Eventable {
         }else if(o instanceof Surface){
             surfaces.push(o);
             o._init(gl, quadtree);
+        }else{
+            //}{ debug init gl
+            o._init(gl, this);
         }
         //broadcast events
         quadtree.broadcast();
@@ -198,6 +201,7 @@ class Global extends Eventable {
      * https://github.com/mdn/webgl-examples/blob/ea1c73ff3ec8d069d890cda0495052bb44a8b073/tutorial/sample6/webgl-demo.js#L283
      */
     render() {
+        //
         const gl = this._gl,
             timeStampScale = this._timeStampScale,
             timeStamp0 = this._timeStamp0,
