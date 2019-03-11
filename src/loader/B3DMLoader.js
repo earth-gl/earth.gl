@@ -46,7 +46,6 @@ class B3DMLoader {
         let headerLength = 0;
         const versions = [20, 24, 28];
     }
-
 }
 
 module.exports = B3DMLoader;
