@@ -1,5 +1,4 @@
 const { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
-    fetch = require('./../utils/fetch'),
     isObject = require('./../utils/isObject'),
     GProgram = require('./../renderer/Program'),
     GUniform = require('./../renderer/Uniform'),
@@ -134,29 +133,36 @@ class GLoader {
      * inital gltf configures
      */
     _initialRequest() {
-        const that = this,
-            gl = this._gl,
-            url = this.rootUrl,
-            model = this.model;
-        if (isObject(model)) {
-            this._createGLTFFromGLB(model);
-        } else{
-            const jsonUrl = url+model;
-            this._createGLTFFromJson(jsonUrl);
-        }
+        const url = this.rootUrl, model = this.model;
+        isObject(model) ? this._createGLTFFromGLB(url, model) : this._createGLTFFromJson(url + model);
     }
     /**
      * 
-     * @param {*} glb 
+     * @param {*} glb buffer, byteOffset
      */
-    _createGLTFFromGLB(glb){
-        const { json, glbBuffer } = GLBLoader.load(glb.buffer, glb.byteOffset);
+    _createGLTFFromGLB(gltfUrl,glb) {
+        const gl = this._gl, that = this;
+        const { json, subglb } = GLBLoader.load(glb.buffer, glb.byteOffset);
+        const gProgram = that._program = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
+            objectLoader = new GLTF(json, { url: gltfUrl, glb: subglb });
+        objectLoader.load(gProgram).then(GLTF => {
+            //prerocess scene nodes
+            that._initComponents(GLTF.scene);
+            //store scene
+            that._scene = GLTF.scene;
+            //store animations
+            that._animations = GLTF.animations || [];
+            //store nodes
+            that._nodes = GLTF.nodes || [];
+            //store skins
+            that._skins = GLTF.skins || [];
+        });
     }
     /**
      * 
      * @param {String} url 
      */
-    _createGLTFFromJson(url){
+    _createGLTFFromJson(url) {
         const gl = this._gl,
             that = this;
         fetch(url, {

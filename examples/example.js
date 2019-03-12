@@ -18,21 +18,25 @@ const scene = new Global({
 //create surface
 const surface = new Surface();
 scene.add(surface);
-//create b3dm
-// const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm');
-// scene.add(b3dm);
-const RiggedSimple = new GLTFLoader(
-    'http://localhost:5500/examples/GLTFS/RiggedSimple/',
-    'RiggedSimple.gltf',
-    {
-        lng: 115.01,
-        lat: 30.58,
-        h: 0,
-        scale: 50000.0
-    }
-);
 
-scene.add(RiggedSimple);
+//create b3dm
+const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm');
+
+//
+scene.add(b3dm);
+
+// const RiggedSimple = new GLTFLoader(
+//     'http://localhost:5500/examples/GLTFS/RiggedSimple/',
+//     'RiggedSimple.gltf',
+//     {
+//         lng: 115.01,
+//         lat: 30.58,
+//         h: 0,
+//         scale: 50000.0
+//     }
+// );
+
+// scene.add(RiggedSimple);
 
 // const CesiumMan = new GLTFLoader(
 //     'http://localhost:5500/examples/GLTFS/CesiumMan/',

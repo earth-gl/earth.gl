@@ -24,7 +24,7 @@ class GLBLoader {
         const json = GLBLoader.readString(dataView.buffer, 20 + byteOffset, contentLength);
         return {
             json: JSON.parse(json),
-            glbBuffer: {
+            subglb: {
                 byteOffset: 20 + byteOffset + contentLength,
                 buffer: dataView.buffer
             }

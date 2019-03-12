@@ -65,8 +65,7 @@ class B3DMLoader {
         let featJSONLength = 0,
             featBinLength = 0,
             batchJSONLength = 0,
-            batchBinLength = 0,
-            batchLength = 0;
+            batchBinLength = 0;
         if (headerLength === 20) {
             // legacy version of b3dm data with 20 bytes header
             batchJSONLength = view.getUint32(12, true);
