@@ -27,6 +27,7 @@ const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile
     lng: 115.01,
     lat: 30.58,
     h: 0,
+    vertical:true,
     scale: 10000.0
 });
 

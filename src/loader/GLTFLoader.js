@@ -151,7 +151,7 @@ class GLoader {
      * 
      */
     _requestScene() {
-        const that = this, 
+        const that = this,
             gltf = this.gltf;
         gltf.then(GLTF => {
             //prerocess scene nodes
@@ -174,6 +174,7 @@ class GLoader {
         const scaleV3 = this._scaleV3,
             lat = this._lat,
             lng = this._lng,
+            vertical = this._vertical,
             h = this._h, //set hight according to the scale 
             geographic = new Geographic(GLMatrix.toRadian(lng), GLMatrix.toRadian(lat), h), //convert degree to radian
             geoTranslation = WGS84.geographicToSpace(geographic),
@@ -181,9 +182,11 @@ class GLoader {
             geoRotateX = GLMatrix.toRadian(lat);
         // calcute root matrix
         const matrix = Mat4.fromRotationTranslationScale(new Quat(), geoTranslation, scaleV3);
-        //matrix.setTranslation(geoTranslation);
-        matrix.rotateZ(geoRotateZ);
-        matrix.rotateX(geoRotateX);
+        if (vertical) {
+            //matrix.setTranslation(geoTranslation);
+            matrix.rotateZ(geoRotateZ);
+            matrix.rotateX(geoRotateX);
+        }
         //return the geo matrix
         return matrix;
     }
