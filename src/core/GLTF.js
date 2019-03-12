@@ -260,7 +260,13 @@ class GLTFLoader {
             glb = this._glb,
             gl = program._gl;
         forEach(GLTFJSON.accessors, (accessor) => {
-            const s = accessor;
+            const bufferView = GLTFJSON.bufferViews[accessor.bufferView],
+                buffer = GLTFJSON.buffers[bufferView.buffer];
+            if (bufferView.buffer === 'binary_glTF' || bufferView.buffer === 'KHR_binary_glTF' || !buffer.uri){
+                
+                
+                this._postgltfprocess(program);
+            }
         }, this);
     }
     /**
