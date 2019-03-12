@@ -155,7 +155,7 @@ class GLoader {
             gltf = this.gltf;
         gltf.then(GLTF => {
             //prerocess scene nodes
-            that._initComponents(GLTF.scene);
+            that._prepareScene(GLTF.scene);
             //store scene
             that._scene = GLTF.scene;
             //store animations
@@ -190,7 +190,7 @@ class GLoader {
     /**
      * 
      */
-    _initComponents(scene) {
+    _prepareScene(scene) {
         const sceneNodes = scene.nodes,
             gProgram = this._program;
         //change program

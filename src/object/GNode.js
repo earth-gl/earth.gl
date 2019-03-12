@@ -35,9 +35,10 @@ class GNode {
          */
         this.children = options.children || [];  // init as id, then hook up to node object later
         /**
-         * 
+         * reference:https://github.com/KhronosGroup/glTF/issues/605
+         * in gltf2.0 node only has one mesh
          */
-        this.mesh = options.mesh !== undefined ? resources.meshes[options.mesh] : null;
+        this.mesh = options.mesh !== undefined || options.meshes ? resources.meshes[options.mesh||options.meshes[0]] : null;
         /**
          * init as id, then hook up to skin object later
          */

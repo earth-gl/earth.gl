@@ -86,7 +86,7 @@ const forEach = function (obj, iteratee, context) {
   } else {
     var keys = assignKeys(obj);
     for (i = 0, length = keys.length; i < length; i++) {
-      iteratee(obj[keys[i]], keys[i], obj);
+      iteratee(obj[keys[i]], i, keys[i], obj);
     }
   }
   return obj;

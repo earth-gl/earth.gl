@@ -8,11 +8,12 @@ class B3DMLoader {
      * @param {String} url 
      * @param {Object} options 
      */
-    constructor(url, options) {
+    constructor(url, options = {}) {
         this.featureTable = null;
         this.batchTable = null;
         this.url = url;
-        this.gltf = {};
+        this.gltf = null;
+        this.options = options;
     }
     /**
      * @typedef {import("./../scene/Global")} Global
@@ -28,8 +29,9 @@ class B3DMLoader {
      * @param {Global} global 
      */
     _initialRequest(gl, global) {
-        const that = this,
-            url = this.url;
+        const options = this.options, 
+            url = this.url
+            that = this;
         fetch(url, {
             responseType: 'arraybuffer'
         }).then(response => {
@@ -37,7 +39,7 @@ class B3DMLoader {
         }).then(b3dm => {
             const components = that._readB3DM(b3dm);
             const rootUrl = url.substring(0, url.lastIndexOf('/'));
-            const gltf = new GLTFLoader(rootUrl, components.khrbinary);
+            const gltf = that.gltf = new GLTFLoader(rootUrl, components.khrbinary, options);
             gltf._init(gl, global);
         });
     }
@@ -100,6 +102,12 @@ class B3DMLoader {
     _readBatchTable(b3dm, batchJSONLength, batchBinLength) {
 
     }
+
+    render(camera, t) {
+        const gltf = this.gltf;
+        gltf?gltf.render(camera, t):null;
+    }
+    
 }
 
 module.exports = B3DMLoader;

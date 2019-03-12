@@ -1,6 +1,18 @@
 
 const readKHRBinary = require('../../utils/readKHRBinary'),
-    requestImage = require('../../utils/requestImage');
+    forEach = require('./../../utils/forEach'),
+    requestImage = require('../../utils/requestImage'),
+    //objects
+    GSkin = require('../../object/GSkin'),
+    GNode = require('../../object/GNode'),
+    GMesh = require('../../object/GMesh'),
+    GScene = require('../../object/GScene'),
+    GSampler = require('../../object/GSampler'),
+    GTexture = require('../../object/GTexture'),
+    GMaterial = require('../../object/GMaterial'),
+    GAccessor = require('../../object/GAccessor'),
+    GBufferView = require('../../object/GBufferView'),
+    GAnimation = require('../../object/GAnimation');
 /**
 * @class
 */
@@ -19,6 +31,58 @@ class GLTFV1 {
          * @type {Object} setting 
          */
         this.json = json;
+        /**
+       * @type {Object}
+       */
+        this._buffers = {};
+        /**
+         * @type {Array}
+         */
+        this._images = {};
+        /**
+         * @type {Object}
+         */
+        this._accessors = {};
+        /**
+         * @type {Array}
+         */
+        this._bufferViews = {};
+        /**
+         * @type {Array}
+         */
+        this._scenes = {};
+        /**
+         * @type {Array}
+         */
+        this._nodes = {};
+        /**
+         * @type {Array}
+         */
+        this._meshes = {};
+        /**
+         * @type {Array}
+         */
+        this._materials = {};
+        /**
+         * @type {Array}
+         */
+        this._textures = {};
+        /**
+         * @type {Array}
+         */
+        this._samplers = {};
+        /**
+         * @type {Array}
+         */
+        this._skins = {};
+        /**
+         * @type {Array}
+         */
+        this._animations = {};
+        /**
+         * @type {Array}
+         */
+        this._cameras = {};
         /**
          * @type {String} default Id of scene
          */
@@ -228,7 +292,126 @@ class GLTFV1 {
     /**
      * process glb
      */
-    processKHRBinary(glb) {
+    processKHRBinary(gltfJson, subglb, program) {
+        const gl = program._gl;
+        //accessors
+        if (gltfJson.accessors) {
+            forEach(gltfJson.accessors, (accessorJson, i, key) => {
+                const bufferViewJson = gltfJson.bufferViews[accessorJson.bufferView],
+                    buffer = gltfJson.buffers[bufferViewJson.buffer];
+                if (bufferViewJson.buffer === 'binary_glTF' || bufferViewJson.buffer === 'KHR_binary_glTF' || !buffer.uri) {
+                    const bufferView = this._bufferViews[key] = new GBufferView(
+                        gl,
+                        subglb.buffer,
+                        bufferViewJson.byteLength,
+                        {
+                            bufferType:bufferViewJson.target,
+                            drawType: gl.STATIC_DRAW,
+                            byteOffset: subglb.byteOffset+bufferViewJson.byteOffset,
+                            byteStride: bufferViewJson.byteStride
+                        });
+                    this._accessors[key] = new GAccessor(
+                        program,
+                        bufferView,
+                        accessorJson.componentType,
+                        accessorJson.type,
+                        accessorJson.count,
+                        {
+                            byteOffset: accessorJson.byteOffset,
+                            normalized: accessorJson.normalized,
+                            min: accessorJson.min,
+                            max: accessorJson.max
+                        });
+                }else{
+                    //todo load from uri
+                }
+
+
+            }, this);
+        }
+        //materials
+        if (gltfJson.materials) {
+            forEach(gltfJson.materials, (materialJson, i, key) => {
+                this._materials[key] = new GMaterial(materialJson);
+            }, this);
+        }
+        //samplers
+        if(gltfJson.samplers){
+            forEach(gltfJson.samplers,(samplerJson, i, key)=>{
+                this._samplers[key] = new GSampler(samplerJson);
+            },this);
+        }
+        //textures
+        if(gltfJson.textures){
+            forEach(gltfJson.textures,(textureJson, i, key)=>{
+                this._textures[key] = new GTexture({
+                    samplers:this._samplers,
+                    images:this._images
+                },textureJson);
+            },this);
+        }
+        //meshes
+        if (gltfJson.meshes) {
+            forEach(gltfJson.meshes,(meshJson, i, key)=>{
+                this._meshes[key] = new GMesh(key, {
+                    json: gltfJson,
+                    accessors: this._accessors,
+                    materials: this._materials
+                }, meshJson);
+            },this);
+        }
+        //nodes, hook up children
+        if(gltfJson.nodes){
+            forEach(gltfJson.nodes, (nodeJson, i, key)=>{
+                this._nodes[key] = new GNode(key,{
+                    meshes: this._meshes
+                }, nodeJson);
+            },this);
+        }
+        //nodes hook up
+        forEach(this._nodes, (node, key)=>{
+            forEach(node.children,(childName, i, key)=>{
+                node.children[childName] = this._nodes[childName];
+            },this);
+        },this);
+        //crate scene
+        if(gltfJson.scenes){
+            forEach(gltfJson.scenes, (sceneJson, i, key)=>{
+                this._scenes[key] = new GScene({ nodes: this._nodes }, sceneJson);
+            }, this);
+        }
+        //animations
+        if (gltfJson.animations) {
+            forEach(gltfJson.animations, (animJson, i, key)=>{
+                this._animations[key] = new GAnimation({
+                    accessors: this._accessors
+                }, animJson);
+            },this);
+        }
+        //skin
+        if(gltfJson.skins){
+
+            forEach(gltfJson.skins, (skinJson, i, key)=>{
+                this._skins[key] = new GSkin({
+                    nodes: this._nodes, 
+                    accessors: this._accessors
+                }, skinJson, key);
+            }, this);
+
+            forEach(this._nodes, (node, i, key)=>{
+                const skinIdx = node.skinIdx;
+                node.skin = this._skins[skinIdx] || null;
+            });
+        }
+
+        return new Promise((resolve,reject)=>{
+            resolve({
+                scene: this._scenes[this.defaultScene],
+                animations: this._animations,
+                nodes: this._nodes,
+                skins: this._skins
+            });
+        });
 
     }
 }
@@ -246,10 +429,7 @@ GLTFV1.fromJson = function (rootPath, json, gProgram) {
 GLTFV1.fromKHRBinary = function (rootPath, glb, gProgram) {
     const { json, subglb } = readKHRBinary(glb.buffer, glb.byteOffset);
     const gltfv1 = new GLTFV1(rootPath, json);
-
-
-
-    return gltfv1;
+    return gltfv1.processKHRBinary(json, subglb, gProgram);
 }
 
 module.exports = GLTFV1;
