@@ -37,7 +37,7 @@ class B3DMLoader {
         }).then(b3dm => {
             const components = that._readB3DM(b3dm);
             const rootUrl = url.substring(0, url.lastIndexOf('/'));
-            const gltf = new GLTFLoader(rootUrl, components.glb);
+            const gltf = new GLTFLoader(rootUrl, components.khrbinary);
             gltf._init(gl, global);
         });
     }
@@ -83,13 +83,13 @@ class B3DMLoader {
             batchBinLength = view.getUint32(24, true);
         }
 
-        const glb = {
+        const khrbinary = {
             buffer: b3dm,
             byteOffset: headerLength + featJSONLength + featBinLength + batchJSONLength + batchBinLength
         };
 
         return {
-            glb
+            khrbinary
         }
     }
 

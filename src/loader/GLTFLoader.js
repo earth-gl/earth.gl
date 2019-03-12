@@ -4,8 +4,10 @@ const { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
     GUniform = require('./../renderer/Uniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
     Geographic = require('./../core/Geographic'),
-    GLBLoader = require('./GLBLoader'),
-    GLTF = require('./../core/GLTF');
+    readKHRBinary = require('../utils/readKHRBinary');
+//GLTF
+const GLTFV1 = require('./GLTF/GLTFV1'),
+    GLTFV2 = require('./GLTF/GLTFV2');
 //shaders 
 const noskin_fragText = require('./../shader/gltf-noskin-fs.glsl');
 const noskin_vertText = require('./../shader/gltf-noskin-vs.glsl');
@@ -109,43 +111,52 @@ class GLoader {
      * @param {Global} global object
      */
     _init(gl, global) {
-        /**
-         * set gl context
-         */
+        const that = this,
+            model = this.model,
+            rootPath = this.rootUrl;
         this._gl = gl;
-        /**
-         * @type {GScene}
-         */
         this._global = global;
-        /**
-         * @type {GProgram}
-         */
-        this._program = null;
-        /**
-         * initial geoTransform
-         */
         this._geoTransformMatrix = this._updateGeoTransform();
-        /**
-         * initial request
-         */
-        this._initialRequest();
+        if (isObject(model)) {
+            const { json, subglb } = readKHRBinary(model.buffer, model.byteOffset);
+            this._requestModelData(rootPath, json, model);
+        } else {
+            fetch(url, {
+                responseType: 'json'
+            }).then(response => {
+                return response.json();
+            }).then(json => {
+                that._requestModelData(rootPath, json);
+            });
+        }
     }
     /**
      * inital gltf configures
      */
-    _initialRequest() {
-        const url = this.rootUrl, model = this.model;
-        isObject(model) ? this._createGLTFFromGLB(url, model) : this._createGLTFFromJson(url + model);
+    _requestModelData(rootPath, json, khrbinary = null) {
+        const gl = this._gl;
+        const gProgram = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText);
+        this._program = gProgram;
+        this.version = json.asset ? +json.asset.version : 1;
+        //1.判断GLTF版本
+        if (this.version === 2) {
+            this.gltf = khrbinary === null ? GLTFV2.fromJson(rootPath, json) : GLTFV2.fromGLB(rootPath, khrbinary);
+        } else {
+            this.gltf = khrbinary === null ? GLTFV1.fromJson(rootPath, json) : GLTFV1.fromKHRBinary(rootPath, khrbinary);
+        }
     }
     /**
      * 
      * @param {*} glb buffer, byteOffset
      */
-    _createGLTFFromGLB(gltfUrl,glb) {
+    _createGLTFFromGLB(gltfUrl, glb) {
+
+        GLTFV2.fromGLB(gltfUrl, glb);
+
         const gl = this._gl, that = this;
-        const { json, subglb } = GLBLoader.load(glb.buffer, glb.byteOffset);
-        const gProgram = that._program = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
-            objectLoader = new GLTF(json, { url: gltfUrl, glb: subglb });
+        const { json, subglb } = readKHRBinary(glb.buffer, glb.byteOffset);
+
+        objectLoader = new GLTF(json, { url: gltfUrl, glb: subglb });
         objectLoader.load(gProgram).then(GLTF => {
             //prerocess scene nodes
             that._initComponents(GLTF.scene);
