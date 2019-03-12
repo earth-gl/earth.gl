@@ -12,6 +12,7 @@ const noskin_vertText = require('./../shader/gltf-noskin-vs.glsl');
 const skin_fragText = require('./../shader/gltf-skin-fs.glsl');
 const skin_vertText = require('./../shader/gltf-skin-vs.glsl');
 /**
+ * load different version of GLTF, and then convert to GScene consolidated
  * @class
  */
 class GLoader {

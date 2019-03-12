@@ -1,17 +1,17 @@
-const requestImage = require('./../utils/requestImage'),
-    forEach = require('./../utils/forEach'),
-    { isBase64 } = require('./../utils/typedArray'),
+const requestImage = require('../utils/requestImage'),
+    forEach = require('../utils/forEach'),
+    { isBase64 } = require('../utils/typedArray'),
     //objects
-    GSkin = require('./../object/GSkin'),
-    GNode = require('./../object/GNode'),
-    GMesh = require('./../object/GMesh'),
-    GScene = require('./../object/GScene'),
-    GSampler = require('./../object/GSampler'),
-    GTexture = require('./../object/GTexture'),
-    GMaterial = require('./../object/GMaterial'),
-    GAccessor = require('./../object/GAccessor'),
-    GBufferView = require('./../object/GBufferView'),
-    GAnimation = require('./../object/GAnimation');
+    GSkin = require('../object/GSkin'),
+    GNode = require('../object/GNode'),
+    GMesh = require('../object/GMesh'),
+    GScene = require('../object/GScene'),
+    GSampler = require('../object/GSampler'),
+    GTexture = require('../object/GTexture'),
+    GMaterial = require('../object/GMaterial'),
+    GAccessor = require('../object/GAccessor'),
+    GBufferView = require('../object/GBufferView'),
+    GAnimation = require('../object/GAnimation');
 /**
  * https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0
  * @author yellow date 2019/1/29
