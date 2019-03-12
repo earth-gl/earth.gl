@@ -119,45 +119,41 @@ class GLoader {
         this._geoTransformMatrix = this._updateGeoTransform();
         if (isObject(model)) {
             const { json, subglb } = readKHRBinary(model.buffer, model.byteOffset);
-            this._requestModelData(rootPath, json, model);
+            this._requestGLTF(rootPath, json, model);
         } else {
-            fetch(url, {
+            fetch(rootPath + model, {
                 responseType: 'json'
             }).then(response => {
                 return response.json();
             }).then(json => {
-                that._requestModelData(rootPath, json);
+                that._requestGLTF(rootPath, json);
             });
         }
     }
     /**
      * inital gltf configures
      */
-    _requestModelData(rootPath, json, khrbinary = null) {
+    _requestGLTF(rootPath, json, khrbinary = null) {
         const gl = this._gl;
         const gProgram = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText);
         this._program = gProgram;
         this.version = json.asset ? +json.asset.version : 1;
         //1.判断GLTF版本
         if (this.version === 2) {
-            this.gltf = khrbinary === null ? GLTFV2.fromJson(rootPath, json) : GLTFV2.fromGLB(rootPath, khrbinary);
+            this.gltf = GLTFV2.fromJson(rootPath, json, gProgram);
         } else {
-            this.gltf = khrbinary === null ? GLTFV1.fromJson(rootPath, json) : GLTFV1.fromKHRBinary(rootPath, khrbinary);
+            this.gltf = khrbinary === null ? GLTFV1.fromJson(rootPath, json, gProgram) : GLTFV1.fromKHRBinary(rootPath, khrbinary, gProgram);
         }
+        //2.request scene
+        this._requestScene();
     }
     /**
      * 
-     * @param {*} glb buffer, byteOffset
      */
-    _createGLTFFromGLB(gltfUrl, glb) {
-
-        GLTFV2.fromGLB(gltfUrl, glb);
-
-        const gl = this._gl, that = this;
-        const { json, subglb } = readKHRBinary(glb.buffer, glb.byteOffset);
-
-        objectLoader = new GLTF(json, { url: gltfUrl, glb: subglb });
-        objectLoader.load(gProgram).then(GLTF => {
+    _requestScene() {
+        const that = this, 
+            gltf = this.gltf;
+        gltf.then(GLTF => {
             //prerocess scene nodes
             that._initComponents(GLTF.scene);
             //store scene
@@ -168,36 +164,6 @@ class GLoader {
             that._nodes = GLTF.nodes || [];
             //store skins
             that._skins = GLTF.skins || [];
-        });
-    }
-    /**
-     * 
-     * @param {String} url 
-     */
-    _createGLTFFromJson(url) {
-        const gl = this._gl,
-            that = this;
-        fetch(url, {
-            responseType: 'json'
-        }).then(response => {
-            return response.json();
-        }).then(json => {
-            //create program according to skin
-            const gProgram = that._program = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText),
-                objectLoader = new GLTF(json, { url: url });
-            //initalization loader resource
-            objectLoader.load(gProgram).then(GLTF => {
-                //prerocess scene nodes
-                that._initComponents(GLTF.scene);
-                //store scene
-                that._scene = GLTF.scene;
-                //store animations
-                that._animations = GLTF.animations || [];
-                //store nodes
-                that._nodes = GLTF.nodes || [];
-                //store skins
-                that._skins = GLTF.skins || [];
-            });
         });
     }
     /**
