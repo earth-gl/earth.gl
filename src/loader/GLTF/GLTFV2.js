@@ -35,6 +35,10 @@ class GLTFV2 {
          */
         this._buffers = {};
         /**
+         * @type {Array}
+         */
+        this._images = [];
+        /**
          * @type {Object}
          */
         this._accessors = [];

@@ -38,18 +38,18 @@ const RiggedSimple = new GLTFLoader(
 
 scene.add(RiggedSimple);
 
-// const CesiumMan = new GLTFLoader(
-//     'http://localhost:5500/examples/GLTFS/CesiumMan/',
-//     'CesiumMan.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 500000.0
-//     }
-// );
+const CesiumMan = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/CesiumMan/',
+    'CesiumMan.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 500000.0
+    }
+);
 
-// scene.add(CesiumMan);
+scene.add(CesiumMan);
 
 // const Monster = new GLTFLoader(
 //     'http://localhost:5500/examples/GLTFS/Monster/',
