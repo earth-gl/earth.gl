@@ -68,40 +68,40 @@ scene.add(tiles3d);
 
 // scene.add(CesiumMan);
 
-const Monster = new GLTFLoader(
-    'http://localhost:5500/examples/GLTFS/Monster/',
-    'Monster.gltf',
-    {
-        lng: 114.01,
-        lat: 30.58,
-        h: 0,
-        scale: 10000.0
-    }
-);
+// const Monster = new GLTFLoader(
+//     'http://localhost:5500/examples/GLTFS/Monster/',
+//     'Monster.gltf',
+//     {
+//         lng: 113.780569,
+//         lat: 22.77368856,
+//         h: 0,
+//         scale: 100.0
+//     }
+// );
 
-scene.add(Monster);
+// scene.add(Monster);
 
-const BoxAnimated = new GLTFLoader(
-    'http://localhost:5500/examples/GLTFS/BoxAnimated/',
-    'BoxAnimated.gltf',
-    {
-        lng: 114.01,
-        lat: 37.58,
-        h: 0.0,
-        scale: 100000.0
-    }
-);
+// const BoxAnimated = new GLTFLoader(
+//     'http://localhost:5500/examples/GLTFS/BoxAnimated/',
+//     'BoxAnimated.gltf',
+//     {
+//         lng: 113.780569,
+//         lat: 22.77368856,
+//         h: 0.0,
+//         scale: 1000.0
+//     }
+// );
 
-scene.add(BoxAnimated);
+// scene.add(BoxAnimated);
 
 const ElmTree = new GLTFLoader(
     'http://localhost:5500/examples/GLTFS/BoneTree/',
     'bone.gltf',
     {
-        lng: 114.01,
-        lat: 30.58,
+        lng: 113.980569,
+        lat: 22.77368856,
         h: 0,
-        scale: 1000.0
+        scale: 10.0
     }
 );
 
