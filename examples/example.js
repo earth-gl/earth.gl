@@ -24,11 +24,11 @@ const surface = new Surface();
 scene.add(surface);
 
 
-const tiles3d = new Tiles3D({
-    url: 'http://localhost:5500/examples/B3DM/Scene/Cesium__3d.json'
-});
+// const tiles3d = new Tiles3D({
+//     url: 'http://localhost:5500/examples/B3DM/Scene/Cesium__3d.json'
+// });
 
-scene.add(tiles3d);
+// scene.add(tiles3d);
 
 // //create b3dm
 // const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
@@ -94,18 +94,18 @@ scene.add(tiles3d);
 
 // scene.add(BoxAnimated);
 
-// const ElmTree = new GLTFLoader(
-//     'http://localhost:5500/examples/GLTFS/ElmTree/',
-//     'ElmTree.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 10000.0
-//     }
-// );
+const ElmTree = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/BoneTree/',
+    'bone.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 10000000.0
+    }
+);
 
-// scene.add(ElmTree);
+scene.add(ElmTree);
 
 const update = function () {
     scene.render();
