@@ -146,7 +146,7 @@ class GSurface {
                     byteStride: 0
                 });
             const vAccessor = new GAccessor(
-                gProgram,
+                gl,
                 vBufferView,
                 gl.FLOAT,
                 'VEC3',
@@ -157,7 +157,7 @@ class GSurface {
                 });
             vAccessor.bindBuffer();
             vAccessor.bufferData();
-            vAccessor.link('a_position');
+            vAccessor.link(gProgram,'a_position');
             //create texcoord buffer
             const tBufferView = new GBufferView(
                 gl,
@@ -171,7 +171,7 @@ class GSurface {
                 }
             );
             const tAccessor = new GAccessor(
-                gProgram,
+                gl,
                 tBufferView,
                 gl.FLOAT,
                 'VEC2',
@@ -183,10 +183,10 @@ class GSurface {
             );
             tAccessor.bindBuffer();
             tAccessor.bufferData();
-            tAccessor.link('a_texcoord');
+            tAccessor.link(gProgram, 'a_texcoord');
             //create indices buffer
             const iBuffer = new Buffer(
-                gProgram,
+                gl,
                 new Uint16Array(indices),
                 gl.ELEMENT_ARRAY_BUFFER,
                 gl.STATIC_DRAW);

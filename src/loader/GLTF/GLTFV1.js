@@ -292,8 +292,7 @@ class GLTFV1 {
     /**
      * process glb
      */
-    processKHRBinary(gltfJson, subglb, program) {
-        const gl = program._gl;
+    processKHRBinary(gltfJson, subglb, gl) {
         //accessors
         if (gltfJson.accessors) {
             forEach(gltfJson.accessors, (accessorJson, i, key) => {
@@ -311,7 +310,7 @@ class GLTFV1 {
                             byteStride: bufferViewJson.byteStride
                         });
                     this._accessors[key] = new GAccessor(
-                        program,
+                        gl,
                         bufferView,
                         accessorJson.componentType,
                         accessorJson.type,
@@ -418,7 +417,7 @@ class GLTFV1 {
 /**
  * @returns {Promise}
  */
-GLTFV1.fromJson = function (rootPath, json, gProgram) {
+GLTFV1.fromJson = function (rootPath, json, gl) {
     const gltfv1 = new GLTFV1(rootPath, json);
     gltfv1 = new GLTFV1(rootPath, global);
     return gltfv1.processJson(json, gProgram);
@@ -426,10 +425,10 @@ GLTFV1.fromJson = function (rootPath, json, gProgram) {
 /**
  * 
  */
-GLTFV1.fromKHRBinary = function (rootPath, glb, gProgram) {
+GLTFV1.fromKHRBinary = function (rootPath, glb, gl) {
     const { json, subglb } = readKHRBinary(glb.buffer, glb.byteOffset);
     const gltfv1 = new GLTFV1(rootPath, json);
-    return gltfv1.processKHRBinary(json, subglb, gProgram);
+    return gltfv1.processKHRBinary(json, subglb, gl);
 }
 
 module.exports = GLTFV1;

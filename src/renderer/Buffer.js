@@ -5,20 +5,16 @@
 class Buffer {
     /**
      * 
-     * @param {GProgram} gProgram 
+     * @param {WebGLRenderingContext} gl 
      * @param {typedArrayBuffer} data 
      * @param {Number} bufferType gl.ARRAY_BUFFER
      * @param {Number} drawType gl.STATIC_DRAW
      */
-    constructor(gProgram, data, bufferType, drawType) {
-        /**
-         * @type {GProgram}
-         */
-        this._gProgram = gProgram;
+    constructor(gl, data, bufferType, drawType) {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = gProgram._gl;
+        this._gl = gl;
         /**
          * @type {typedArrayBuffer}
          */
@@ -49,6 +45,14 @@ class Buffer {
      */
     get typedArrayBuffer(){
         return this._data;
+    }
+    /**
+     * convert the buffer type to Element_Array_Buffer
+     */
+    toIndexBuffer(){
+        const gl = this._gl;
+        this._bufferType = gl.ELEMENT_ARRAY_BUFFER;
+        return this;
     }
     /**
      * active current buffer

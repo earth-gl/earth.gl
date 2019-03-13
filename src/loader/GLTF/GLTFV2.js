@@ -165,12 +165,11 @@ class GLTFV2 {
     /**
      * 
      * @param {Object} gltfJson 
-     * @param {GProgram} gProgram 
+     * @param {WebGLRenderingContext} gl 
      */
-    processJson(gltfJson, program) {
-        const resourcePromises = this._processUri(),
-            gl = program._gl,
-            that = this;
+    processJson(gltfJson, gl) {
+        const that = this,
+            resourcePromises = this._processUri();
         return Promise.all(resourcePromises).then(() => {
             // bufferviews
             if (gltfJson.bufferViews) {
@@ -196,7 +195,7 @@ class GLTFV2 {
                     const bvid = accessorJson.bufferView;
                     const bufferView = that._bufferViews[bvid];
                     that._accessors[i] = new GAccessor(
-                        program,
+                        gl,
                         bufferView,
                         accessorJson.componentType,
                         accessorJson.type,
@@ -297,9 +296,9 @@ class GLTFV2 {
     }
 }
 
-GLTFV2.fromJson = function (rootPath, json, gProgram) {
+GLTFV2.fromJson = function (rootPath, json, gl) {
     const gltfv2 = new GLTFV2(rootPath, json);
-    return gltfv2.processJson(json, gProgram);
+    return gltfv2.processJson(json, gl);
 }
 
 

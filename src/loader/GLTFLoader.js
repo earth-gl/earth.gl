@@ -1,7 +1,7 @@
 const { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
     isObject = require('./../utils/isObject'),
-    GProgram = require('./../renderer/Program'),
-    GUniform = require('./../renderer/Uniform'),
+    Program = require('./../renderer/Program'),
+    Uniform = require('./../renderer/Uniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
     Geographic = require('./../core/Geographic'),
     readKHRBinary = require('../utils/readKHRBinary');
@@ -45,10 +45,6 @@ class GLoader {
          * @type {WebGLRenderingContext}
          */
         this._gl = null;
-        /**
-         * @type {GProgram}
-         */
-        this._program = null;
         /**
          * gltf scene
          */
@@ -135,14 +131,20 @@ class GLoader {
      */
     _requestGLTF(rootPath, json, khrbinary = null) {
         const gl = this._gl;
-        const gProgram = json.skins && json.skins.length > 0 ? new GProgram(gl, skin_vertText, skin_fragText) : new GProgram(gl, noskin_vertText, noskin_fragText);
-        this._program = gProgram;
+        // let gProgram;
+        // if(json.skins && json.skins.length > 0){
+        //     gProgram = new Program(gl, skin_vertText, skin_fragText)
+        //     // gProgram = new GProgram(gl, noskin_vertText, noskin_fragText);
+        // }else{
+        //     gProgram = new Program(gl, noskin_vertText, noskin_fragText);
+        // }
+        // this._program = gProgram;
         this.version = json.asset ? +json.asset.version : 1;
         //1.判断GLTF版本
         if (this.version === 2) {
-            this.gltf = GLTFV2.fromJson(rootPath, json, gProgram);
+            this.gltf = GLTFV2.fromJson(rootPath, json, gl);
         } else {
-            this.gltf = khrbinary === null ? GLTFV1.fromJson(rootPath, json, gProgram) : GLTFV1.fromKHRBinary(rootPath, khrbinary, gProgram);
+            this.gltf = khrbinary === null ? GLTFV1.fromJson(rootPath, json, gl) : GLTFV1.fromKHRBinary(rootPath, khrbinary, gl);
         }
         //2.request scene
         this._requestScene();
@@ -194,43 +196,47 @@ class GLoader {
      * 
      */
     _prepareScene(scene) {
-        const sceneNodes = scene.nodes,
-            gProgram = this._program;
-        //change program
-        gProgram.useProgram();
+        const gl = this._gl;
         //liter node
         const processNode = (node) => {
             //process mesh
             if (node.mesh) {
                 const mesh = node.mesh;
                 mesh.primitives.forEach(primitive => {
+                    //create cached program
+                    let gProgram;
+                    if(primitive.attributes['JOINTS_0']&&primitive.attributes['WEIGHTS_0'])
+                        gProgram = new Program(gl, skin_vertText, skin_fragText);
+                    else
+                        gProgram = new Program(gl, noskin_vertText, noskin_fragText);
+                    gProgram.useProgram();
                     //1.position attribute
                     const vAccessor = primitive.attributes['POSITION'];
                     if (vAccessor) {
                         vAccessor.bindBuffer();
                         vAccessor.bufferData();
-                        vAccessor.link('a_position');
+                        vAccessor.link(gProgram, 'a_position');
                     }
                     //2.normal attribute
                     // const nAccessor = primitive.attributes['NORMAL'];
                     // if (nAccessor) {
                     //     nAccessor.bindBuffer();
                     //     nAccessor.bufferData();
-                    //     nAccessor.link('a_normal');
+                    //     nAccessor.link(gProgram, 'a_normal');
                     // }
                     //3.skin joints
                     const jAccessor = primitive.attributes['JOINTS_0'];
                     if (jAccessor) {
                         jAccessor.bindBuffer();
                         jAccessor.bufferData();
-                        jAccessor.link('a_joints_0');
+                        jAccessor.link(gProgram, 'a_joints_0');
                     }
                     //4.skin weights
                     const wAccessor = primitive.attributes['WEIGHTS_0'];
                     if (wAccessor) {
                         wAccessor.bindBuffer();
                         wAccessor.bufferData();
-                        wAccessor.link('a_weights_0');
+                        wAccessor.link(gProgram, 'a_weights_0');
                     }
                     //5.bind index buffer
                     const indicesBuffer = primitive.indicesBuffer;
@@ -238,16 +244,16 @@ class GLoader {
                     indicesBuffer.bufferData();
                     //6.uniform
                     //5.1 skin jontmatrix unifrom
-                    const uJoint = new GUniform(gProgram, 'u_jointMatrix');
+                    const uJoint = new Uniform(gProgram, 'u_jointMatrix');
                     //5.2 camera uniform
-                    const uProject = new GUniform(gProgram, 'u_projectionMatrix'),
-                        uView = new GUniform(gProgram, 'u_viewMatrix'),
-                        uModel = new GUniform(gProgram, 'u_modelMatrix');
+                    const uProject = new Uniform(gProgram, 'u_projectionMatrix'),
+                        uView = new Uniform(gProgram, 'u_viewMatrix'),
+                        uModel = new Uniform(gProgram, 'u_modelMatrix');
                     //4.cache mesh
                     primitive.cache = {
                         attributes: {
                             vAccessor,
-                            //nAccessor,
+                            // nAccessor,
                             jAccessor,
                             wAccessor
                         },
@@ -263,6 +269,7 @@ class GLoader {
                             indicesComponentType: primitive.indicesComponentType
                         },
                         mode: primitive.mode,
+                        gProgram,
                     };
                 });
             }
@@ -274,7 +281,7 @@ class GLoader {
             }
         };
         //prepare nodes
-        sceneNodes.forEach((node) => {
+        scene.nodes.forEach((node) => {
             processNode(node);
         });
     }
@@ -305,12 +312,14 @@ class GLoader {
                     attributes,
                     uniforms,
                     indices,
-                    mode
+                    mode,
+                    gProgram
                 } = cache;
+                gProgram.useProgram();
                 //relink
                 const { vAccessor, nAccessor, jAccessor, wAccessor } = attributes;
                 vAccessor ? vAccessor.relink() : null;
-                nAccessor ? nAccessor.relink() : null;
+                // nAccessor ? nAccessor.relink() : null;
                 jAccessor ? jAccessor.relink() : null;
                 wAccessor ? wAccessor.relink() : null;
                 //indices
@@ -362,12 +371,8 @@ class GLoader {
      */
     render(camera, t) {
         const animId = this._animId,
-            gProgram = this._program,
             sceneNodes = this._scene === null ? [] : this._scene.nodes,
             animations = this._animations;
-        if (!gProgram) return;
-        //change program
-        gProgram.useProgram();
         //apply animations, default runs animation 0
         if (animations[animId])
             this._applyAnimation(animations[animId], t);

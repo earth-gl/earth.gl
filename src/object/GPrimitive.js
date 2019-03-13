@@ -69,7 +69,7 @@ class GPrimitive {
             this.indicesComponentType = gltf.json.accessors[this.indices].componentType;
             this.indicesLength = gltf.json.accessors[this.indices].count;
             this.indicesOffset = gltf.json.accessors[this.indices].byteOffset || 0;
-            this.indicesBuffer = gltf.accessors[this.indices]._gBuffer;
+            this.indicesBuffer = gltf.accessors[this.indices]._gBuffer.toIndexBuffer();
         } else {
             // assume 'POSITION' is there
             this.drawArraysCount = gltf.json.accessors[this.attributes.POSITION].count;

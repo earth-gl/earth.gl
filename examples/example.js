@@ -30,17 +30,17 @@ scene.add(surface);
 
 // scene.add(tiles3d);
 
-// //create b3dm
-// const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
-//     lng: 115.01,
-//     lat: 33.58,
-//     h: 0,
-//     vertical:true,
-//     scale: 4000.0
-// });
+//create b3dm
+const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
+    lng: 115.01,
+    lat: 33.58,
+    h: 0,
+    vertical:true,
+    scale: 4000.0
+});
 
-// //
-// scene.add(b3dm);
+//
+scene.add(b3dm);
 
 // const RiggedSimple = new GLTFLoader(
 //     'http://localhost:5500/examples/GLTFS/RiggedSimple/',
@@ -68,31 +68,31 @@ scene.add(surface);
 
 // scene.add(CesiumMan);
 
-// const Monster = new GLTFLoader(
-//     'http://localhost:5500/examples/GLTFS/Monster/',
-//     'Monster.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 30.58,
-//         h: 0,
-//         scale: 10000.0
-//     }
-// );
+const Monster = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/Monster/',
+    'Monster.gltf',
+    {
+        lng: 114.01,
+        lat: 30.58,
+        h: 0,
+        scale: 10000.0
+    }
+);
 
-// scene.add(Monster);
+scene.add(Monster);
 
-// const BoxAnimated = new GLTFLoader(
-//     'http://localhost:5500/examples/GLTFS/BoxAnimated/',
-//     'BoxAnimated.gltf',
-//     {
-//         lng: 114.01,
-//         lat: 37.58,
-//         h: 0.0,
-//         scale: 100000.0
-//     }
-// );
+const BoxAnimated = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/BoxAnimated/',
+    'BoxAnimated.gltf',
+    {
+        lng: 114.01,
+        lat: 37.58,
+        h: 0.0,
+        scale: 100000.0
+    }
+);
 
-// scene.add(BoxAnimated);
+scene.add(BoxAnimated);
 
 const ElmTree = new GLTFLoader(
     'http://localhost:5500/examples/GLTFS/BoneTree/',
@@ -101,7 +101,7 @@ const ElmTree = new GLTFLoader(
         lng: 114.01,
         lat: 30.58,
         h: 0,
-        scale: 10000000.0
+        scale: 1000.0
     }
 );
 

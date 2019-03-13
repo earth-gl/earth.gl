@@ -12,7 +12,7 @@ class GAccessor {
      * @example
      * const verticesAccessor = new GAccessor(gProgram, verticesBuffer, gl.FLOAT, "VEC3");
      *
-     * @param {GProgram} gProgram
+     * @param {WebGLRenderingContext} gl
      * @param {GBufferView} gBufferView 
      * @param {Number} componentType  gl.Float or others
      * @param {String} read type, SCALAR, VEC2, VEC3, VEC4, MAT4, MAT3, MAT4
@@ -23,15 +23,11 @@ class GAccessor {
      * @param {Array} [options.min]
      * @param {Array} [options.max]
      */
-    constructor(gProgram, gBufferView, componentType, type, count, options = {}) {
-        /**
-         * @type {GProgram}
-         */
-        this._gProgram = gProgram;
+    constructor(gl, gBufferView, componentType, type, count, options = {}) {
         /**
          * @type {WebGLRenderingContext}
          */
-        this._gl = gProgram._gl;
+        this._gl = gl;
         /**
          * @type {GBuffer}
          */
@@ -88,13 +84,13 @@ class GAccessor {
      * 
      */
     _createGBuffer() {
-        const gProgram = this._gProgram,
+        const gl = this._gl,
             gBufferView = this._gBufferView,
             componentType = this._componentType,
             typeSize = this._typeSize,
             count = this._count,
             byteOffset = this._byteOffset,
-            gBuffer = gBufferView.toTypedArray(gProgram, componentType, typeSize, count, byteOffset);
+            gBuffer = gBufferView.toTypedArray(gl, componentType, typeSize, count, byteOffset);
         return gBuffer;
     }
     /**
@@ -122,10 +118,8 @@ class GAccessor {
      * 
      * @param {String} attribName 
      */
-    link(attribName) {
-        const gProgram = this._gProgram,
-            gl = this._gl,
-            location = gProgram.ActivateAttributes[attribName];
+    link(program, attribName) {
+        const gl = this._gl, location = program.ActivateAttributes[attribName];
         //enable vertex attrib 
         //warning this._byteOffset equal 0
         //beacuse we have convert the arraybuffer to typedArrayBuffer by offset and length
