@@ -90,7 +90,7 @@ class GProgram {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
-        if (options.debug) console.log(gl.getShaderInfoLog(shader));
+        //if (options.debug) console.log(gl.getShaderInfoLog(shader));
         return shader;
     }
     /**
@@ -105,7 +105,7 @@ class GProgram {
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
         gl.linkProgram(program);
-        if (options.debug)  console.log(gl.getProgramInfoLog(program));
+        //if (options.debug)  console.log(gl.getProgramInfoLog(program));
         return program;
     }
     /**

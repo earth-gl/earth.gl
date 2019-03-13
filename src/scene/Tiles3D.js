@@ -1,7 +1,7 @@
 /**
  * 
  */
-const { Vec3 } = require('kiwi.matrix'),
+const { Vec3, Mat4 } = require('kiwi.matrix'),
     forEach = require('./../utils/forEach'),
     BoundingSphere = require('../core/BoundingSphere'),
     B3DMLoader = require('../loader/B3DMLoader'),
@@ -37,7 +37,7 @@ class Tiles3D {
         /**
          * @type {Number}
          */
-        this._maximumScreenSpaceError = 0.001;
+        this._maximumScreenSpaceError = 0;
         /**
          * @type {Object} 3dtile json
          */
@@ -100,25 +100,29 @@ class Tiles3D {
                     }).then(json => {
                         liter(json.root, that._getParentPath(url));
                     });
-                } else if(content && that._isB3dmUri(content.url)) {
+                } else if (content && that._isB3dmUri(content.url)) {
                     const url = parentPath + content.url;
                     const key = that._getb3dmKey(url);
-                    const b3dm = new B3DMLoader(url, {
-                        scale: 40000.0,
-                        vertical: false
-                    });
-                    b3dm._init(gl, global);
-                    that.b3dms[key] = b3dm;
+                    if(!that.b3dms[key]) {
+                        const geoTransMatrix = Mat4.fromVec3Translation(boundSphere.center).rotateX(Math.PI/2);
+                        const b3dm = new B3DMLoader(url, {
+                            vertical: false,
+                            matrix: geoTransMatrix
+                        });
+                        b3dm._init(gl, global);
+                        that.b3dms[key] = b3dm;
+                    }
                 }
                 //2.foreach children
-                if(tile.children){
+                if (tile.children) {
                     for (let i = 0, len = tile.children.length; i < len; i++) {
-                        liter(tile.children[i], that.rootPath);
+                        liter(tile.children[i], parentPath);
                     }
                 }
             }
         }
-        liter(json.root);
+        //start liter 3dtile
+        liter(json.root, that.rootPath);
     }
     /**
      * 
@@ -136,9 +140,9 @@ class Tiles3D {
      * 
      * @param {*} url 
      */
-    _getParentPath(url){
+    _getParentPath(url) {
         const i = url.lastIndexOf('/');
-        return url.substr(0, i+1);
+        return url.substr(0, i + 1);
     }
     /**
      * 
@@ -175,7 +179,6 @@ class Tiles3D {
             b3dm.render(camera, t);
         }, this);
     }
-
 }
 
 module.exports = Tiles3D;

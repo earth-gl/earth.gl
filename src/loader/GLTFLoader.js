@@ -101,6 +101,10 @@ class GLoader {
          * @type {GSkin[]}
          */
         this._skins = [];
+        /**
+         * update geotransform
+         */
+        this._updateGeoTransform();
     }
     /**
      * @param {WebGLRenderingContext} gl 
@@ -112,33 +116,24 @@ class GLoader {
             rootPath = this.rootUrl;
         this._gl = gl;
         this._global = global;
-        this._geoTransformMatrix = this._updateGeoTransform();
         if (isObject(model)) {
             const { json, subglb } = readKHRBinary(model.buffer, model.byteOffset);
-            this._requestGLTF(rootPath, json, model);
+            this._requestData(rootPath, json, model);
         } else {
             fetch(rootPath + model, {
                 responseType: 'json'
             }).then(response => {
                 return response.json();
             }).then(json => {
-                that._requestGLTF(rootPath, json);
+                that._requestData(rootPath, json);
             });
         }
     }
     /**
      * inital gltf configures
      */
-    _requestGLTF(rootPath, json, khrbinary = null) {
+    _requestData(rootPath, json, khrbinary = null) {
         const gl = this._gl;
-        // let gProgram;
-        // if(json.skins && json.skins.length > 0){
-        //     gProgram = new Program(gl, skin_vertText, skin_fragText)
-        //     // gProgram = new GProgram(gl, noskin_vertText, noskin_fragText);
-        // }else{
-        //     gProgram = new Program(gl, noskin_vertText, noskin_fragText);
-        // }
-        // this._program = gProgram;
         this.version = json.asset ? +json.asset.version : 1;
         //1.判断GLTF版本
         if (this.version === 2) {
@@ -157,7 +152,7 @@ class GLoader {
             gltf = this.gltf;
         gltf.then(GLTF => {
             //prerocess scene nodes
-            that._prepareScene(GLTF.scene);
+            that._prepareDraw(GLTF.scene);
             //store scene
             that._scene = GLTF.scene;
             //store animations
@@ -183,19 +178,26 @@ class GLoader {
             geoRotateZ = GLMatrix.toRadian(lng - 90),
             geoRotateX = GLMatrix.toRadian(lat);
         // calcute root matrix
-        const matrix = Mat4.fromRotationTranslationScale(new Quat(), geoTranslation, scaleV3);
+        let matrix = new Mat4().identity().scale(scaleV3);
         if (vertical) {
+            matrix = Mat4.fromRotationTranslationScale(new Quat(), geoTranslation, scaleV3);
             //matrix.setTranslation(geoTranslation);
             matrix.rotateZ(geoRotateZ);
             matrix.rotateX(geoRotateX);
         }
-        //return the geo matrix
-        return matrix;
+        //update geotransform matrix
+        this._geoTransformMatrix = matrix;
+    }
+    /**
+     * set geotransform matrix
+     */
+    setGeoTransform(matrix){
+        this._geoTransformMatrix = matrix;
     }
     /**
      * 
      */
-    _prepareScene(scene) {
+    _prepareDraw(scene) {
         const gl = this._gl;
         //liter node
         const processNode = (node) => {
@@ -205,7 +207,7 @@ class GLoader {
                 mesh.primitives.forEach(primitive => {
                     //create cached program
                     let gProgram;
-                    if(primitive.attributes['JOINTS_0']&&primitive.attributes['WEIGHTS_0'])
+                    if (primitive.attributes['JOINTS_0'] && primitive.attributes['WEIGHTS_0'])
                         gProgram = new Program(gl, skin_vertText, skin_fragText);
                     else
                         gProgram = new Program(gl, noskin_vertText, noskin_fragText);

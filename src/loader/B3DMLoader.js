@@ -6,7 +6,8 @@ const GLTFLoader = require('./GLTFLoader');
 class B3DMLoader {
     /**
      * @param {String} url 
-     * @param {Object} options 
+     * @param {Object} options
+     * @param {Object} [options.matrix] 
      */
     constructor(url, options = {}) {
         this.featureTable = null;
@@ -14,6 +15,7 @@ class B3DMLoader {
         this.url = url;
         this.gltf = null;
         this.options = options;
+        this.matrix = options.matrix;
     }
     /**
      * @typedef {import("./../scene/Global")} Global
@@ -38,8 +40,10 @@ class B3DMLoader {
             return response.arrayBuffer()
         }).then(b3dm => {
             const components = that._readB3DM(b3dm);
+            const geoTransMatrix = that.matrix;
             const rootUrl = url.substring(0, url.lastIndexOf('/'));
             const gltf = that.gltf = new GLTFLoader(rootUrl, components.khrbinary, options);
+            gltf.setGeoTransform(geoTransMatrix);
             gltf._init(gl, global);
         });
     }
