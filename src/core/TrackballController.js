@@ -172,7 +172,6 @@ class Trackball extends Eventable {
         const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zoomSpeed;
         if (factor !== 1.0 && factor > 0.0) {
             this._eye.scale(factor);
-            console.log(factor);
         } else {
             this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
         }

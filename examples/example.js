@@ -23,24 +23,24 @@ const surface = new Surface();
 
 scene.add(surface);
 
-
-// const tiles3d = new Tiles3D({
-//     url: 'http://localhost:5500/examples/B3DM/Scene/Cesium__3d.json'
-// });
-
-// scene.add(tiles3d);
-
-//create b3dm
-const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
-    lng: 115.01,
-    lat: 33.58,
-    h: 0,
-    vertical:true,
-    scale: 4000.0
+const tiles3d = new Tiles3D({
+    rootPath:'http://localhost:5500/examples/B3DM/Scene/',
+    name:'Cesium__3d.json'
 });
 
-//
-scene.add(b3dm);
+scene.add(tiles3d);
+
+//create b3dm
+// const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
+//     lng: 115.01,
+//     lat: 33.58,
+//     h: 0,
+//     vertical:true,
+//     scale: 4000.0
+// });
+
+// //
+// scene.add(b3dm);
 
 // const RiggedSimple = new GLTFLoader(
 //     'http://localhost:5500/examples/GLTFS/RiggedSimple/',

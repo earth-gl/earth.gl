@@ -22,7 +22,8 @@ class BoundingSphere {
      * @param {Vec3} position 
      */
     distance(position) {
-        return Math.max(position.sub(boundSphere.center).len(), EPSILON7);
+        const center = this.center;
+        return Math.max(position.sub(center).len(), EPSILON7);
     }
 }
 

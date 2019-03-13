@@ -112,6 +112,10 @@ class Global extends Eventable {
         /**
          * @type {Array}
          */
+        this._tiles3ds = [];
+        /**
+         * @type {Array}
+         */
         this._surfaces=[];
         /**
          * timestampe scale (delta time)
@@ -189,6 +193,7 @@ class Global extends Eventable {
             quadtree = this._quadtree,
             surfaces = this._surfaces,
             b3dms = this._b3dms,
+            tiles3ds = this._tiles3ds,
             gltfs = this._gltfs;
         if (o instanceof GLTFLoader) {
             gltfs.push(o);
@@ -201,6 +206,7 @@ class Global extends Eventable {
             o._init(gl, this);
         }else if(o instanceof Tiles3D){
             o._init(gl, this);
+            tiles3ds.push(o);
         }
         //broadcast events
         quadtree.broadcast();
@@ -219,6 +225,7 @@ class Global extends Eventable {
             camera = this._camera,
             gltfs = this._gltfs,
             b3dms = this._b3dms,
+            tiles3ds = this._tiles3ds,
             surfaces = this._surfaces;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -240,6 +247,10 @@ class Global extends Eventable {
         //render b3dm
         b3dms.forEach(b3dm=>{
             b3dm.render(camera, timeStamp);
+        });
+        //render 3dtiles
+        tiles3ds.forEach(tiles3d=>{
+            tiles3d.render(camera, timeStamp);
         });
     }
 }
