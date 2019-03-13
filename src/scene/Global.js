@@ -28,7 +28,9 @@ const merge = require('../utils/merge'),
 /**
  * scene render object
  */
-const Surface = require('./Surface'),
+const Tiles3D = require('./Tiles3D'),
+    Surface = require('./Surface'),
+    B3DMLoader = require('../loader/B3DMLoader'),
     GLTFLoader = require('../loader/GLTFLoader');
 /**
  * 
@@ -194,9 +196,10 @@ class Global extends Eventable {
         }else if(o instanceof Surface){
             surfaces.push(o);
             o._init(gl, quadtree);
-        }else{
-            //}{ debug init gl
+        }else if(o instanceof B3DMLoader){
             b3dms.push(o);
+            o._init(gl, this);
+        }else if(o instanceof Tiles3D){
             o._init(gl, this);
         }
         //broadcast events

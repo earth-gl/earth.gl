@@ -11,6 +11,7 @@ const cos = function (x) {
 };
 
 const EPSILON1 = 0.1,
+    EPSILON7 = 0.0000001,
     EPSILON12 = 0.000000000001,
     EPSILON14 = 0.00000000000001;
 
@@ -28,4 +29,4 @@ const TYPE2NUMOFCOMPONENT = {
     'MAT4': 16
 };
 
-module.exports = { TYPE2NUMOFCOMPONENT, sin, cos, equal14, EPSILON1, EPSILON12, EPSILON14 };
+module.exports = { TYPE2NUMOFCOMPONENT, sin, cos, equal14, EPSILON1, EPSILON7, EPSILON12, EPSILON14 };

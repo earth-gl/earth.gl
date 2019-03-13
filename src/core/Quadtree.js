@@ -11,10 +11,11 @@ const QuadtreeTile = require('./QuadtreeTile'),
 class Quadtree extends Eventable {
     /**
      * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
+     * @typedef {import("./../scene/Global")} Global
      * @param {PerspectiveCamera} camera 
-     * @param {GScene} gScene
+     * @param {Global} global
      */
-    constructor(camera, gScene) {
+    constructor(camera, global) {
         super();
         /**
          * @typedef {import("./QuadtreeTileSchema")} QuadtreeTileSchema
@@ -26,9 +27,9 @@ class Quadtree extends Eventable {
          */
         this._camera = camera;
         /**
-         * 
+         * @type {Global}
          */
-        this._gScene = gScene;
+        this._global = global;
         /**
          * if less then maximumScreenSpaceError, the tile should be load
          * @type {Number}
@@ -81,8 +82,8 @@ class Quadtree extends Eventable {
      * 
      */
     _registerEvents() {
-        const gScene = this._gScene;
-        gScene.on('zoomend loaded mouseup', this._updateQuadtreeTileByDistanceError, this);
+        const global = this._global;
+        global.on('zoomend loaded mouseup', this._updateQuadtreeTileByDistanceError, this);
     }
     /**
      * calctue tileset by distance error

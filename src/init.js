@@ -1,7 +1,10 @@
 const Global = require('./scene/Global'),
     Surface = require('./scene/Surface'),
+    Tiles3D = require('./scene/Tiles3D'),
+    //loader
     GLTFLoader = require('./loader/GLTFLoader'),
     B3DMLoader = require('./loader/B3DMLoader'),
+    //camera
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
 module.exports = {
@@ -15,7 +18,8 @@ module.exports = {
         },
         scene: {
             Global: Global,
-            Surface: Surface
+            Surface: Surface,
+            Tiles3D: Tiles3D
         },
     }
 };
