@@ -50,7 +50,7 @@ class PerspectiveCamera extends Camera {
          */
         this._position = new Vec3().set(0, 1, 0);
         /**
-         * @type {Vec3}
+         * @type {Vec3}, 使用z轴承为正方向
          */
         this._up = new Vec3().set(0, 0, 1);
         /**

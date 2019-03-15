@@ -20,6 +20,8 @@
  */
 const merge = require('../utils/merge'),
     TrackballController = require('../core/TrackballController'),
+    {WGS84} = require('./../core/Ellipsoid'),
+    Geographic = require('./../core/Geographic'),
     maximumRadius = require('../core/Ellipsoid').WGS84.maximumRadius,
     Eventable = require('../core/Eventable'),
     Quadtree = require('../core/Quadtree'),
@@ -155,6 +157,14 @@ class Global extends Eventable {
         canvas.width = canvas.clientWidth * devicePixelRatio;
         canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
+    }
+    /**
+     * 
+     */
+    centerTo(lng, lat, height = 10000){
+        const camera = this._camera;
+        const space = WGS84.geographicToSpace(new Geographic(lng, lat, height, true));
+        camera.position = space._out;
     }
     /**
      * 

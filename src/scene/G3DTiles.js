@@ -37,7 +37,7 @@ class G3DTiles {
         /**
          * @type {Number}
          */
-        this._maximumScreenSpaceError = 0;
+        this._maximumScreenSpaceError = 2;
         /**
          * @type {Object} 3dtile json
          */
@@ -81,6 +81,7 @@ class G3DTiles {
         const that = this;
         const gl = this.gl;
         const global = this.global;
+        const upAxis = json.asset.gltfUpAxis;
         const maximumScreenSpaceError = this._maximumScreenSpaceError;
         const liter = function (tile, parentPath) {
             const geometricError = tile.geometricError;
@@ -104,7 +105,11 @@ class G3DTiles {
                     const url = parentPath + content.url;
                     const key = that._getb3dmKey(url);
                     if(!that.b3dms[key]) {
-                        const geoTransMatrix = Mat4.fromVec3Translation(boundSphere.center).rotateX(Math.PI/2);
+                        const geoTransMatrix = Mat4.fromVec3Translation(boundSphere.center);
+                        //https://github.com/AnalyticalGraphicsInc/cesium/blob/5cbb5e52304e719b0d14ad87628cc028d115526a/Source/Scene/Axis.js#L52
+                        if(upAxis === 'Y'){
+                            geoTransMatrix.rotateX(Math.PI/2);
+                        }
                         const b3dm = new B3DMLoader(url, {
                             vertical: false,
                             matrix: geoTransMatrix

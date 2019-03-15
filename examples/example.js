@@ -31,6 +31,9 @@ const tiles3d = new G3DTiles({
 
 scene.add(tiles3d);
 
+scene.centerTo(113.78, 22.77, 20000);
+
+
 //create b3dm
 // const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
 //     lng: 115.01,
