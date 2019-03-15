@@ -1,7 +1,7 @@
 /**
  * @class
  */
-class GTexture{
+class GTexture {
 
     /**
      * @param {Object} resource 
@@ -15,7 +15,7 @@ class GTexture{
      * @param {String} options.extensions
      * @param {String} options.extras
      */
-    constructor(resource,options){
+    constructor(resource, options) {
         this.name = options.name !== undefined ? options.name : null;
         this.sampler = options.sampler !== undefined ? resource.samplers[options.sampler] : null;
         this.source = options.source !== undefined ? resource.images[options.source] : null;

@@ -1,3 +1,4 @@
+const isPowerOf2= require('./../utils/isPowerOf2');
 /**
  * @author yellow date 2019/2/3
  * @modify date 2019/3/3 unify gltf texture object
@@ -71,7 +72,7 @@ class Texture {
         gl.texImage2D(textureType, 0, format, width, height, 0, srcFormat, srcType, pixel);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         //set parameteri
-        if (this._isPowerOf2(width) && this._isPowerOf2(height)) {
+        if (isPowerOf2(width) && isPowerOf2(height)) {
             //generate mips.
             gl.generateMipmap(gl.TEXTURE_2D);
         } else {
@@ -97,12 +98,6 @@ class Texture {
         const gl = this._gl,
             texture = this._texture;
         gl.activeTexture(texture);
-    }
-    /**
-     * check the value is power of 2
-     */
-    _isPowerOf2(value) {
-        return (value & (value - 1)) == 0;
     }
     /**
      * create webgl handler

@@ -44,12 +44,12 @@ class GAnimation {
         /**
          * intial samplers and channels
          */
-        this._initial();
+        this._processSamplersAndChannels();
     }
     /**
      * 
      */
-    _initial() {
+    _processSamplersAndChannels() {
         const animJson = this._animJson,
             resource = this._resource;
         //load animationsampler
