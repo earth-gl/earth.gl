@@ -350,7 +350,7 @@ class GLTFV1 {
         //meshes
         if (gltfJson.meshes) {
             forEach(gltfJson.meshes,(meshJson, i, key)=>{
-                this._meshes[key] = new GMesh(key, {
+                this._meshes[key] = new GMesh({
                     json: gltfJson,
                     accessors: this._accessors,
                     materials: this._materials
@@ -360,7 +360,7 @@ class GLTFV1 {
         //nodes, hook up children
         if(gltfJson.nodes){
             forEach(gltfJson.nodes, (nodeJson, i, key)=>{
-                this._nodes[key] = new GNode(key,{
+                this._nodes[key] = new GNode({
                     meshes: this._meshes
                 }, nodeJson);
             },this);
@@ -394,7 +394,7 @@ class GLTFV1 {
                 this._skins[key] = new GSkin({
                     nodes: this._nodes, 
                     accessors: this._accessors
-                }, skinJson, key);
+                }, skinJson);
             }, this);
 
             forEach(this._nodes, (node, i, key)=>{

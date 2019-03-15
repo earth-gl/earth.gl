@@ -1,6 +1,6 @@
 const GGlobal = require('./scene/GGlobal'),
     GSurface = require('./scene/GSurface'),
-    G3dTiles = require('./scene/G3dTiles'),
+    G3DTiles = require('./scene/G3DTiles'),
     //loader
     GLTFLoader = require('./loader/GLTFLoader'),
     B3DMLoader = require('./loader/B3DMLoader'),
@@ -17,9 +17,9 @@ module.exports = {
             B3DMLoader: B3DMLoader
         },
         scene: {
-            Global: GGlobal,
-            Surface: GSurface,
-            Tiles3D: G3dTiles
+            GGlobal: GGlobal,
+            GSurface: GSurface,
+            G3DTiles: G3DTiles
         },
     }
 };

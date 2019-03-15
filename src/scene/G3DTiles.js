@@ -10,7 +10,7 @@ const { Vec3, Mat4 } = require('kiwi.matrix'),
  * @author
  * @class
  */
-class Tiles3D {
+class G3DTiles {
     /**
      * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
      * @param {Object} options 
@@ -181,4 +181,4 @@ class Tiles3D {
     }
 }
 
-module.exports = Tiles3D;
+module.exports = G3DTiles;

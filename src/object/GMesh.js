@@ -19,7 +19,7 @@ class GMesh{
         /**
          * 
          */
-        this.gltf = resource;
+        this.resource = resource;
         /**
          * @type {GPrimitives[]}
          */
@@ -49,10 +49,10 @@ class GMesh{
      * 
      */
     _processPrimitives(primitives){
-        const gltf = this.gltf;
+        const resource = this.resource;
         for (var i = 0, len = primitives.length; i < len; ++i) {
-            const pJson = primitives[i];
-            const primitive = new GPrimitive(gltf, pJson);
+            const primitiveJson = primitives[i];
+            const primitive = new GPrimitive(resource, primitiveJson);
             this.primitives.push(primitive);
         }
     }
