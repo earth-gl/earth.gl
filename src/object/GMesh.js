@@ -7,16 +7,11 @@ class GMesh{
      * 
      * @param {String|Number} meshID 
      * @param {Object} resource
-     * @param {Object} [resource.json]
      * @param {Object} [resource.accessors]
      * @param {Object} [resource.materials]
      * @param {Object} options 
      */
-    constructor(meshID, resource, options){
-        /**
-         * @type {Number}
-         */
-        this.meshID = meshID;
+    constructor(resource, options){
         /**
          * @type {String}
          */
@@ -33,22 +28,6 @@ class GMesh{
          * 
          */
         this.boundingBox = null;
-        // var p, primitive;
-        // for (var i = 0, len = options.primitives.length; i < len; ++i) {
-        //     p = options.primitives[i];
-        //     primitive = new Primitive(curLoader.glTF, p);
-        //     this.primitives.push(primitive);
-        //     // bounding box related
-        //     if (primitive.boundingBox) {
-        //         if (!this.boundingBox) {
-        //             this.boundingBox = new BoundingBox();
-        //         }
-        //         this.boundingBox.updateBoundingBox(primitive.boundingBox);
-        //     }
-        // }
-        // if (this.boundingBox) {
-        //     this.boundingBox.calculateTransform();
-        // }
         /**
          * 
          */
@@ -62,14 +41,14 @@ class GMesh{
          */
         this.extras = options.extras !== undefined ? options.extras : null;
         /**
-         * initial promitives
+         * process primitives
          */
-        this._initial(options.primitives);
+        this._processPrimitives(options.primitives);
     }
     /**
      * 
      */
-    _initial(primitives){
+    _processPrimitives(primitives){
         const gltf = this.gltf;
         for (var i = 0, len = primitives.length; i < len; ++i) {
             const pJson = primitives[i];

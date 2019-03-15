@@ -1,7 +1,7 @@
 /**
  * @typedef {import("./GProgram")} GProgram
  */
-const Buffer = require('../renderer/Buffer');
+const GBuffer = require('./GBuffer');
 /**
  * get arrayBuffer ctor type
  */
@@ -89,7 +89,7 @@ class GBufferView {
             drawType = this._drawType,
             ArrayCtor = getArrayCtor(componentType),
             typedArrayBuffer = new ArrayCtor(data, byteOffset, count * typeSize);
-        return new Buffer(gl, typedArrayBuffer, bufferType, drawType);
+        return new GBuffer(gl, typedArrayBuffer, bufferType, drawType);
     }
 }
 

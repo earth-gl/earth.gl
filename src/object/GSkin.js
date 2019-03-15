@@ -9,18 +9,13 @@ class GSkin {
      * @param {*} resource 
      * @param {[]} resource.nodes
      * @param {[]} resource.accessors
-     * @param {*} options 
-     * @param {*} skinID 
+     * @param {*} options
      */
-    constructor(resource, options, skinID) {
+    constructor(resource, options) {
         /**
          * @type {String|Number}
          */
         this.name = options.name !== undefined ? options.name : null;
-        /**
-         * @type {Number}
-         */
-        this.skinID = skinID;
         /**
          * @type {[]}
          */

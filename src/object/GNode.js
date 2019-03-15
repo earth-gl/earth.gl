@@ -13,15 +13,11 @@ class GNode {
      * @param {Object} options
      * 
      */
-    constructor(nodeID, resources, options) {
+    constructor(resources, options) {
         /**
          * @type {Object}
          */
-        this.nodeJson = options;
-        /**
-         * @type {Number}
-         */
-        this.nodeID = nodeID;
+        this.options = options;
         /**
          * @type {String}
          */
@@ -76,7 +72,7 @@ class GNode {
      * calcute matrix
      */
     _initialMatrix() {
-        const options = this.nodeJson;
+        const options = this.options;
         if (options.matrix) {
             const matrix = options.matrix,
                 modelMatrix = new Mat4().set(...matrix);

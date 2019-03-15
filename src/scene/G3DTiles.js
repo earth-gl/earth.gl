@@ -2,17 +2,17 @@
  * 
  */
 const { Vec3, Mat4 } = require('kiwi.matrix'),
-    forEach = require('./../utils/forEach'),
+    forEach = require('../utils/forEach'),
     BoundingSphere = require('../core/BoundingSphere'),
     B3DMLoader = require('../loader/B3DMLoader'),
-    { EPSILON7 } = require('./../utils/revise');
+    { EPSILON7 } = require('../utils/revise');
 /**
  * @author
  * @class
  */
 class Tiles3D {
     /**
-     * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
+     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
      * @param {Object} options 
      * @param {String} options.rootPath
      * @param {string} options.name
@@ -48,8 +48,8 @@ class Tiles3D {
         this.b3dms = {};
     }
     /**
-     * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
-     * @typedef {import("./../scene/Global")} Global
+     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
+     * @typedef {import("./GGlobal")} Global
      * @param {WebGLRenderingContext} gl 
      * @param {Global} global 
      */
@@ -152,7 +152,7 @@ class Tiles3D {
         return url.substr(i + 1, url.length - i - 6);
     }
     /**
-     * @typedef {import("./../core/BoundingSphere")} BoundingSphere
+     * @typedef {import("../core/BoundingSphere")} BoundingSphere
      * @param {BoundingSphere} boundSphere 
      */
     _spaceError(boundSphere, geometricError) {

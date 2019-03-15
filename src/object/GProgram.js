@@ -3,7 +3,7 @@ const merge = require('../utils/merge');
  * default program options
  */
 const PROGRAM_OPTIONS = {
-    debug: true
+    debug: false
 };
 /**
  * @class Program
@@ -60,7 +60,7 @@ class GProgram {
      * get activate attributes
      * @type {Object}
      */
-    get ActivateAttributes(){
+    get ActivateAttributes() {
         return this._attribs;
     }
 
@@ -68,7 +68,7 @@ class GProgram {
      * get activate unifroms
      * @type {Object}
      */
-    get ActivateUniforms(){
+    get ActivateUniforms() {
         return this._uniforms;
     }
     /**
@@ -90,7 +90,7 @@ class GProgram {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
-        //if (options.debug) console.log(gl.getShaderInfoLog(shader));
+        if (options.debug) console.log(gl.getShaderInfoLog(shader));
         return shader;
     }
     /**
@@ -105,7 +105,7 @@ class GProgram {
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
         gl.linkProgram(program);
-        //if (options.debug)  console.log(gl.getProgramInfoLog(program));
+        if (options.debug) console.log(gl.getProgramInfoLog(program));
         return program;
     }
     /**
@@ -121,33 +121,33 @@ class GProgram {
         const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
         for (let i = 0; i < numAttribs; ++i) {
             const info = gl.getActiveAttrib(program, i);
-            this._attribs[info.name] = gl.getAttribLocation(program,info.name);
+            this._attribs[info.name] = gl.getAttribLocation(program, info.name);
         }
         //uniform
         const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
         for (let i = 0; i < numUniforms; ++i) {
             const info = gl.getActiveUniform(program, i);
-            this._uniforms[info.name] = { location: gl.getUniformLocation(program,info.name) , type: info.type, size: info.size };
+            this._uniforms[info.name] = { location: gl.getUniformLocation(program, info.name), type: info.type, size: info.size };
         }
     }
     /**
      * force to get unifrom location
      * @param {String} name 
      */
-    getUniformLocation(name){
+    getUniformLocation(name) {
         const gl = this._gl,
             program = this._program,
             uniforms = this._uniforms,
-            location = gl.getUniformLocation(program,name);
-        if(location){
+            location = gl.getUniformLocation(program, name);
+        if (location) {
             const info = {};
-            const typedArray = gl.getUniform(program,location);
+            const typedArray = gl.getUniform(program, location);
             //todo }{ wait supplement. convert to uniform info 
-            if((typedArray instanceof Float32Array)&&typedArray.length===16){
+            if ((typedArray instanceof Float32Array) && typedArray.length === 16) {
                 info.type = gl.FLOAT_MAT4;
                 info.size = 16;
             }
-            uniforms[name] = { location: location , type: info.type, size: info.size };
+            uniforms[name] = { location: location, type: info.type, size: info.size };
         }
         return uniforms[name];
     }

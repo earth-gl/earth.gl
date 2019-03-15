@@ -4,6 +4,7 @@ const Global = earth.gl.scene.Global,
     Tiles3D = earth.gl.scene.Tiles3D,
     B3DMLoader = earth.gl.Loader.B3DMLoader,
     GLTFLoader = earth.gl.Loader.GLTFLoader;
+
 //set doom
 const canvas = document.getElementById('mapCanvas');
 const width = window.innerWidth - 20;
@@ -23,12 +24,12 @@ const surface = new Surface();
 
 scene.add(surface);
 
-const tiles3d = new Tiles3D({
-    rootPath:'http://localhost:5500/examples/B3DM/Scene/',
-    name:'Cesium__3d.json'
-});
+// const tiles3d = new Tiles3D({
+//     rootPath:'http://localhost:5500/examples/B3DM/Scene/',
+//     name:'Cesium__3d.json'
+// });
 
-scene.add(tiles3d);
+// scene.add(tiles3d);
 
 //create b3dm
 // const b3dm = new B3DMLoader('http://localhost:5500/examples/B3DM/Scene/Data/Tile_m003_m028/Tile_m003_m028_L14_0.b3dm', {
@@ -101,7 +102,7 @@ const ElmTree = new GLTFLoader(
         lng: 113.980569,
         lat: 22.77368856,
         h: 0,
-        scale: 10.0
+        scale: 10000.0
     }
 );
 

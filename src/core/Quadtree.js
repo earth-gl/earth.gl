@@ -1,6 +1,6 @@
 const QuadtreeTile = require('./QuadtreeTile'),
-    ellipsoid = require('./Ellipsoid').WGS84,
-    maximumRadius = require('./Ellipsoid').WGS84.maximumRadius,
+    { WGS84 } = require('./Ellipsoid'),
+    maximumRadius = WGS84.maximumRadius,
     Eventable = require('./Eventable'),
     quadtreeTileSchema = require('./QuadtreeTileSchema').WEB_MERCATOR_TILING_SCHEME;
 /**
@@ -11,7 +11,7 @@ const QuadtreeTile = require('./QuadtreeTile'),
 class Quadtree extends Eventable {
     /**
      * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
-     * @typedef {import("./../scene/Global")} Global
+     * @typedef {import("../scene/GGlobal")} Global
      * @param {PerspectiveCamera} camera 
      * @param {Global} global
      */
@@ -59,7 +59,7 @@ class Quadtree extends Eventable {
         /**
          * initialize geometric errors at each level
          */
-        this._initialize();
+        this._prepareGeometricErrors();
     }
     /**
      * broadcast the events again
@@ -71,7 +71,7 @@ class Quadtree extends Eventable {
     /**
      * 
      */
-    _initialize() {
+    _prepareGeometricErrors() {
         //calcute geometric error
         const geometricError = this._geometricError;
         for (var i = 0; i < 24; i++) geometricError[i] = this._computeMaximumGeometricError(i);
@@ -164,7 +164,7 @@ class Quadtree extends Eventable {
         const zeroLevelTiles = this._zeroLevelTiles,
             pickedZeroLevelTiles = [];
         //1.转化camera 到椭球体
-        const geographic = ellipsoid.spaceToGeographic(cameraSpacePosition);
+        const geographic = WGS84.spaceToGeographic(cameraSpacePosition);
         //2.计算tile rectangle与 geo coord 相交
         for (var i = 0, len = zeroLevelTiles.length; i < len; i++) {
             const quadtreeTile = zeroLevelTiles[i];
@@ -191,7 +191,7 @@ class Quadtree extends Eventable {
         //2019/2/10 修正，改为与四角的距离取最大error
         let err = 0;
         for (let i = 0, len = bounds.length; i < len; i++) {
-            const spacePostion = ellipsoid.geographicToSpace(bounds[i]);
+            const spacePostion = WGS84.geographicToSpace(bounds[i]);
             const distance = cameraSpacePosition.clone().sub(spacePostion).len();
             const error = (maxGeometricError * height) / (distance * sseDenominator);
             err = error > err ? error : err;

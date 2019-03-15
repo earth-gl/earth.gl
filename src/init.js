@@ -1,6 +1,6 @@
-const Global = require('./scene/Global'),
-    Surface = require('./scene/Surface'),
-    Tiles3D = require('./scene/Tiles3D'),
+const GGlobal = require('./scene/GGlobal'),
+    GSurface = require('./scene/GSurface'),
+    G3dTiles = require('./scene/G3dTiles'),
     //loader
     GLTFLoader = require('./loader/GLTFLoader'),
     B3DMLoader = require('./loader/B3DMLoader'),
@@ -17,9 +17,9 @@ module.exports = {
             B3DMLoader: B3DMLoader
         },
         scene: {
-            Global: Global,
-            Surface: Surface,
-            Tiles3D: Tiles3D
+            Global: GGlobal,
+            Surface: GSurface,
+            Tiles3D: G3dTiles
         },
     }
 };

@@ -233,7 +233,7 @@ class GLTFV2 {
             if (gltfJson.meshes) {
                 for (let i = 0, len = gltfJson.meshes.length; i < len; i++) {
                     const meshJson = gltfJson.meshes[i];
-                    that._meshes[i] = new GMesh(i, {
+                    that._meshes[i] = new GMesh({
                         json: gltfJson,
                         accessors: that._accessors,
                         materials: that._materials
@@ -244,7 +244,7 @@ class GLTFV2 {
             if (gltfJson.nodes) {
                 for (let i = 0, len = gltfJson.nodes.length; i < len; i++) {
                     const nJson = gltfJson.nodes[i];
-                    that._nodes[i] = new GNode(i, {
+                    that._nodes[i] = new GNode({
                         meshes: that._meshes
                     }, nJson);
                 }
@@ -276,7 +276,7 @@ class GLTFV2 {
             //skin
             if (gltfJson.skins) {
                 for (let i = 0, leni = gltfJson.skins.length; i < leni; i++) {
-                    that._skins[i] = new GSkin({ nodes: that._nodes, accessors: that._accessors }, gltfJson.skins[i], i);
+                    that._skins[i] = new GSkin({ nodes: that._nodes, accessors: that._accessors }, gltfJson.skins[i]);
                 }
                 //jonit skin
                 for (let i = 0, len = that._nodes.length; i < len; i++) {

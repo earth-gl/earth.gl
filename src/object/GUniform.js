@@ -3,7 +3,7 @@
  */
 class GUniform {
     /**
-     * @typedef {import("./Program")} GProgram
+     * @typedef {import("./GProgram")} GProgram
      * @param {GProgram} program 
      * @param {string} uniformName 
      */

@@ -13,7 +13,7 @@ class Texture {
      * @param {Number} format gl.RGBA
      * @param {Number} srcFormat gl.RGBA
      * @param {Number} srcType gl.UNSIGNED_BYTE
-     * @param {Number} textureTyp] default is gl.TEXTURE_2D
+     * @param {Number} textureType default is gl.TEXTURE_2D
      */
     constructor(gl, source, width, height, format, srcFormat, srcType, textureType) {
         /**

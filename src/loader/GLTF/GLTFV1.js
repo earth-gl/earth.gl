@@ -235,7 +235,7 @@ class GLTFV1 {
             if (gltfJson.meshes) {
                 for (let i = 0, len = gltfJson.meshes.length; i < len; i++) {
                     const meshJson = gltfJson.meshes[i];
-                    that._meshes[i] = new GMesh(i, {
+                    that._meshes[i] = new GMesh({
                         json: gltfJson,
                         accessors: that._accessors,
                         materials: that._materials
@@ -246,7 +246,7 @@ class GLTFV1 {
             if (gltfJson.nodes) {
                 for (let i = 0, len = gltfJson.nodes.length; i < len; i++) {
                     const nJson = gltfJson.nodes[i];
-                    that._nodes[i] = new GNode(i, {
+                    that._nodes[i] = new GNode({
                         meshes: that._meshes
                     }, nJson);
                 }
@@ -278,7 +278,7 @@ class GLTFV1 {
             //skin
             if (gltfJson.skins) {
                 for (let i = 0, leni = gltfJson.skins.length; i < leni; i++) {
-                    that._skins[i] = new GSkin({ nodes: that._nodes, accessors: that._accessors }, gltfJson.skins[i], i);
+                    that._skins[i] = new GSkin({ nodes: that._nodes, accessors: that._accessors }, gltfJson.skins[i]);
                 }
                 //jonit skin
                 for (let i = 0, len = that._nodes.length; i < len; i++) {
@@ -324,8 +324,6 @@ class GLTFV1 {
                 }else{
                     //todo load from uri
                 }
-
-
             }, this);
         }
         //materials
@@ -368,11 +366,13 @@ class GLTFV1 {
             },this);
         }
         //nodes hook up
-        forEach(this._nodes, (node, key)=>{
-            forEach(node.children,(childName, i, key)=>{
-                node.children[childName] = this._nodes[childName];
+        if(this._nodes.length>0){
+            forEach(this._nodes, (node, key)=>{
+                forEach(node.children,(childName, i, key)=>{
+                    node.children[childName] = this._nodes[childName];
+                },this);
             },this);
-        },this);
+        }
         //crate scene
         if(gltfJson.scenes){
             forEach(gltfJson.scenes, (sceneJson, i, key)=>{

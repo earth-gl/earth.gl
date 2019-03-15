@@ -8,10 +8,10 @@ const requestImage = require('../utils/requestImage'),
     GBufferView = require('../object/GBufferView'),
     GAccessor = require('../object/GAccessor'),
     //render unit
-    Texture = require('./../renderer/Texture'),
-    Uniform = require('./../renderer/Uniform'),
-    Buffer = require('./../renderer/Buffer'),
-    Program = require('./../renderer/Program'),
+    Texture = require('../renderer/Texture'),
+    Uniform = require('../object/GUniform'),
+    GBuffer = require('../object/GBuffer'),
+    Program = require('../object/GProgram'),
     //shader glsl file
     fragText = require('./../shader/surface-fs.glsl'),
     vertText = require('./../shader/surface-vs.glsl');
@@ -185,7 +185,7 @@ class GSurface {
             tAccessor.bufferData();
             tAccessor.link(gProgram, 'a_texcoord');
             //create indices buffer
-            const iBuffer = new Buffer(
+            const iBuffer = new GBuffer(
                 gl,
                 new Uint16Array(indices),
                 gl.ELEMENT_ARRAY_BUFFER,

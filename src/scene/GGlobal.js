@@ -28,8 +28,8 @@ const merge = require('../utils/merge'),
 /**
  * scene render object
  */
-const Tiles3D = require('./Tiles3D'),
-    Surface = require('./Surface'),
+const Tiles3D = require('./G3DTiles'),
+    Surface = require('./GSurface'),
     B3DMLoader = require('../loader/B3DMLoader'),
     GLTFLoader = require('../loader/GLTFLoader');
 /**
@@ -105,10 +105,6 @@ class Global extends Eventable {
          * @type {Array}
          */
         this._gltfs = [];
-        /**
-         * @type {Array}
-         */
-        this._b3dms=[];
         /**
          * @type {Array}
          */
@@ -192,7 +188,6 @@ class Global extends Eventable {
         const gl = this._gl,
             quadtree = this._quadtree,
             surfaces = this._surfaces,
-            b3dms = this._b3dms,
             tiles3ds = this._tiles3ds,
             gltfs = this._gltfs;
         if (o instanceof GLTFLoader) {
@@ -201,9 +196,6 @@ class Global extends Eventable {
         }else if(o instanceof Surface){
             surfaces.push(o);
             o._init(gl, quadtree);
-        }else if(o instanceof B3DMLoader){
-            b3dms.push(o);
-            o._init(gl, this);
         }else if(o instanceof Tiles3D){
             o._init(gl, this);
             tiles3ds.push(o);
@@ -224,7 +216,6 @@ class Global extends Eventable {
             trackball = this._trackball,
             camera = this._camera,
             gltfs = this._gltfs,
-            b3dms = this._b3dms,
             tiles3ds = this._tiles3ds,
             surfaces = this._surfaces;
         //gl state
@@ -243,10 +234,6 @@ class Global extends Eventable {
         //render gltf
         gltfs.forEach(gltf=>{
             gltf.render(camera, timeStamp);
-        });
-        //render b3dm
-        b3dms.forEach(b3dm=>{
-            b3dm.render(camera, timeStamp);
         });
         //render 3dtiles
         tiles3ds.forEach(tiles3d=>{

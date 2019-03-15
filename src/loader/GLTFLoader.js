@@ -1,7 +1,7 @@
 const { GLMatrix, Vec3, Quat, Mat4 } = require('kiwi.matrix'),
     isObject = require('./../utils/isObject'),
-    Program = require('./../renderer/Program'),
-    Uniform = require('./../renderer/Uniform'),
+    Program = require('../object/GProgram'),
+    Uniform = require('../object/GUniform'),
     WGS84 = require('./../core/Ellipsoid').WGS84,
     Geographic = require('./../core/Geographic'),
     readKHRBinary = require('../utils/readKHRBinary');

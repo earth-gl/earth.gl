@@ -18,7 +18,7 @@ class B3DMLoader {
         this.matrix = options.matrix;
     }
     /**
-     * @typedef {import("./../scene/Global")} Global
+     * @typedef {import("../scene/GGlobal")} Global
      * @param {WebGLRenderingContext} gl 
      * @param {Global} global 
      */
@@ -26,7 +26,7 @@ class B3DMLoader {
         this._initialRequest(gl, global);
     }
     /**
-     * @typedef {import("./../scene/Global")} Global
+     * @typedef {import("../scene/GGlobal")} Global
      * @param {WebGLRenderingContext} gl 
      * @param {Global} global 
      */
