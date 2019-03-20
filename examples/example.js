@@ -98,18 +98,18 @@ scene.centerTo(113.78, 22.77, 20000);
 
 // scene.add(BoxAnimated);
 
-// const ElmTree = new GLTFLoader(
-//     'http://localhost:5500/examples/GLTFS/BoneTree/',
-//     'bone.gltf',
-//     {
-//         lng: 113.980569,
-//         lat: 22.77368856,
-//         h: 0,
-//         scale: 10000.0
-//     }
-// );
+const ElmTree = new GLTFLoader(
+    'http://localhost:5500/examples/GLTFS/BoneTree/',
+    'tree2018.gltf',
+    {
+        lng: 113.780569,
+        lat: 22.77368856,
+        h: 0,
+        scale: 10.0
+    }
+);
 
-// scene.add(ElmTree);
+scene.add(ElmTree);
 
 const update = function () {
     scene.render();
