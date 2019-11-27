@@ -1,11 +1,4 @@
 /* eslint-disable */
-const GGlobal = earth.gl.scene.GGlobal,
-    GSurface = earth.gl.scene.GSurface,
-    G3DTiles = earth.gl.scene.G3DTiles,
-    B3DMLoader = earth.gl.Loader.B3DMLoader,
-    GLTFLoader = earth.gl.Loader.GLTFLoader;
-
-//set doom
 const canvas = document.getElementById('mapCanvas');
 const width = window.innerWidth - 20;
 const height = window.innerHeight - 20;
@@ -13,7 +6,7 @@ canvas.style.width = `${width}px`;
 canvas.style.height = `${height}px`;
 
 //create global
-const scene = new GGlobal({
+const scene = new earth.gl.Global({
     canvas: canvas,
     width: width,
     height: height
@@ -24,12 +17,12 @@ const surface = new GSurface();
 
 scene.add(surface);
 
-const tiles3d = new G3DTiles({
-    rootPath:'http://localhost:5500/examples/B3DM/Scene/',
-    name:'Cesium__3d.json'
-});
+// const tiles3d = new G3DTiles({
+//     rootPath:'http://localhost:5500/examples/B3DM/Scene/',
+//     name:'Cesium__3d.json'
+// });
 
-scene.add(tiles3d);
+// scene.add(tiles3d);
 
 scene.centerTo(113.78, 22.77, 20000);
 
@@ -98,18 +91,18 @@ scene.centerTo(113.78, 22.77, 20000);
 
 // scene.add(BoxAnimated);
 
-const ElmTree = new GLTFLoader(
-    'http://localhost:5500/examples/GLTFS/BoneTree/',
-    'tree2018.gltf',
-    {
-        lng: 113.780569,
-        lat: 22.77368856,
-        h: 0,
-        scale: 10.0
-    }
-);
+// const ElmTree = new GLTFLoader(
+//     'http://localhost:5500/examples/GLTFS/BoneTree/',
+//     'tree2018.gltf',
+//     {
+//         lng: 113.780569,
+//         lat: 22.77368856,
+//         h: 0,
+//         scale: 10.0
+//     }
+// );
 
-scene.add(ElmTree);
+// scene.add(ElmTree);
 
 const update = function () {
     scene.render();

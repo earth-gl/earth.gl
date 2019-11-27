@@ -1,10 +1,10 @@
-const isPowerOf2= require('./../utils/isPowerOf2');
+const isPowerOf2= require('../utils/isPowerOf2');
 /**
  * @author yellow date 2019/2/3
  * @modify date 2019/3/3 unify gltf texture object
  * @class
  */
-class Texture {
+class GTexture {
     /**
      * 
      * @param {WebGLRenderingContext} gl
@@ -108,4 +108,4 @@ class Texture {
     }
 }
 
-module.exports = Texture;
+module.exports = GTexture;

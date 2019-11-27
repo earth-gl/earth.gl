@@ -2,7 +2,7 @@
  *  @author }{yellow 2017/4/18
 *   @returns {Object} 合并后对象
  *  (Object[, Object, ...]) ->
- * @param {*} dest 
+ *  @param {*} dest 
  */
 const merge = function(dest) {
     for (let i = 1; i < arguments.length; i++) {

@@ -3,12 +3,13 @@
 const requestImage = require('../utils/requestImage'),
     //core
     Geographic = require('../core/Geographic'),
+    Object3D = require('./../core/Object3D'),
     { WGS84 } = require('../core/Ellipsoid'),
     //object
     GBufferView = require('../object/GBufferView'),
     GAccessor = require('../object/GAccessor'),
     //render unit
-    Texture = require('../renderer/Texture'),
+    Texture = require('../renderer/GTexture'),
     Uniform = require('../object/GUniform'),
     GBuffer = require('../object/GBuffer'),
     Program = require('../object/GProgram'),
@@ -19,23 +20,20 @@ const requestImage = require('../utils/requestImage'),
  * request terrain data for cesium server
  * @class
  */
-class GSurface {
+class GlobalSurface extends Object3D{
     /**
      * @param {Object} options
      * @param {String} options.uri the tile uri, such as 'https://c.basemaps.cartocdn.com/light_all/'
      */
     constructor(options) {
-        /**
-         * @type {WebGLRenderingContext}
-         */
-        this._gl = null;
+        super();
         /**
          * @type {Quadtree}
          */
         this._quadtree = null;
         /**
-         * @type {Object[]}
          * key-value: key=level-x-y, value:{program,buffer}
+         * @type {Object[]}
          */
         this._tileCaches = {};
     }
@@ -44,17 +42,11 @@ class GSurface {
      * @param {WebGLRenderingContext} gl 
      * @param {Quadtree} quadtree 
      */
-    _init(gl, quadtree) {
-        this._gl = gl;
+    hook(gl, quadtree){
+        super.hook(gl);
         this._quadtree = quadtree;
-        this._registerEvents();
-    }
-    /**
-     * 
-     */
-    _registerEvents() {
-        const quadtree = this._quadtree;
-        quadtree.on('updatedTiles', this._updateTiles, this);
+         //register event with updateTiles
+         this._quadtree.on('updatedTiles', this._updateTiles, this);
     }
     /**
      * @param o
@@ -269,4 +261,4 @@ class GSurface {
     }
 }
 
-module.exports = GSurface;
+module.exports = GlobalSurface;

@@ -3,7 +3,11 @@ const isObject = require('./isObject');
 const isFunction = require('./isFunction');
 const hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
 const nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString', 'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
-
+/**
+ * 
+ * @param {*} obj 
+ * @param {*} keys 
+ */
 const collectNonEnumProps = function(obj, keys) {
   var nonEnumIdx = nonEnumerableProps.length;
   var constructor = obj.constructor;
@@ -17,8 +21,10 @@ const collectNonEnumProps = function(obj, keys) {
     }
   }
 };
-
-
+/**
+ * 
+ * @param {*} obj 
+ */
 const assignKeys = function (obj) {
   if (!isObject(obj)) return [];
   if (Object.keys) return Object.keys(obj);

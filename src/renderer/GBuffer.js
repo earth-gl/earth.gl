@@ -2,7 +2,7 @@
  * @author yellow date 2019/1/29
  * @class
  */
-class Buffer {
+class GBuffer {
     /**
      * 
      * @param {WebGLRenderingContext} gl 
@@ -75,4 +75,4 @@ class Buffer {
     }
 }
 
-module.exports = Buffer;
+module.exports = GBuffer;

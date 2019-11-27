@@ -18,24 +18,18 @@
  * 3. 可自定义加载建筑
  * 4. 提供camera distance，用于确定lod
  */
-const merge = require('../utils/merge'),
-    TrackballController = require('../core/TrackballController'),
-    {WGS84} = require('./../core/Ellipsoid'),
-    Geographic = require('./../core/Geographic'),
-    maximumRadius = require('../core/Ellipsoid').WGS84.maximumRadius,
-    Eventable = require('../core/Eventable'),
-    Quadtree = require('../core/Quadtree'),
-    PerspectiveCamera = require('../camera/PerspectiveCamera'),
-    { addDomEvent, domEventNames } = require('../utils/domEvent');
+const merge = require('./utils/merge'),
+    GlobalSurface = require('./scene/GlobalSurface'),
+    TrackballController = require('./core/TrackballController'),
+    { WGS84 } = require('./core/Ellipsoid'),
+    Geographic = require('./core/Geographic'),
+    maximumRadius = require('./core/Ellipsoid').WGS84.maximumRadius,
+    Eventable = require('./core/Eventable'),
+    Quadtree = require('./core/Quadtree'),
+    PerspectiveCamera = require('./camera/PerspectiveCamera'),
+    { addDomEvent, domEventNames } = require('./utils/domEvent');
 /**
- * scene render object
- */
-const G3DTiles = require('./G3DTiles'),
-    GSurface = require('./GSurface');
-const B3DMLoader = require('../loader/B3DMLoader'),
-    GLTFLoader = require('../loader/GLTFLoader');
-/**
- * 
+ * default webgl context options
  */
 const CONTEXT_OPTIONS = {
     alpha: false,
@@ -99,22 +93,10 @@ class Global extends Eventable {
          */
         this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, maximumRadius * 3);
         /**
+         * 计算瓦片规则
          * @type {Quadtree}
          */
         this._quadtree = new Quadtree(this._camera, this);
-        /**
-         * gltf instances
-         * @type {Array}
-         */
-        this._gltfs = [];
-        /**
-         * @type {Array}
-         */
-        this._tiles3ds = [];
-        /**
-         * @type {Array}
-         */
-        this._surfaces=[];
         /**
          * timestampe scale (delta time)
          */
@@ -124,6 +106,10 @@ class Global extends Eventable {
          */
         this._timeStamp0 = performance.now();
         /**
+         * @type {GlobalSurface[]}
+         */
+        this._globalSurfaces = [];
+        /**
          * initialization
          */
         this._initialize();
@@ -131,13 +117,6 @@ class Global extends Eventable {
          * 注册dom时间，操作相机矩阵
          */
         this._registerDomEvents();
-    }
-    /**
-     * get current zoom level
-     */
-    getLevel() {
-        const quadtree = this._quadtree;
-        return quadtree._level;
     }
     /**
      * 
@@ -158,15 +137,7 @@ class Global extends Eventable {
         canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
-    /**
-     * 
-     */
-    centerTo(lng, lat, height = 10000){
-        const camera = this._camera;
-        const space = WGS84.geographicToSpace(new Geographic(lng, lat, height, true));
-        camera.position = space._out;
-    }
-    /**
+        /**
      * 
      */
     _registerDomEvents() {
@@ -174,9 +145,7 @@ class Global extends Eventable {
             camera = this._camera;
         addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
         this._trackball = new TrackballController(camera, this);
-        const trackball = this._trackball;
-        trackball.update();
-        //
+        this._trackball.update();
         this.fire('loaded', {}, true);
     }
     /**
@@ -192,26 +161,30 @@ class Global extends Eventable {
         this.fire(type, e, true);
     }
     /**
+     * get current zoom level
+     */
+    getLevel() {
+        return this._quadtree._level;
+    }
+    /**
+     * 
+     */
+    centerTo(lng, lat, height = 10000) {
+        const camera = this._camera;
+        const space = WGS84.geographicToSpace(new Geographic(lng, lat, height, true));
+        camera.position = space._out;
+    }
+    /**
      * @type {Object} o
      */
     add(o) {
-        const gl = this._gl,
-            quadtree = this._quadtree,
-            surfaces = this._surfaces,
-            tiles3ds = this._tiles3ds,
-            gltfs = this._gltfs;
-        if (o instanceof GLTFLoader) {
+        const gl = this._gl;
+        if (o instanceof GlobalSurface) {
+            o.hook(gl, this._quadtree);
             gltfs.push(o);
-            o._init(gl, this);
-        }else if(o instanceof GSurface){
-            surfaces.push(o);
-            o._init(gl, quadtree);
-        }else if(o instanceof G3DTiles){
-            o._init(gl, this);
-            tiles3ds.push(o);
         }
-        //broadcast events
-        quadtree.broadcast();
+        //broadcast quadtree events
+        this._quadtree.broadcast();
     }
     /**
      * reference
@@ -238,17 +211,9 @@ class Global extends Eventable {
         //update trackball and camera
         trackball.update();
         //render surface
-        surfaces.forEach(surface=>{
-            surface.render(camera, timeStamp);
-        });
-        //render gltf
-        gltfs.forEach(gltf=>{
-            gltf.render(camera, timeStamp);
-        });
-        //render 3dtiles
-        tiles3ds.forEach(tiles3d=>{
-            tiles3d.render(camera, timeStamp);
-        });
+        // surfaces.forEach(surface => {
+        //     surface.render(camera, timeStamp);
+        // });
     }
 }
 

@@ -2,7 +2,7 @@
  * convert type to number  
  * 枚举
  */
-const { TYPE2NUMOFCOMPONENT } = require('./../utils/revise');
+const { TYPE2NUMOFCOMPONENT } = require('../utils/revise');
 /**
  * 与GBuffer搭配，为Buffer设置attribName的读取方式等
  * @class

@@ -37,14 +37,8 @@ const setId = (obj, id) => {
  * @return {String} error if returned 'null'
  */
 const stamp = (obj, prefix = _prefix) => {
-    if(!obj)
-        return null;
-    if (!obj._kiwi_gl_id_) {
-        const id = getId(prefix);
-        return setId(obj, id);
-    } else {
-        return obj._kiwi_gl_id_;
-    }
+    if (!obj) return null;
+    return !obj._earth_gl_id_ ? setId(obj, getId(prefix)) : obj._earth_gl_id_;
 };
 
 module.exports = stamp;

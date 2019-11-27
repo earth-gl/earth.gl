@@ -64,7 +64,6 @@ class Eventable {
         }
         return this;
     }
-
     /**
      * Alias for [on]{@link Eventable.on}
      *
@@ -77,7 +76,6 @@ class Eventable {
     addEventListener() {
         return this.on.apply(this, arguments);
     }
-
     /**
      * Same as on, except the listener will only get fired once and then removed.
      *
@@ -105,7 +103,6 @@ class Eventable {
         }
         return this;
     }
-
     /**
      * Unregister the event handler for the specified event types.
      *
@@ -149,7 +146,6 @@ class Eventable {
         }
         return this;
     }
-
     /**
      * Alias for [off]{@link Eventable.off}
      *
@@ -162,7 +158,6 @@ class Eventable {
     removeEventListener() {
         return this.off.apply(this, arguments);
     }
-
     /**
      * Returns listener's count registered for the event type.
      *
@@ -193,7 +188,6 @@ class Eventable {
         }
         return count;
     }
-
     /**
      * Copy all the event listener to the target object
      * @param {Object} target - target object to copy to.
@@ -214,7 +208,6 @@ class Eventable {
         }
         return this;
     }
-
     /**
      * Fire an event, causing all handlers for that event name to run.
      *
@@ -229,7 +222,9 @@ class Eventable {
         }
         return this._fire.apply(this, arguments);
     }
-
+    /**
+     * 
+     */
     _wrapOnceHandler(evtType, handler, context) {
         const me = this;
         const key = 'Z__' + evtType;
@@ -259,7 +254,10 @@ class Eventable {
         }
         return this;
     }
-
+    /**
+     * 
+     * @param {*} eventType 
+     */
     _clearListeners(eventType) {
         if (!this._eventMap || !isString(eventType)) {
             return;
@@ -270,11 +268,12 @@ class Eventable {
         }
         this._eventMap[eventType] = null;
     }
-
+    /**
+     * 
+     */
     _clearAllListeners() {
         this._eventMap = null;
     }
-
     /**
      * Set a event parent to handle all the events
      * @param {Any} parent - event parent
@@ -286,7 +285,11 @@ class Eventable {
         this._eventParent = parent;
         return this;
     }
-
+    /**
+     * 
+     * @param {*} eventType 
+     * @param {*} param 
+     */
     _fire(eventType, param) {
         if (!this._eventMap) {
             return this;

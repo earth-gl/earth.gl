@@ -8,7 +8,6 @@ const trim = (function (isNative) {
         return isNative ? isNative.apply(input) : ((input || '') + '').replace(/^\s+|\s+$/g, '');
     }
 })(String.prototype.trim);
-
 /**
  * @description  字符串内空格拆分为字符数组
  * @param {any} str
