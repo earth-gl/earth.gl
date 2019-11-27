@@ -181,7 +181,7 @@ class Global extends Eventable {
         const gl = this._gl;
         if (o instanceof GlobalSurface) {
             o.hook(gl, this._quadtree);
-            gltfs.push(o);
+            this._globalSurfaces.push(o);
         }
         //broadcast quadtree events
         this._quadtree.broadcast();
@@ -197,10 +197,7 @@ class Global extends Eventable {
             timeStamp0 = this._timeStamp0,
             timeStamp = (performance.now() - timeStamp0) * timeStampScale || 0,
             trackball = this._trackball,
-            camera = this._camera,
-            gltfs = this._gltfs,
-            tiles3ds = this._tiles3ds,
-            surfaces = this._surfaces;
+            camera = this._camera;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -211,9 +208,9 @@ class Global extends Eventable {
         //update trackball and camera
         trackball.update();
         //render surface
-        // surfaces.forEach(surface => {
-        //     surface.render(camera, timeStamp);
-        // });
+        this._globalSurfaces.forEach(o=>{
+            o.render(camera, timeStamp);
+        });
     }
 }
 

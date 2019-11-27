@@ -13,9 +13,8 @@ const scene = new earth.gl.Global({
 });
 
 //create surface
-const surface = new GSurface();
-
-scene.add(surface);
+const globalSurface = new earth.gl.scene.GlobalSurface();
+scene.add(globalSurface);
 
 // const tiles3d = new G3DTiles({
 //     rootPath:'http://localhost:5500/examples/B3DM/Scene/',
@@ -24,7 +23,7 @@ scene.add(surface);
 
 // scene.add(tiles3d);
 
-scene.centerTo(113.78, 22.77, 20000);
+scene.centerTo(113.78, 22.77, 20000000);
 
 
 //create b3dm

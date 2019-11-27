@@ -1,18 +1,16 @@
 
 //util func
 const requestImage = require('../utils/requestImage'),
-    //core
-    Geographic = require('../core/Geographic'),
+    interpolation = require('./../utils/interpolation'),
     Object3D = require('./../core/Object3D'),
-    { WGS84 } = require('../core/Ellipsoid'),
     //object
-    GBufferView = require('../object/GBufferView'),
-    GAccessor = require('../object/GAccessor'),
+    GBufferView = require('./../renderer/GBufferView'),
+    GAccessor = require('./../renderer/GAccessor'),
     //render unit
-    Texture = require('../renderer/GTexture'),
-    Uniform = require('../object/GUniform'),
-    GBuffer = require('../object/GBuffer'),
-    Program = require('../object/GProgram'),
+    GTexture = require('../renderer/GTexture'),
+    Uniform = require('./../renderer/GUniform'),
+    GBuffer = require('./../renderer/GBuffer'),
+    GProgram = require('./../renderer/GProgram'),
     //shader glsl file
     fragText = require('./../shader/surface-fs.glsl'),
     vertText = require('./../shader/surface-vs.glsl');
@@ -60,53 +58,12 @@ class GlobalSurface extends Object3D{
         }
     }
     /**
-     * interpolation
-     */
-    _lerp(boundary) {
-        const lerp = 8,
-            factor = 1 / lerp,
-            rangeX = boundary.width,
-            rangeY = boundary.height,
-            start = boundary.southwest;
-        let texcoords = [],
-            vertices = [],
-            indices = [];
-        for (let x = 0; x <= lerp; x++)
-            for (let y = 0; y <= lerp; y++) {
-                //convert to space
-                //bug!不能直接使用线性加减得到方框顶点，而是需要从投影米级坐标计算
-                const g1 = new Geographic(
-                    start.longitude + x * factor * rangeX,
-                    start.latitude + y * factor * rangeY,
-                    0);
-                //convert to space coord
-                const spaceCoord = WGS84.geographicToSpace(g1);
-                //push vertices
-                vertices = vertices.concat(spaceCoord._out);
-                //texcoords
-                texcoords = texcoords.concat([x * factor, y * factor]);
-            }
-        for (let x = 0; x < lerp; ++x)
-            for (let y = 0; y < lerp; ++y) {
-                let first = (x * (lerp + 1)) + y;
-                let second = first + lerp + 1;
-                indices.push(first);
-                indices.push(second);
-                indices.push(first + 1);
-                indices.push(second);
-                indices.push(second + 1);
-                indices.push(first + 1);
-            }
-        //retrun vertices array and indices array
-        return { vertices, indices, texcoords };
-    }
-    /**
      * 
-     * @param {*} tile 
+     * @param {import('./../core/QuadtreeTile')} qudatreeTile 
      */
     _request(qudatreeTile) {
-        const { x, y, level, boundary } = qudatreeTile;
         const gl = this._gl,
+            { x, y, level, boundary } = qudatreeTile,
             key = x + '-' + y + '-' + level,
             width = 256,
             height = 256,
@@ -123,8 +80,8 @@ class GlobalSurface extends Object3D{
         requestImage(uri).then(arraybuffer => {
             //create program
             const tileCache = {},
-                gProgram = new Program(gl, vertText, fragText);
-            const { vertices, indices, texcoords } = this._lerp(boundary);
+                gProgram = new GProgram(gl, vertText, fragText);
+            const { vertices, indices, texcoords } = interpolation(boundary);
             gProgram.useProgram();
             //create vertices buffer
             const vBufferView = new GBufferView(
@@ -185,7 +142,7 @@ class GlobalSurface extends Object3D{
             iBuffer.bindBuffer();
             iBuffer.bufferData();
             //create texture image2d
-            const gTexture = new Texture(
+            const gTexture = new GTexture(
                 gl,
                 arraybuffer,
                 width,

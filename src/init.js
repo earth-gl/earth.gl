@@ -1,16 +1,16 @@
 const Global = require('./Global'),
-    // GSurface = require('./scene/Surface'),
+    GlobalSurface = require('./scene/GlobalSurface'),
     //camera
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
 module.exports = {
     gl: {
-        camera: {
-            PerspectiveCamera: PerspectiveCamera
-        },
         Global: Global,
+        camera: {
+            PerspectiveCamera
+        },
         scene: {
-            // GSurface: GSurface,
+            GlobalSurface
         },
     }
 };
