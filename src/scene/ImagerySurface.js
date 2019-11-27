@@ -1,16 +1,16 @@
 
 //util func
 const requestImage = require('../utils/requestImage'),
-    interpolation = require('./../utils/interpolation'),
-    Object3D = require('./../core/Object3D'),
+    interpolation = require('../utils/interpolation'),
+    Object3D = require('../core/Object3D'),
     //object
-    GBufferView = require('./../renderer/GBufferView'),
-    GAccessor = require('./../renderer/GAccessor'),
+    GBufferView = require('../renderer/GBufferView'),
+    GAccessor = require('../renderer/GAccessor'),
     //render unit
     GTexture = require('../renderer/GTexture'),
-    Uniform = require('./../renderer/GUniform'),
-    GBuffer = require('./../renderer/GBuffer'),
-    GProgram = require('./../renderer/GProgram'),
+    Uniform = require('../renderer/GUniform'),
+    GBuffer = require('../renderer/GBuffer'),
+    GProgram = require('../renderer/GProgram'),
     //shader glsl file
     fragText = require('./../shader/surface-fs.glsl'),
     vertText = require('./../shader/surface-vs.glsl');
@@ -18,7 +18,7 @@ const requestImage = require('../utils/requestImage'),
  * request terrain data for cesium server
  * @class
  */
-class GlobalSurface extends Object3D{
+class ImagerySurface extends Object3D{
     /**
      * @param {Object} options
      * @param {String} options.uri the tile uri, such as 'https://c.basemaps.cartocdn.com/light_all/'
@@ -59,7 +59,7 @@ class GlobalSurface extends Object3D{
     }
     /**
      * 
-     * @param {import('./../core/QuadtreeTile')} qudatreeTile 
+     * @param {import('../core/QuadtreeTile')} qudatreeTile 
      */
     _request(qudatreeTile) {
         const gl = this._gl,
@@ -218,4 +218,4 @@ class GlobalSurface extends Object3D{
     }
 }
 
-module.exports = GlobalSurface;
+module.exports = ImagerySurface;

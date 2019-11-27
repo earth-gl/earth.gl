@@ -19,7 +19,7 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require('./utils/merge'),
-    GlobalSurface = require('./scene/GlobalSurface'),
+    ImagerySurface = require('./scene/ImagerySurface'),
     TrackballController = require('./core/TrackballController'),
     { WGS84 } = require('./core/Ellipsoid'),
     Geographic = require('./core/Geographic'),
@@ -179,7 +179,7 @@ class Global extends Eventable {
      */
     add(o) {
         const gl = this._gl;
-        if (o instanceof GlobalSurface) {
+        if (o instanceof ImagerySurface) {
             o.hook(gl, this._quadtree);
             this._globalSurfaces.push(o);
         }

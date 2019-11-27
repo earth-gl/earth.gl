@@ -1,5 +1,5 @@
 const Global = require('./Global'),
-    GlobalSurface = require('./scene/GlobalSurface'),
+    ImagerySurface = require('./scene/ImagerySurface'),
     //camera
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
@@ -10,7 +10,7 @@ module.exports = {
             PerspectiveCamera
         },
         scene: {
-            GlobalSurface
+            ImagerySurface
         },
     }
 };
