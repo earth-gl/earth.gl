@@ -11,9 +11,9 @@ const RAF = window.requestAnimationFrame
 
 const Animate = [];
 
-const update = function () {
+const update = function (time) {
     Animate.forEach(animate => {
-        animate();
+        animate(time);
     });
     RAF(update);
 };

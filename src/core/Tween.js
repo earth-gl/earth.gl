@@ -31,6 +31,22 @@ class Tween {
          */
         this._valuesStart = {};
         /**
+         * @type {Object}
+         */
+        this._valuesStartRepeat = {};
+        /**
+         * @type {Function}
+         */
+        this._onStartCallback = null;
+        /**
+         * @type {Boolean}
+         */
+        this._onStartCallbackFired = false;
+        /**
+         * @type {Function}
+         */
+        this._onCompleteCallback = null;
+        /**
          * @type {Number}
          */
         this._delayTime = 0;
@@ -82,8 +98,8 @@ class Tween {
         /**
          * 
          */
-        Animate.push(()=>{
-            this.update();
+        Animate.push((time)=>{
+            this.update(time);
         });
         return this;
     }
@@ -182,7 +198,7 @@ Tween.add = (tween) => {
     Tween._tweens[tween.id] = tween;
 }
 
-TWEEN.Easing = {
+Tween.Easing = {
     Linear: {
         None: function (k) {
             return k;
@@ -204,4 +220,4 @@ TWEEN.Easing = {
     }
 }
 
-module.exports = Animation;
+module.exports = Tween;

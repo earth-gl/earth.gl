@@ -3,6 +3,7 @@
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
 const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
+    Tween = require('./../core/Tween'),
     { WGS84 } = require('./../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
@@ -266,19 +267,27 @@ class GlobalController extends EventEmitter {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
+        const coord = {y : 0};
+        //const coord = {y:this._zoomStart._out[1]};
         //使用timeout方式，延后执行update
-        switch (event.deltaMode) {
-            case 2: //zoom in pages
-                this._zoomStart._out[1] = event.deltaY * 0.025;
-                break;
-            case 1: //zoom in lines
-                this._zoomStart._out[1] -= event.deltaY * 0.01;
-                break;
-            default: //undefined, 0, assume pixels
-                this._zoomStart._out[1] -= event.deltaY / 12500;
-                break;
-        }
-
+        // switch (event.deltaMode) {
+        //     case 2: //zoom in pages
+        //         this._zoomStart._out[1] = event.deltaY * 0.025;
+        //         break;
+        //     case 1: //zoom in lines
+        //         this._zoomStart._out[1] -= event.deltaY * 0.01;
+        //         break;
+        //     default: //undefined, 0, assume pixels
+        //         this._zoomStart._out[1] -= event.deltaY / 12500;
+        //         break;
+        // }
+        const tween = new Tween(coord)
+            .to({y:1}, 1000)
+            .easing(Tween.Easing.Quadratic.Out)
+            .onUpdate((v)=>{
+                this._zoomStart._out[1] = v;
+            })
+            .start();
         this._global.fire('zoomend', event);
         //fire event delay
         // this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
