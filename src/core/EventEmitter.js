@@ -13,6 +13,13 @@ const isString = require('../utils/isString'),
  */
 const eventSplitter = /\s+/;
 /**
+ * @author yellow
+ * @module 2019/11/28
+ * @example
+ * const a, b;
+ * a.on('mouseover', ()=>{}, context)
+ * b.listenTo(a, 'mouseover', ()=>{}, context)
+ * 
  * 适合ES6的事件分发基类
  */
 class EventEmitter {

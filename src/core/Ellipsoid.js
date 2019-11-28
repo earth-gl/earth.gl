@@ -41,6 +41,10 @@ class Ellipsoid {
          * 
          */
         this._oneOverRadiiSquared = new Vec3().set(1 / (x * x), 1 / (y * y), 1 / (z * z));
+        /**
+         * @type {Number}
+         */
+        this._oneOverMaximumRadius = 1 / this.maximumRadius;
     }
     /**
      * @type {Vec3}
@@ -65,6 +69,12 @@ class Ellipsoid {
      */
     get maximumRadius() {
         return Math.max(this.x, this.y, this.z);
+    }
+    /**
+     * @type {Number}
+     */
+    get oneOverMaximumRadius() {
+        return this._oneOverMaximumRadius;
     }
     /**
      * 地理坐标转化

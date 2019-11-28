@@ -3,6 +3,7 @@
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
 const { Quat, Vec2, Vec3 } = require('kiwi.matrix'), 
+    { WGS84 } = require('./../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
 /**
@@ -27,10 +28,6 @@ class GlobalController extends EventEmitter {
          * render screen
          */
         this.screen = {};
-        /**
-         * store rotate speeds in each level
-         */
-        this.rotateSpeeds = [];
         /**
          * 
          */
@@ -112,10 +109,6 @@ class GlobalController extends EventEmitter {
      * 
      */
     _initialize() {
-        for (let i = 0; i <= 24; i++) {
-            const offset = i;
-            this.rotateSpeeds[i] = 8.0 / (1 << offset);
-        }
         for (let i = 0; i < 24; i++) {
             const offset = i;
             this.zoomSpeeds[i] = 64.0 / (1 << offset);
@@ -177,19 +170,16 @@ class GlobalController extends EventEmitter {
      * 
      */
     rotateCamera() {
-        const level = this._global.getLevel(),
-            target = this.target,
+        const target = this.target, //默认是 (0,0,0),
             camera = this.camera,
-            rotateSpeed = this.rotateSpeeds[level],
+            distance = camera.position.distance(this.target) - WGS84.maximumRadius,
+            // distance2 = distance - ;
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
             movePrev.x - moveCurr.x,
             movePrev.y - moveCurr.y,
-            //moveCurr.x - movePrev.x,
-            //moveCurr.y - movePrev.y,
-            0
-        );
+            0);
         //set rotate direction as -1
         let angle = -moveDirection.len();
         if (angle) {
@@ -197,24 +187,20 @@ class GlobalController extends EventEmitter {
             const eyeDirection = this._eye.clone().normalize();
             const objectUpDirection = camera.up.clone().normalize();
             const objectSidewaysDirection = objectUpDirection.clone().cross(eyeDirection).normalize();
-            //
             objectUpDirection.normalize().scale(movePrev.y - moveCurr.y);
             objectSidewaysDirection.normalize().scale(movePrev.x - moveCurr.x);
             objectUpDirection.add(objectSidewaysDirection);
             moveDirection = objectUpDirection.clone();
             const axis = moveDirection.clone().cross(this._eye).normalize();
-            angle *= rotateSpeed;
-            //
+            angle *= distance * WGS84.oneOverMaximumRadius;
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
-            //修改camera up
             camera.up.applyQuat(quaternion);
-            //
             this._lastAxis = axis.clone();
             this._lastAngle = angle;
+            //assign movePrev position
+            this._movePrev = moveCurr.clone();
         }
-        //assign movePrev position
-        this._movePrev = moveCurr.clone();
     }
     /**
      * 
@@ -224,7 +210,7 @@ class GlobalController extends EventEmitter {
             panEnd = this._panEnd,
             panSpeed = this.panSpeed,
             camera = this.camera,
-            dynamicDampingFactor = this._dynamicDampingFactor,
+            dynfactor = this._dynamicDampingFactor,
             target = this.target,
             up = camera.up,
             eye = this._eye,
@@ -238,7 +224,7 @@ class GlobalController extends EventEmitter {
             target.add(pan);
             //如果是右键移动，则改变panStart
             //如果不是，则围绕中心点
-            panStart.add(panEnd.clone().sub(panStart).scale(dynamicDampingFactor));
+            panStart.add(panEnd.clone().sub(panStart).scale(dynfactor));
         }
     }
     /**
@@ -260,8 +246,6 @@ class GlobalController extends EventEmitter {
         //resgister document events
         this.listenTo(this._global, 'mousemove',this.mousemove, this);
         this.listenTo(this._global, 'mouseup',this.mouseup, this);
-        // scene.on('mousemove', this.mousemove, this);
-        // scene.on('mouseup', this.mouseup, this);
     }
     /**
      * 
@@ -291,8 +275,6 @@ class GlobalController extends EventEmitter {
         preventDefault(event);
         stopPropagation(event);
         //使用timeout方式，延后执行update
-        const scene = this.global,
-            that = this;
         switch (event.deltaMode) {
             case 2: //zoom in pages
                 this._zoomStart._out[1] = event.deltaY * 0.025;
@@ -304,11 +286,11 @@ class GlobalController extends EventEmitter {
                 this._zoomStart._out[1] -= event.deltaY / 12500;
                 break;
         }
+        this._global.fire('zoomend', event);
         //fire event delay
-        this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
-            scene.fire('zoomend', event, true);
-            that._zoomEventEnd = null;
-        }, 800);
+        // this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
+        //     that._zoomEventEnd = null;
+        // }, 800);
     }
     /**
      * 
@@ -325,13 +307,7 @@ class GlobalController extends EventEmitter {
         camera.position = target.clone().add(this._eye).value;
         camera.lookAt(target.value);
         camera._update();
-        //clear zoom
-        this._clearState();
-    }
-    /**
-     * 
-     */
-    _clearState() {
+        //4. reset zoomStart
         this._zoomStart = this._zoomEnd.clone();
     }
 }

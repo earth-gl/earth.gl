@@ -88,8 +88,7 @@ class Quadtree extends EventEmitter {
      * calctue tileset by distance error
      */
     _updateQuadtreeTileByDistanceError() {
-        const that = this,
-            camera = this._camera,
+        const camera = this._camera,
             maximumScreenSpaceError = this._maximumScreenSpaceError;
         //current Level
         let level = 0;
@@ -99,8 +98,8 @@ class Quadtree extends EventEmitter {
         const rawQuadtreeTiles = [];
         const renderingQuadtreeTiles = [];
         //liter func, to calcute new tile in distance error
-        const liter = function (quadtreeTile) {
-            const error = that._spaceError(quadtreeTile);
+        const liter = (quadtreeTile) => {
+            const error = this._spaceError(quadtreeTile);
             if (error > maximumScreenSpaceError)
                 for (let i = 0; i < 4; i++)
                     liter(quadtreeTile.children[i]);
