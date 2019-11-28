@@ -2,7 +2,7 @@
  * earth.gl 核心操作交互
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
-const { Quat, Vec2, Vec3 } = require('kiwi.matrix'), 
+const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
     { WGS84 } = require('./../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
@@ -157,9 +157,10 @@ class GlobalController extends EventEmitter {
      * 
      */
     zoomCamera() {
-        const level = this._global.getLevel(),
-            zoomSpeed = this.zoomSpeeds[level];
-        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zoomSpeed;
+        const camera = this.camera;
+        let zs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius); //zoom speed
+        zs = zs > 0 ? zs : 0;
+        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zs;
         if (factor !== 1.0 && factor > 0.0) {
             this._eye.scale(factor);
         } else {
@@ -172,8 +173,7 @@ class GlobalController extends EventEmitter {
     rotateCamera() {
         const target = this.target, //默认是 (0,0,0),
             camera = this.camera,
-            distance = camera.position.distance(this.target) - WGS84.maximumRadius,
-            // distance2 = distance - ;
+            rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
@@ -192,7 +192,7 @@ class GlobalController extends EventEmitter {
             objectUpDirection.add(objectSidewaysDirection);
             moveDirection = objectUpDirection.clone();
             const axis = moveDirection.clone().cross(this._eye).normalize();
-            angle *= distance * WGS84.oneOverMaximumRadius;
+            angle *= rs;
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
             camera.up.applyQuat(quaternion);
@@ -244,8 +244,8 @@ class GlobalController extends EventEmitter {
         this._zoomStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._zoomEnd = this._zoomStart.clone();
         //resgister document events
-        this.listenTo(this._global, 'mousemove',this.mousemove, this);
-        this.listenTo(this._global, 'mouseup',this.mouseup, this);
+        this.listenTo(this._global, 'mousemove', this.mousemove, this);
+        this.listenTo(this._global, 'mouseup', this.mouseup, this);
     }
     /**
      * 
