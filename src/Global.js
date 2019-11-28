@@ -19,15 +19,15 @@
  * 4. 提供camera distance，用于确定lod
  */
 const merge = require('./utils/merge'),
+    { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
-    TrackballController = require('./core/TrackballController'),
+    GlobalController = require('./control/GlobalController'),
     { WGS84 } = require('./core/Ellipsoid'),
     Geographic = require('./core/Geographic'),
     maximumRadius = require('./core/Ellipsoid').WGS84.maximumRadius,
-    Eventable = require('./core/Eventable'),
+    EventEmitter = require('./core/EventEmitter'),
     Quadtree = require('./core/Quadtree'),
-    PerspectiveCamera = require('./camera/PerspectiveCamera'),
-    { addDomEvent, domEventNames } = require('./utils/domEvent');
+    PerspectiveCamera = require('./camera/PerspectiveCamera');
 /**
  * default webgl context options
  */
@@ -43,7 +43,7 @@ const CONTEXT_OPTIONS = {
 /**
  * @class Scene
  */
-class Global extends Eventable {
+class Global extends EventEmitter {
     /**
      * 
      * @param {Object} [options]
@@ -143,9 +143,12 @@ class Global extends Eventable {
     _registerDomEvents() {
         const canvas = this._canvas,
             camera = this._camera;
+        //统一注册dom事件
         addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
-        this._trackball = new TrackballController(camera, this);
+        //
+        this._trackball = new GlobalController(camera, this);
         this._trackball.update();
+        //
         this.fire('loaded', {}, true);
     }
     /**

@@ -2,18 +2,18 @@
  * earth.gl 核心操作交互
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
-const Eventable = require('./Eventable'),
-    { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
-    { preventDefault, stopPropagation } = require('./../utils/domEvent');
+const { Quat, Vec2, Vec3 } = require('kiwi.matrix'), 
+    EventEmitter = require('../core/EventEmitter'),
+    { preventDefault, stopPropagation } = require('../utils/domEvent');
 /**
  * @class
  */
-class Trackball extends Eventable {
+class GlobalController extends EventEmitter {
     /**
     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
     * @param {PerspectiveCamera} camera
     */
-    constructor(camera, scene) {
+    constructor(camera, global) {
         super();
         /**
          * @type {PerspectiveCamera}
@@ -22,7 +22,7 @@ class Trackball extends Eventable {
         /**
          * @type {GScene}
          */
-        this.scene = scene;
+        this._global = global;
         /**
          * render screen
          */
@@ -134,11 +134,8 @@ class Trackball extends Eventable {
      * 
      */
     _registerEvent() {
-        const scene = this.scene;
-        //pan map
-        scene.on('mousedown', this.mousedown, this);
-        //zoom map
-        scene.on('mousewheel', this.mousewheel, this);
+        this.listenTo(this._global, 'mousedown', this.mousedown, this);
+        this.listenTo(this._global, 'mousewheel', this.mousewheel, this);
     }
     /**
      * 
@@ -167,7 +164,7 @@ class Trackball extends Eventable {
      * 
      */
     zoomCamera() {
-        const level = this.scene.getLevel(),
+        const level = this._global.getLevel(),
             zoomSpeed = this.zoomSpeeds[level];
         const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zoomSpeed;
         if (factor !== 1.0 && factor > 0.0) {
@@ -180,7 +177,7 @@ class Trackball extends Eventable {
      * 
      */
     rotateCamera() {
-        const level = this.scene.getLevel(),
+        const level = this._global.getLevel(),
             target = this.target,
             camera = this.camera,
             rotateSpeed = this.rotateSpeeds[level],
@@ -251,8 +248,6 @@ class Trackball extends Eventable {
     mousedown(event) {
         preventDefault(event);
         stopPropagation(event);
-        //
-        const scene = this.scene;
         //rotate
         this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
         this._movePrev = this._moveCurr.clone();
@@ -263,8 +258,10 @@ class Trackball extends Eventable {
         this._zoomStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._zoomEnd = this._zoomStart.clone();
         //resgister document events
-        scene.on('mousemove', this.mousemove, this);
-        scene.on('mouseup', this.mouseup, this);
+        this.listenTo(this._global, 'mousemove',this.mousemove, this);
+        this.listenTo(this._global, 'mouseup',this.mouseup, this);
+        // scene.on('mousemove', this.mousemove, this);
+        // scene.on('mouseup', this.mouseup, this);
     }
     /**
      * 
@@ -282,10 +279,9 @@ class Trackball extends Eventable {
      * @param {*} event 
      */
     mouseup(event) {
-        const scene = this.scene;
-        scene.off('mousemove', this.mousemove, this);
-        scene.off('mouseup', this.mouseup, this);
-        scene.fire('dragEnd', event, true);
+        this.stopListen(this._global, 'mousemove', this.mousemove, this);
+        this.stopListen(this._global, 'mouseup', this.mouseup, this);
+        this.fire('dragEnd', event)
     }
     /**
      * 
@@ -295,7 +291,7 @@ class Trackball extends Eventable {
         preventDefault(event);
         stopPropagation(event);
         //使用timeout方式，延后执行update
-        const scene = this.scene,
+        const scene = this.global,
             that = this;
         switch (event.deltaMode) {
             case 2: //zoom in pages
@@ -340,4 +336,4 @@ class Trackball extends Eventable {
     }
 }
 
-module.exports = Trackball;
+module.exports = GlobalController;

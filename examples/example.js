@@ -23,7 +23,7 @@ scene.add(globalSurface);
 
 // scene.add(tiles3d);
 
-scene.centerTo(113.78, 22.77, 20000000);
+scene.centerTo(113.78, 22.77, 8000000);
 
 
 //create b3dm

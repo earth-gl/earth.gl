@@ -1,14 +1,14 @@
 const QuadtreeTile = require('./QuadtreeTile'),
     { WGS84 } = require('./Ellipsoid'),
     maximumRadius = WGS84.maximumRadius,
-    Eventable = require('./Eventable'),
+    EventEmitter = require('./EventEmitter'),
     quadtreeTileSchema = require('./QuadtreeTileSchema').WEB_MERCATOR_TILING_SCHEME;
 /**
  * 预建瓦片规则
  * @class
  * @fires 'updatedTiles'
  */
-class Quadtree extends Eventable {
+class Quadtree extends EventEmitter {
     /**
      * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
      * @typedef {import("../scene/GGlobal")} Global
@@ -82,8 +82,7 @@ class Quadtree extends Eventable {
      * 
      */
     _registerEvents() {
-        const global = this._global;
-        global.on('zoomend loaded mouseup', this._updateQuadtreeTileByDistanceError, this);
+        this.listenTo(this._global, 'zoomend loaded mouseup', this._updateQuadtreeTileByDistanceError, this);
     }
     /**
      * calctue tileset by distance error
@@ -126,7 +125,7 @@ class Quadtree extends Eventable {
         //store for fire again
         this._renderingQuadtreeTiles = renderingQuadtreeTiles;
         //
-        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
+        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles });
     }
     /**
      * 
