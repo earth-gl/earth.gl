@@ -18,7 +18,8 @@
  * 3. 可自定义加载建筑
  * 4. 提供camera distance，用于确定lod
  */
-const merge = require('./utils/merge'),
+const { Animate, update } = require('./utils/loop'),
+    merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
     GlobalController = require('./control/GlobalController'),
@@ -117,6 +118,16 @@ class Global extends EventEmitter {
          * 注册dom时间，操作相机矩阵
          */
         this._registerDomEvents();
+        /**
+         * 添加进animation
+         */
+        Animate.push(()=>{
+            this.render();
+        });
+        /**
+         * 开始渲染
+         */
+        update();
     }
     /**
      * 
@@ -137,9 +148,9 @@ class Global extends EventEmitter {
         canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
-        /**
-     * 
-     */
+    /**
+ * 
+ */
     _registerDomEvents() {
         const canvas = this._canvas,
             camera = this._camera;
@@ -211,7 +222,7 @@ class Global extends EventEmitter {
         //update trackball and camera
         trackball.update();
         //render surface
-        this._globalSurfaces.forEach(o=>{
+        this._globalSurfaces.forEach(o => {
             o.render(camera, timeStamp);
         });
     }

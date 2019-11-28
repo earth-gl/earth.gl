@@ -102,10 +102,3 @@ scene.centerTo(113.78, 22.77, 8000000);
 // );
 
 // scene.add(ElmTree);
-
-const update = function () {
-    scene.render();
-    requestAnimationFrame(update);
-};
-
-update();

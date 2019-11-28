@@ -31,10 +31,6 @@ class GlobalController extends EventEmitter {
         /**
          * 
          */
-        this.zoomSpeeds = [];
-        /**
-         * 
-         */
         this.panSpeed = 0.3;
         /**
          * }{ debug
@@ -109,10 +105,6 @@ class GlobalController extends EventEmitter {
      * 
      */
     _initialize() {
-        for (let i = 0; i < 24; i++) {
-            const offset = i;
-            this.zoomSpeeds[i] = 64.0 / (1 << offset);
-        }
         //camera clone
         this.target0 = this.target.clone();
         this.position0 = this.camera.position.clone();
@@ -286,6 +278,7 @@ class GlobalController extends EventEmitter {
                 this._zoomStart._out[1] -= event.deltaY / 12500;
                 break;
         }
+
         this._global.fire('zoomend', event);
         //fire event delay
         // this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
