@@ -159,7 +159,7 @@ class GlobalController extends EventEmitter {
     zoomCamera() {
         const camera = this.camera;
         let zs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius); //zoom speed
-        zs = zs > 0 ? zs : 0;
+        zs = zs > 0 ? zs * 2 : 0;
         const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zs;
         if (factor !== 1.0 && factor > 0.0) {
             this._eye.scale(factor);
