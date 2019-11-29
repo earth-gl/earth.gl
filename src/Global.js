@@ -149,8 +149,14 @@ class Global extends EventEmitter {
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
     /**
- * 
- */
+     * get global document element
+     */
+    get domElement(){
+        return this._canvas;
+    }
+    /**
+    * 
+    */
     _registerDomEvents() {
         const canvas = this._canvas,
             camera = this._camera;

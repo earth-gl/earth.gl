@@ -3,17 +3,21 @@
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
 const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
+    rangeValue = require('./../utils/rangeValue'),
     Tween = require('./../core/Tween'),
     { WGS84 } = require('./../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
 /**
+ * https://github.com/JonLim/three-trackballcontrols/blob/master/index.js
  * @class
  */
 class GlobalController extends EventEmitter {
     /**
     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
+    * @typedef {import('./../Global')} Global
     * @param {PerspectiveCamera} camera
+    * @param {Global} global
     */
     constructor(camera, global) {
         super();
@@ -22,7 +26,7 @@ class GlobalController extends EventEmitter {
          */
         this.camera = camera;
         /**
-         * @type {GScene}
+         * @type {Global}
          */
         this._global = global;
         /**
@@ -106,15 +110,27 @@ class GlobalController extends EventEmitter {
      * 
      */
     _initialize() {
+        const domElement = this._global.domElement;
         //camera clone
         this.target0 = this.target.clone();
         this.position0 = this.camera.position.clone();
         this.up0 = this.camera.up.clone();
-        //screen
-        this.screen.left = 0;
-        this.screen.top = 0;
-        this.screen.width = window.innerWidth;
-        this.screen.height = window.innerHeight;
+        if (domElement === document) {
+            //screen
+            this.screen.left = 0;
+            this.screen.top = 0;
+            this.screen.width = window.innerWidth;
+            this.screen.height = window.innerHeight;
+        } else {
+            const box = domElement.getBoundingClientRect();
+            const dom = domElement.ownerDocument.documentElement;
+            this.screen.left = box.left + window.pageXOffset - dom.clientLeft;
+            this.screen.top = box.top + window.pageYOffset - dom.clientTop;
+            this.screen.width = box.width;
+            this.screen.height = box.height;
+        }
+        this.centerX = this.screen.left + this.screen.width / 2;
+        this.centerY = this.screen.top + this.screen.height / 2;
     }
     /**
      * 
@@ -166,7 +182,9 @@ class GlobalController extends EventEmitter {
     rotateCamera() {
         const target = this.target, //默认是 (0,0,0),
             camera = this.camera,
-            rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
+            //rs = 1.0,
+            rs = rangeValue(WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), 0, 1), //rotate speed
+            //rs = (camera.position.distance(this.target) - WGS84.maximumRadius)/camera.position.distance(this.target),
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
@@ -267,32 +285,40 @@ class GlobalController extends EventEmitter {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        const fo = this._zoomStart._out[1];
-        let to = fo;
+        //
+        this._movePrev = this.getMouseOnCircle(event.pageX, event.pageY);
+        this._moveCurr = this._movePrev.clone();
+        //zfactor
+        const fr = this._zoomStart._out[1];
+        let to = fr;
         //使用timeout方式，延后执行update
         switch (event.deltaMode) {
             case 2: //zoom in pages
-                to = fo + event.deltaY * 0.025;
+                to = fr + event.deltaY * 0.025;
                 break;
             case 1: //zoom in lines
-                to = fo - event.deltaY * 0.01;
+                to = fr - event.deltaY * 0.01;
                 break;
             default: //undefined, 0, assume pixels
-                to = fo - event.deltaY / 12500;
+                to = fr - event.deltaY / 12500;
                 break;
         }
-        if(!this.tween){
+        //x: oriV2.x, y: oriV2.y, x: this._moveCurr.x, y: this._moveCurr.y,
+        if (!this.tween) {
             this.tween = new Tween()
-            .form({ y: fo })
-            .to({ y: to }, 800)
-            .easing(Tween.Easing.Linear.None)
-            .onUpdate((v) => {
-                this._zoomStart._out[1] = v.y;
-            })
-            .onComplete(()=>{
-                this._global.fire('zoomend', event);
-                this.tween = null;
-            });
+                .form({ x: event.pageX, y: event.pageY, z: fr })
+                .to({ x: this.centerX, y: this.centerY, z: to }, 800)
+                .easing(Tween.Easing.Quadratic.In)
+                .onUpdate((v) => {
+                    //rotate
+                    this._movePrev = this._moveCurr.clone();
+                    this._moveCurr = this.getMouseOnCircle(v.x, v.y);
+                    this._zoomStart._out[1] = v.z;
+                })
+                .onComplete(() => {
+                    this._global.fire('zoomend', event);
+                    this.tween = null;
+                });
             this.tween.start();
         }
     }
