@@ -1,3 +1,4 @@
+const forEach = require('./../utils/forEach');
 const FRAF = (cb) => {
     window.setTimeout(cb, 1000 / 60);
 };
@@ -9,16 +10,22 @@ const RAF = window.requestAnimationFrame
     || window.msRequestAnimationFrame
     || FRAF;
 
-const Animate = [];
+const AnimateCache = [];
+
+const TweenCache = {};
 
 const update = function (time) {
-    Animate.forEach(animate => {
+    AnimateCache.forEach(animate => {
         animate(time);
+    });
+    forEach(TweenCache, (tween)=>{
+        tween(time);
     });
     RAF(update);
 };
 
 module.exports = {
-    Animate,
+    AnimateCache,
+    TweenCache,
     update
 }

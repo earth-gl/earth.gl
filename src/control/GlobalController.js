@@ -267,32 +267,34 @@ class GlobalController extends EventEmitter {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        const coord = {y : 0};
-        //const coord = {y:this._zoomStart._out[1]};
+        const fo = this._zoomStart._out[1];
+        let to = fo;
         //使用timeout方式，延后执行update
-        // switch (event.deltaMode) {
-        //     case 2: //zoom in pages
-        //         this._zoomStart._out[1] = event.deltaY * 0.025;
-        //         break;
-        //     case 1: //zoom in lines
-        //         this._zoomStart._out[1] -= event.deltaY * 0.01;
-        //         break;
-        //     default: //undefined, 0, assume pixels
-        //         this._zoomStart._out[1] -= event.deltaY / 12500;
-        //         break;
-        // }
-        const tween = new Tween(coord)
-            .to({y:1}, 1000)
-            .easing(Tween.Easing.Quadratic.Out)
-            .onUpdate((v)=>{
-                this._zoomStart._out[1] = v;
+        switch (event.deltaMode) {
+            case 2: //zoom in pages
+                to = fo + event.deltaY * 0.025;
+                break;
+            case 1: //zoom in lines
+                to = fo - event.deltaY * 0.01;
+                break;
+            default: //undefined, 0, assume pixels
+                to = fo - event.deltaY / 12500;
+                break;
+        }
+        if(!this.tween){
+            this.tween = new Tween()
+            .form({ y: fo })
+            .to({ y: to }, 800)
+            .easing(Tween.Easing.Linear.None)
+            .onUpdate((v) => {
+                this._zoomStart._out[1] = v.y;
             })
-            .start();
-        this._global.fire('zoomend', event);
-        //fire event delay
-        // this._zoomEventEnd = this._zoomEventEnd || setTimeout(() => {
-        //     that._zoomEventEnd = null;
-        // }, 800);
+            .onComplete(()=>{
+                this._global.fire('zoomend', event);
+                this.tween = null;
+            });
+            this.tween.start();
+        }
     }
     /**
      * 

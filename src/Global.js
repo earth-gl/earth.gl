@@ -18,7 +18,7 @@
  * 3. 可自定义加载建筑
  * 4. 提供camera distance，用于确定lod
  */
-const { Animate, update } = require('./utils/loop'),
+const { AnimateCache, update } = require('./utils/loop'),
     merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
@@ -121,7 +121,7 @@ class Global extends EventEmitter {
         /**
          * 添加进animation
          */
-        Animate.push(()=>{
+        AnimateCache.push(()=>{
             this.render();
         });
         /**

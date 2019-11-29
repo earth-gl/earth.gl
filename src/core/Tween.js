@@ -1,4 +1,5 @@
-const { Animate } = require('./../utils/loop');
+const { TweenCache } = require('./../utils/loop'),
+    merge = require('./../utils/merge');
 /**
  * @class Tween
  * @example
@@ -13,11 +14,11 @@ const { Animate } = require('./../utils/loop');
  */
 class Tween {
 
-    constructor(o) {
+    constructor() {
         /**
          * @type {Object}
          */
-        this._object = o;
+        this._objective = null;
         /**
          * @type {Boolean}
          */
@@ -30,10 +31,6 @@ class Tween {
          * @type {Object}
          */
         this._valuesStart = {};
-        /**
-         * @type {Object}
-         */
-        this._valuesStartRepeat = {};
         /**
          * @type {Function}
          */
@@ -68,13 +65,21 @@ class Tween {
         return this._id;
     }
 
+    form(properties) {
+        this._valuesStart = properties;
+        //存储拷贝对象
+        this._objective = merge({}, properties);
+        return this;
+    }
+
     to(properties, duration) {
         this._valuesEnd = properties;
-        this._duration = duration;
+        this._duration = duration || this._duration;
         return this;
     }
 
     start() {
+        if (this._isPlaying) return true;
         Tween.add(this);
         this._isPlaying = true;
         this._onStartCallbackFired = false;
@@ -88,19 +93,25 @@ class Tween {
                 this._valuesEnd[property] = [this._object[property]].concat(this._valuesEnd[property]);
             }
             // If `to()` specifies a property that doesn't exist in the source object, we should not set that property in the object
-            if (this._object[property] === undefined) continue;
+            if (this._objective[property] === undefined) continue;
             // Save the starting value.
-            this._valuesStart[property] = this._object[property];
+            this._valuesStart[property] = this._objective[property];
             // Ensures we're using numbers, not strings
             if ((this._valuesStart[property] instanceof Array) === false) this._valuesStart[property] *= 1.0;
-            this._valuesStartRepeat[property] = this._valuesStart[property] || 0;
         }
-        /**
-         * 
-         */
-        Animate.push((time)=>{
+        //animation loop
+        TweenCache[this.id] = (time)=>{
             this.update(time);
-        });
+        }
+    }
+
+    onStart(cb) {
+        this._onStartCallback = cb;
+        return this;
+    }
+
+    onComplete(cb) {
+        this._onCompleteCallback = cb;
         return this;
     }
 
@@ -115,67 +126,73 @@ class Tween {
     }
 
     update(time) {
-        var property;
-        var elapsed;
-        var value;
         if (time < this._startTime) return true;
+        //开始事件触发
         if (this._onStartCallbackFired === false) {
-            if (this._onStartCallback !== null) this._onStartCallback.call(this._object, this._object);
+            if (this._onStartCallback !== null)
+                this._onStartCallback.call(this._object, this._object);
             this._onStartCallbackFired = true;
         }
-        elapsed = (time - this._startTime) / this._duration;
-        elapsed = elapsed > 1 ? 1 : elapsed;
-        value = this._easingFunction(elapsed);
-        for (property in this._valuesEnd) {
+        //计算当前时间
+        const pssedTime = (time - this._startTime) / this._duration;
+        const elapsed = pssedTime > 1 ? 1 : pssedTime;
+        const value = this._easingFunction(elapsed);
+        //更新属性值
+        for (var property in this._valuesEnd) {
             // Don't update properties that do not exist in the source object
             if (this._valuesStart[property] === undefined) continue;
-            var start = this._valuesStart[property] || 0;
-            var end = this._valuesEnd[property];
-            if (end instanceof Array)
-                this._object[property] = this._interpolationFunction(end, value);
-            else {
-                if (typeof (end) === 'string') {
-                    if (end.charAt(0) === '+' || end.charAt(0) === '-') {
-                        end = start + parseFloat(end);
-                    } else {
-                        end = parseFloat(end);
-                    }
-                }
-                // Protect against non numeric properties.
-                if (typeof (end) === 'number') this._object[property] = start + (end - start) * value;
-            }
-        }
-        if (this._onUpdateCallback !== null) this._onUpdateCallback.call(this._object, value);
-        if (elapsed === 1) {
-            if (this._repeat > 0) {
-                if (isFinite(this._repeat))
-                    this._repeat--;
-                // Reassign starting values, restart by making startTime = now
-                for (property in this._valuesStartRepeat) {
-                    if (typeof (this._valuesEnd[property]) === 'string')
-                        this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(this._valuesEnd[property]);
-                    if (this._yoyo) {
-                        var tmp = this._valuesStartRepeat[property];
-                        this._valuesStartRepeat[property] = this._valuesEnd[property];
-                        this._valuesEnd[property] = tmp;
-                    }
-                    this._valuesStart[property] = this._valuesStartRepeat[property];
-                }
-                if (this._yoyo) this._reversed = !this._reversed;
-                if (this._repeatDelayTime !== undefined) {
-                    this._startTime = time + this._repeatDelayTime;
+            const start = this._valuesStart[property] || 0;
+            let end = this._valuesEnd[property];
+            const typeName = typeof (end);
+            if (typeName === 'string') {
+                if (end.charAt(0) === '+' || end.charAt(0) === '-') {
+                    end = start + parseFloat(end);
                 } else {
-                    this._startTime = time + this._delayTime;
+                    end = parseFloat(end);
                 }
-                return true;
-            } else {
-                if (this._onCompleteCallback !== null)
-                    this._onCompleteCallback.call(this._object, this._object);
-                for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++)
-                    this._chainedTweens[i].start(this._startTime + this._duration);
-                return false;
+            } else if (typeName === 'number') {
+                this._objective[property] = start + (end - start) * value;
             }
         }
+        //返回当前时间状态（比例）
+        if (this._onUpdateCallback !== null) this._onUpdateCallback(this._objective);
+        //结束状态
+        if (elapsed === 1) {
+            if (this._onCompleteCallback !== null) {
+                this._onCompleteCallback.call(this._objective);
+            }
+            delete TweenCache[this.id];
+        }
+        // if (elapsed === 1) {
+        //     if (this._repeat > 0) {
+        //         if (isFinite(this._repeat))
+        //             this._repeat--;
+        //         // Reassign starting values, restart by making startTime = now
+        //         for (property in this._valuesStartRepeat) {
+        //             if (typeof (this._valuesEnd[property]) === 'string')
+        //                 this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(this._valuesEnd[property]);
+        //             if (this._yoyo) {
+        //                 var tmp = this._valuesStartRepeat[property];
+        //                 this._valuesStartRepeat[property] = this._valuesEnd[property];
+        //                 this._valuesEnd[property] = tmp;
+        //             }
+        //             this._valuesStart[property] = this._valuesStartRepeat[property];
+        //         }
+        //         if (this._yoyo) this._reversed = !this._reversed;
+        //         if (this._repeatDelayTime !== undefined) {
+        //             this._startTime = time + this._repeatDelayTime;
+        //         } else {
+        //             this._startTime = time + this._delayTime;
+        //         }
+        //         return true;
+        //     } else {
+        //         if (this._onCompleteCallback !== null)
+        //             this._onCompleteCallback.call(this._object, this._object);
+        //         for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++)
+        //             this._chainedTweens[i].start(this._startTime + this._duration);
+        //         return false;
+        //     }
+        // }
         return true;
     }
 }
