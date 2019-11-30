@@ -26,7 +26,7 @@ class Camera {
         /**
          * 视角矩阵 
          */
-        this._viewMatrix = new Mat4();
+        this._invertViewMatrix = new Mat4();
         /**
          * 投影矩阵
          */
@@ -34,7 +34,7 @@ class Camera {
         /**
          * 视角投影矩阵
          */
-        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
+        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._invertViewMatrix);
     }
 
 }

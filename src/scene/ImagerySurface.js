@@ -16,6 +16,7 @@ const requestImage = require('../utils/requestImage'),
     vertText = require('./../shader/surface-vs.glsl');
 /**
  * request terrain data for cesium server
+ * @typedef {import('./../camera/PerspectiveCamera')} PerspectiveCamera
  * @class
  */
 class ImagerySurface extends Object3D{
@@ -175,7 +176,7 @@ class ImagerySurface extends Object3D{
     }
     /**
      * 
-     * @param {*} camera 
+     * @param {PerspectiveCamera} camera 
      */
     render(camera) {
         const gl = this._gl,
@@ -209,9 +210,9 @@ class ImagerySurface extends Object3D{
             //set texture
             uTexture.assignValue(0);
             //set camera
-            uProjection.assignValue(camera.ProjectionMatrix);
-            uView.assignValue(camera.ViewMatrix);
-            uModel.assignValue(camera.IdentityMatrix);
+            uProjection.assignValue(camera.ProjectionMatrixValue);
+            uView.assignValue(camera.InvertViewMatrixValue);
+            uModel.assignValue(camera.IdentityMatrixValue);
             //draw polygon
             gl.drawElements(gl.TRIANGLES, iLength, gl.UNSIGNED_SHORT, 0);
         }

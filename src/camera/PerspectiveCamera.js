@@ -98,28 +98,52 @@ class PerspectiveCamera extends Camera {
      * 返回identityMatrix，一般用作没有指定的modelMatrix填充
      * @type {Array}
      */
-    get IdentityMatrix() {
+    get IdentityMatrixValue() {
         return new Mat4().identity().value;
     }
     /**
      * 返回投影矩阵
      * @type {Array}
      */
-    get ProjectionMatrix() {
+    get ProjectionMatrixValue() {
         return this._projectionMatrix.value;
     }
     /**
      * 返回视角矩阵
      * @type {Array}
      */
-    get ViewMatrix() {
-        return this._viewMatrix.value;
+    get InvertViewMatrixValue() {
+        return this._invertViewMatrix.value;
     }
     /**
      * 返回视角投影矩阵
      */
-    get ViewProjectionMatrix() {
+    get ViewProjectionMatrixValue() {
         return this._viewProjectionMatrix.value;
+    }
+    /**
+     * @type {Mat4}
+     */
+    get ProjectionMatrix(){
+        return this._projectionMatrix;
+    }
+    /**
+     * @type {Mat4}
+     */
+    get ViewMatrix(){
+        return this._viewMatrix;
+    }
+    /**
+     * @type {Mat4}
+     */
+    get InvertViewMatrix(){
+        return this._invertViewMatrix;
+    }
+    /**
+     * @type {Mat4}
+     */
+    get ViewProjectionMatrix(){
+        return this._viewProjectionMatrix;
     }
     /**
      * used to calcute space error
@@ -154,18 +178,22 @@ class PerspectiveCamera extends Camera {
          * 相机矩阵，这个矩阵代表的是相机在世界坐标中的位置和姿态。
          * https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-3d-camera.html
          */
-        const cameraMatrix =
-            new Mat4().lookAt(this._position, this._target, this._up);
+        const cameraMatrix = new Mat4().lookAt(this._position, this._target, this._up);
         /**
-         * 视图矩阵是将所有物体以相反于相机的方向运动
+         *  @type {Mat4}
          */
-        this._viewMatrix = cameraMatrix.clone().invert();
+        this._viewMatrix = cameraMatrix.clone();
         /**
-         *
+         *  视图矩阵是将所有物体以相反于相机的方向运动
+         *  @type {Mat4}
          */
-        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._viewMatrix);
+        this._invertViewMatrix = cameraMatrix.clone().invert();
         /**
-         * 
+         *  @type {Mat4}
+         */
+        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._invertViewMatrix);
+        /**
+         *  @type {Mat4}
          */
         this._normalMatrix  = this._viewProjectionMatrix.clone().invert().transpose();
     }

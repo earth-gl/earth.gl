@@ -22,7 +22,8 @@ const { AnimateCache, update } = require('./utils/loop'),
     merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
-    GlobalController = require('./control/GlobalController'),
+    GlobalControl = require('./control/GlobalControl'),
+    //GlobalController = require('./control/GlobalController'),
     { WGS84 } = require('./core/Ellipsoid'),
     Geographic = require('./core/Geographic'),
     maximumRadius = require('./core/Ellipsoid').WGS84.maximumRadius,
@@ -149,22 +150,14 @@ class Global extends EventEmitter {
         gl.viewport(0, 0, width * devicePixelRatio, height * devicePixelRatio);
     }
     /**
-     * get global document element
-     */
-    get domElement(){
-        return this._canvas;
-    }
-    /**
     * 
     */
     _registerDomEvents() {
-        const canvas = this._canvas,
-            camera = this._camera;
         //统一注册dom事件
-        addDomEvent(canvas, domEventNames, this._handleDomEvent, this);
+        addDomEvent(this.domElement, domEventNames, this._handleDomEvent, this);
         //
-        this._trackball = new GlobalController(camera, this);
-        this._trackball.update();
+        this._trackball = new GlobalControl(this);
+        //this._trackball.update();
         //
         this.fire('loaded', {}, true);
     }
@@ -172,13 +165,19 @@ class Global extends EventEmitter {
      * refrenece:
      * https://github.com/maptalks/maptalks.js/blob/169cbed69f3e0db1801d559511dad6646a227224/src/map/Map.DomEvents.js#L191
      * handle dom events
-     * @param {Event} e 
+     * @param {DocumentEvent} e 
      */
     _handleDomEvent(e) {
         //dom event type
         const type = e.type;
         //handle directly
-        this.fire(type, e, true);
+        this.fire(type, e);
+    }
+    /**
+     * get global document element
+     */
+    get domElement(){
+        return this._canvas;
     }
     /**
      * get current zoom level
@@ -189,9 +188,9 @@ class Global extends EventEmitter {
     /**
      * 
      */
-    centerTo(lng, lat, height = 10000) {
+    centerTo(lng, lat, h = 10000) {
         const camera = this._camera;
-        const space = WGS84.geographicToSpace(new Geographic(lng, lat, height, true));
+        const space = WGS84.geographicToSpace(new Geographic(lng, lat, h, true));
         camera.position = space._out;
     }
     /**
@@ -226,7 +225,7 @@ class Global extends EventEmitter {
         gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update trackball and camera
-        trackball.update();
+        //trackball.update();
         //render surface
         this._globalSurfaces.forEach(o => {
             o.render(camera, timeStamp);
