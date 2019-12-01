@@ -161,11 +161,17 @@ class GlobalController extends EventEmitter {
      * @param {*} h 
      */
     _getNormalizeDeviceCoordinate(pageX, pageY) {
-        return new Vec3().set(
-            ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
-            ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width),
+        const ndc = new Vec3().set(
+            ((pageX - this.screen.left) / this.screen.width) * 2 - 1,
+            -((pageY - this.screen.top) / this.screen.height) * 2 + 1,
             1
         );
+        return ndc;
+        // return new Vec3().set(
+        //     ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
+        //     ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width),
+        //     1
+        // );
     }
     /**
      * ndc to space coord
@@ -200,6 +206,8 @@ class GlobalController extends EventEmitter {
         return ray.intersectSphere(WGS84);
     }
 
+
+
     /**
      * }{修正
      * 基于Ray，构建鼠标点与视角点的直线和球体的相交
@@ -208,7 +216,7 @@ class GlobalController extends EventEmitter {
      */
     getMouseOnCircle(pageX, pageY) {
         const space = this._rayTrackOnSphere(pageX, pageY);
-        return space !== null?this._spaceCoordinateToNormaziledDeveiceCoordinate(space):null;
+        return space !== null ? this._spaceCoordinateToNormaziledDeveiceCoordinate(space) : null;
     }
     /**
      * 
@@ -228,10 +236,10 @@ class GlobalController extends EventEmitter {
      * 
      */
     rotateCamera() {
-        if(this._moveCurr === null || this._movePrev === null) return;
+        if (this._moveCurr === null || this._movePrev === null) return;
         const target = this.target, //默认是 (0,0,0),
             camera = this.camera,
-            rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
+            //rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
@@ -250,7 +258,7 @@ class GlobalController extends EventEmitter {
             objectUpDirection.add(objectSidewaysDirection);
             moveDirection = objectUpDirection.clone();
             const axis = moveDirection.clone().cross(this._eye).normalize();
-            angle *= rs;
+            //angle *= rs;
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
             camera.up.applyQuat(quaternion);
