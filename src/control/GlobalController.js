@@ -223,6 +223,7 @@ class GlobalController extends EventEmitter {
         } else {
             this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
         }
+        this._zoomStart = this._zoomEnd.clone();
     }
     /**
      * 
@@ -393,8 +394,6 @@ class GlobalController extends EventEmitter {
         camera.position = target.clone().add(this._eye).value;
         camera.lookAt(target.value);
         camera._update();
-        //4. reset zoomStart
-        this._zoomStart = this._zoomEnd.clone();
     }
 }
 
