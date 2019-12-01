@@ -55,11 +55,11 @@ class GlobalController extends EventEmitter {
          */
         this._eye = new Vec3();
         /**
-         * @type {Vec2}
+         * @type {Vec3}
          */
         this._movePrev = new Vec3();
         /**
-         * @type {Vec2}
+         * @type {Vec3}
          */
         this._moveCurr = new Vec3();
         /**
@@ -167,11 +167,6 @@ class GlobalController extends EventEmitter {
             1
         );
         return ndc;
-        // return new Vec3().set(
-        //     ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
-        //     ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width),
-        //     1
-        // );
     }
     /**
      * ndc to space coord
@@ -205,9 +200,6 @@ class GlobalController extends EventEmitter {
         const ray = new Ray(this.camera.position.clone(), d);
         return ray.intersectSphere(WGS84);
     }
-
-
-
     /**
      * }{修正
      * 基于Ray，构建鼠标点与视角点的直线和球体的相交
@@ -216,7 +208,7 @@ class GlobalController extends EventEmitter {
      */
     getMouseOnCircle(pageX, pageY) {
         const space = this._rayTrackOnSphere(pageX, pageY);
-        return space !== null ? this._spaceCoordinateToNormaziledDeveiceCoordinate(space) : null;
+        return space === null ? null : { space: space, ndc: this._spaceCoordinateToNormaziledDeveiceCoordinate(space) };
     }
     /**
      * 
@@ -234,6 +226,19 @@ class GlobalController extends EventEmitter {
     }
     /**
      * 
+     * @param {Vec3} v1 
+     * @param {Vec3} v2 
+     */
+    _getVectorsAngle(v1, v2){
+        if(v1.len() === 0 || v2.len() ===0 )
+            return 0;
+        else{
+            const theta = v1.dot(v2)/(v1.len()*v2.len());
+            return Math.acos(theta);
+        }
+    }
+    /**
+     * 
      */
     rotateCamera() {
         if (this._moveCurr === null || this._movePrev === null) return;
@@ -242,12 +247,9 @@ class GlobalController extends EventEmitter {
             //rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
-        let moveDirection = new Vec3().set(
-            movePrev.x - moveCurr.x,
-            movePrev.y - moveCurr.y,
-            0);
-        //set rotate direction as -1
-        let angle = -moveDirection.len();
+        const ori = this._normalizedDeviceCoordinateToSpaceCoordinate(moveCurr);
+        const des = this._normalizedDeviceCoordinateToSpaceCoordinate(movePrev);
+        const angle = -1 * this._getVectorsAngle(ori, des);
         if (angle) {
             this._eye = camera.position.clone().sub(target);
             const eyeDirection = this._eye.clone().normalize();
@@ -258,15 +260,14 @@ class GlobalController extends EventEmitter {
             objectUpDirection.add(objectSidewaysDirection);
             moveDirection = objectUpDirection.clone();
             const axis = moveDirection.clone().cross(this._eye).normalize();
-            //angle *= rs;
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
             camera.up.applyQuat(quaternion);
             this._lastAxis = axis.clone();
             this._lastAngle = angle;
-            //assign movePrev position
-            this._movePrev = moveCurr.clone();
         }
+        //assign movePrev position
+        this._movePrev = this._moveCurr.clone();
     }
     /**
      * 
@@ -301,8 +302,11 @@ class GlobalController extends EventEmitter {
         preventDefault(event);
         stopPropagation(event);
         //rotate
-        this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
-        this._movePrev = this._moveCurr.clone();
+        const c = this.getMouseOnCircle(event.pageX, event.pageY);
+        if(c!==null){
+            this._moveCurr = c.ndc;
+            this._movePrev = this._moveCurr.clone();
+        }
         //pan
         this._panStart = this.getMouseOnScreen(event.pageX, event.pageY);
         this._panEnd = this._panStart.clone();
@@ -319,8 +323,11 @@ class GlobalController extends EventEmitter {
      */
     mousemove(event) {
         //rotate
-        this._movePrev = this._moveCurr.clone();
-        this._moveCurr = this.getMouseOnCircle(event.pageX, event.pageY);
+        const c = this.getMouseOnCircle(event.pageX, event.pageY);
+        if(c!==null){
+            this._movePrev = this._moveCurr.clone();
+            this._moveCurr = c.ndc;
+        }
         //pan
         this._panEnd = this.getMouseOnScreen(event.pageX, event.pageY);
     }
@@ -340,9 +347,6 @@ class GlobalController extends EventEmitter {
     mousewheel(event) {
         preventDefault(event);
         stopPropagation(event);
-        //
-        this._movePrev = this.getMouseOnCircle(event.pageX, event.pageY);
-        this._moveCurr = this._movePrev.clone();
         //zfactor
         const fr = this._zoomStart._out[1];
         let to = fr;
@@ -361,13 +365,10 @@ class GlobalController extends EventEmitter {
         //x: oriV2.x, y: oriV2.y, x: this._moveCurr.x, y: this._moveCurr.y,
         if (!this.tween) {
             this.tween = new Tween()
-                .form({ x: event.pageX, y: event.pageY, z: fr })
-                .to({ x: this.centerX, y: this.centerY, z: to }, 800)
+                .form({ z: fr })
+                .to({ z: to }, 800)
                 .easing(Tween.Easing.Quadratic.In)
                 .onUpdate((v) => {
-                    //rotate
-                    this._movePrev = this._moveCurr.clone();
-                    this._moveCurr = this.getMouseOnCircle(v.x, v.y);
                     this._zoomStart._out[1] = v.z;
                 })
                 .onComplete(() => {
