@@ -22,8 +22,8 @@ const { AnimateCache, update } = require('./utils/loop'),
     merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
-    GlobalControl = require('./control/GlobalControl'),
-    //GlobalController = require('./control/GlobalController'),
+    //GlobalControl = require('./control/GlobalControl'),
+    GlobalControl = require('./control/GlobalController'),
     { WGS84 } = require('./core/Ellipsoid'),
     Geographic = require('./core/Geographic'),
     maximumRadius = require('./core/Ellipsoid').WGS84.maximumRadius,
@@ -225,7 +225,7 @@ class Global extends EventEmitter {
         gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         //update trackball and camera
-        //trackball.update();
+        trackball.update();
         //render surface
         this._globalSurfaces.forEach(o => {
             o.render(camera, timeStamp);

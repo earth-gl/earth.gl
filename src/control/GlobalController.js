@@ -4,6 +4,7 @@
  */
 const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
     rangeValue = require('./../utils/rangeValue'),
+    Ray = require('./../core/Ray'),
     Tween = require('./../core/Tween'),
     { WGS84 } = require('./../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
@@ -19,12 +20,12 @@ class GlobalController extends EventEmitter {
     * @param {PerspectiveCamera} camera
     * @param {Global} global
     */
-    constructor(camera, global) {
+    constructor(global) {
         super();
         /**
          * @type {PerspectiveCamera}
          */
-        this.camera = camera;
+        this.camera = global._camera;
         /**
          * @type {Global}
          */
@@ -56,11 +57,11 @@ class GlobalController extends EventEmitter {
         /**
          * @type {Vec2}
          */
-        this._movePrev = new Vec2();
+        this._movePrev = new Vec3();
         /**
          * @type {Vec2}
          */
-        this._moveCurr = new Vec2();
+        this._moveCurr = new Vec3();
         /**
          * @type {Vec3}
          */
@@ -76,11 +77,11 @@ class GlobalController extends EventEmitter {
         /**
          * @type {Vec2}
          */
-        this._zoomStart = new Vec2();
+        this._zoomStart = new Vec3();
         /**
          * @type {Vec2}
          */
-        this._zoomEnd = new Vec2();
+        this._zoomEnd = new Vec3();
         /**
          * @type {Number}
          */
@@ -92,11 +93,11 @@ class GlobalController extends EventEmitter {
         /**
          * @type {Vec2}
          */
-        this._panStart = new Vec2();
+        this._panStart = new Vec3();
         /**
          * @type {Vec2}
          */
-        this._panEnd = new Vec2();
+        this._panEnd = new Vec3();
         /**
          * 
          */
@@ -143,24 +144,71 @@ class GlobalController extends EventEmitter {
      * 
      * @param {*} pageX 
      * @param {*} pageY 
-     * @returns {Vec2} -
+     * @returns {Vec3} -
      */
     getMouseOnScreen(pageX, pageY) {
-        return new Vec2().set(
+        return new Vec3().set(
             (pageX - this.screen.left) / this.screen.width,
-            (pageY - this.screen.top) / this.screen.height
+            (pageY - this.screen.top) / this.screen.height,
+            1
         );
     }
     /**
      * 
+     * @param {*} x 
+     * @param {*} y 
+     * @param {*} w 
+     * @param {*} h 
+     */
+    _getNormalizeDeviceCoordinate(pageX, pageY) {
+        return new Vec3().set(
+            ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
+            ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width),
+            1
+        );
+    }
+    /**
+     * ndc to space coord
+     * @param {Vec3} pndc 
+     * @returns {Vec3}
+     */
+    _normalizedDeviceCoordinateToSpaceCoordinate(pndc) {
+        const m4 = this.camera.ViewMatrix.clone().multiply(this.camera.ProjectionMatrix.clone().invert());
+        const space = pndc.clone().applyMatrix4(m4);
+        return space;
+    }
+    /**
+     * @type {Vec3}
+     */
+    _spaceCoordinateToNormaziledDeveiceCoordinate(space) {
+        const ndc = space.clone().applyMatrix4(this.camera.ViewProjectionMatrix);
+        return ndc;
+    }
+    /**
+     * prepare the unprojection matrix which projects from NDC space to camera space
+     * and takes the current rotation of the camera into account
+     * unproject ndc point to camera space point
+     * @param {Number} pageX 
+     * @param {Number} pageY 
+     * @returns {Vec3} space coord
+     */
+    _rayTrackOnSphere(pageX, pageY) {
+        const pndc = this._getNormalizeDeviceCoordinate(pageX, pageY);
+        const space = this._normalizedDeviceCoordinateToSpaceCoordinate(pndc);
+        const d = space.sub(this.camera.position.clone()).normalize();
+        const ray = new Ray(this.camera.position.clone(), d);
+        return ray.intersectSphere(WGS84);
+    }
+
+    /**
+     * }{修正
+     * 基于Ray，构建鼠标点与视角点的直线和球体的相交
      * @param {*} pageX 
      * @param {*} pageY 
      */
     getMouseOnCircle(pageX, pageY) {
-        return new Vec2().set(
-            ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
-            ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width)
-        );
+        const space = this._rayTrackOnSphere(pageX, pageY);
+        return space !== null?this._spaceCoordinateToNormaziledDeveiceCoordinate(space):null;
     }
     /**
      * 
@@ -180,11 +228,10 @@ class GlobalController extends EventEmitter {
      * 
      */
     rotateCamera() {
+        if(this._moveCurr === null || this._movePrev === null) return;
         const target = this.target, //默认是 (0,0,0),
             camera = this.camera,
-            //rs = 1.0,
-            rs = rangeValue(WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), 0, 1), //rotate speed
-            //rs = (camera.position.distance(this.target) - WGS84.maximumRadius)/camera.position.distance(this.target),
+            rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
         let moveDirection = new Vec3().set(
