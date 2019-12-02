@@ -2,13 +2,26 @@
  * earth.gl 核心操作交互
  * https://github.com/mrdoob/three.js/blob/e88edaa2caea2b61c7ccfc00d1a4f8870399642a/examples/jsm/controls/TrackballControls.js
  */
-const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
-    rangeValue = require('./../utils/rangeValue'),
-    Ray = require('./../core/Ray'),
-    Tween = require('./../core/Tween'),
-    { WGS84 } = require('./../core/Ellipsoid'),
+const { Quat, Vec2, Vec3, Mat4 } = require('kiwi.matrix'),
+    Ray = require('../core/Ray'),
+    Tween = require('../core/Tween'),
+    { WGS84 } = require('../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
+/**
+ * @enum
+ */
+const STATE = {
+    NONE: 'NONE',
+    PAN: 'PAN',
+    ROTATE: 'ROTATE',
+    ORBIT: 'ORBIT',
+    TOUCH: 'TOUCH'
+}
+/**
+ * The number of user's inputs to consider for panning inertia, to reduce erratic inputs.
+ */
+const USER_INPUTS_TO_CONSIDER = 5;
 /**
  * https://github.com/JonLim/three-trackballcontrols/blob/master/index.js
  * @class
@@ -16,12 +29,41 @@ const { Quat, Vec2, Vec3 } = require('kiwi.matrix'),
 class GlobalController extends EventEmitter {
     /**
     * @typedef {import("../camera/PerspectiveCamera")} PerspectiveCamera
-    * @typedef {import('./../Global')} Global
+    * @typedef {import('../Global')} Global
     * @param {PerspectiveCamera} camera
     * @param {Global} global
     */
     constructor(global) {
         super();
+        /**
+         * @type {String}
+         */
+        this.m_state = STATE.NONE;
+        /**
+         * last mouse position (clientX, clientY)
+         * @type {Vec2} 
+         */
+        this.m_lastMousePosition = new Vec2();
+        /**
+         * @type {Number}
+         */
+        this.m_currentPanDistanceOrAngleIndex = 0;
+        /**
+         * @type {Array}
+         */
+        this.m_recentPanDistancesOrAngles = [0, 0, 0, 0, 0];
+        /**
+         * @type {Vec2}
+         */
+        this.m_mouseDelta = new Vec2();
+        /**
+         * @type {Vec3}
+         */
+        this.m_lastRotateGlobeFromVector = new Vec3();
+        /**
+         * @type {Quat}
+         */
+        this.m_rotateGlobeQuaternion = new Quat();
         /**
          * @type {PerspectiveCamera}
          */
@@ -141,32 +183,17 @@ class GlobalController extends EventEmitter {
         this.listenTo(this._global, 'mousewheel', this.mousewheel, this);
     }
     /**
-     * 
-     * @param {*} pageX 
-     * @param {*} pageY 
-     * @returns {Vec3} -
+     * get NDC
+     * @param {Number} clientX 
+     * @param {Number} clientY 
+     * @return {Vec3}
      */
-    getMouseOnScreen(pageX, pageY) {
-        return new Vec3().set(
-            (pageX - this.screen.left) / this.screen.width,
-            (pageY - this.screen.top) / this.screen.height,
+    _getNormalizeDeviceCoordinate(clientX, clientY) {
+        return ndc = new Vec3().set(
+            (clientX / this.screen.width) * 2 - 1,
+            -(clientY / this.screen.height) * 2 + 1,
             1
         );
-    }
-    /**
-     * 
-     * @param {*} x 
-     * @param {*} y 
-     * @param {*} w 
-     * @param {*} h 
-     */
-    _getNormalizeDeviceCoordinate(pageX, pageY) {
-        const ndc = new Vec3().set(
-            ((pageX - this.screen.left) / this.screen.width) * 2 - 1,
-            -((pageY - this.screen.top) / this.screen.height) * 2 + 1,
-            1
-        );
-        return ndc;
     }
     /**
      * ndc to space coord
@@ -189,26 +216,98 @@ class GlobalController extends EventEmitter {
      * prepare the unprojection matrix which projects from NDC space to camera space
      * and takes the current rotation of the camera into account
      * unproject ndc point to camera space point
-     * @param {Number} pageX 
-     * @param {Number} pageY 
+     * @param {Number} clientX 
+     * @param {Number} clientY 
      * @returns {Vec3} space coord
      */
-    _rayTrackOnSphere(pageX, pageY) {
-        const pndc = this._getNormalizeDeviceCoordinate(pageX, pageY);
+    _rayTrackOnSphere(clientX, clientY) {
+        const pndc = this._getNormalizeDeviceCoordinate(clientX, clientY);
         const space = this._normalizedDeviceCoordinateToSpaceCoordinate(pndc);
         const d = space.sub(this.camera.position.clone()).normalize();
         const ray = new Ray(this.camera.position.clone(), d);
         return ray.intersectSphere(WGS84);
     }
     /**
-     * }{修正
-     * 基于Ray，构建鼠标点与视角点的直线和球体的相交
-     * @param {*} pageX 
-     * @param {*} pageY 
+     * 
+     * @param {Vec3} from, space coordinate on earth
+     * @param {Vec3} to, space coordinate on earth
      */
-    getMouseOnCircle(pageX, pageY) {
-        const space = this._rayTrackOnSphere(pageX, pageY);
-        return space === null ? null : { space: space, ndc: this._spaceCoordinateToNormaziledDeveiceCoordinate(space) };
+    _pan(from, to) {
+        // Assign the new animation start time.
+        this.m_panAnimationStartTime = performance.now();
+        this.m_lastRotateGlobeFromVector = from.clone();
+        this.m_lastRotateGlobeAxis = from.clone().cross(to).normalize();
+        this.m_lastRotateGlobeAngle = from.angle(to);
+        this._handlePan();
+    }
+    /**
+     * 
+     */
+    _handlePan(){
+        const angle = this.m_lastRotateGlobeAngle;
+        this.m_rotateGlobeQuaternion = new Quat().setAxisAngle(this.m_lastRotateGlobeAxis, this.m_lastRotateGlobeAngle).normalize();
+        this.m_currentPanDistanceOrAngleIndex = (this.m_currentPanDistanceOrAngleIndex + 1) % USER_INPUTS_TO_CONSIDER;
+        this.m_recentPanDistancesOrAngles[this.m_currentPanDistanceOrAngleIndex] = angle;
+        this.m_lastAveragedPanDistanceOrAngle = this.m_recentPanDistancesOrAngles.reduce((a, b) => a + b) / USER_INPUTS_TO_CONSIDER;
+        //rotate mapview
+        const from = this.m_lastRotateGlobeFromVector.clone();
+        const to = this.m_lastRotateGlobeFromVector.clone().applyQuat(this.m_rotateGlobeQuaternion);
+        //rotate view
+        this._rotateCamera(from, to);
+    }
+    /**
+     * }{ debug 
+     * @param {Vec3} from 
+     * @param {Vec3} to 
+     */
+    _rotateCamera(from, to){
+        const q = new Quat().setFromUnitVectors(from.clone().normalize(), to.clone().normalize()).invert();
+        const m4 = Mat4.fromQuat(q);
+        this.camera.applyMatrix(m4);
+    }
+    /**
+     * 设置触发状态
+     * @param {MouseEvent} event 
+     */
+    mousedown(event) {
+        stopPropagation(event);
+        if (this.m_state !== STATE.NONE) return;
+        //set state
+        if (event.button === 0)
+            this.m_state = STATE.PAN;
+        else if (event.button === 1)
+            this.m_state === STATE.ROTATE;
+        else if (event.button === 2)
+            this.m_state === STATE.ORBIT;
+        else
+            return;
+        //store current client mouse position
+        this.m_lastMousePosition.set(event.clientX, event.clientY);
+        //resgister document events
+        this.listenTo(this._global, 'mousemove', this.mousemove, this);
+        this.listenTo(this._global, 'mouseup', this.mouseup, this);
+    }
+    /**
+     * https://github.com/heremaps/harp.gl/blob/7d23554e9e00626c9e14e5edf995a30daff12523/%40here/harp-map-controls/lib/MapControls.ts#L958
+     * @param {MouseEvent} event 
+     */
+    mousemove(event) {
+        //鼠标移动距离(像素)
+        this.m_mouseDelta.set(event.clientX - this.m_lastMousePosition.x, event.clientY - this.m_lastMousePosition.y);
+        if (this.m_state === STATE.PAN) {
+            const form = this._rayTrackOnSphere(this.m_lastMousePosition.x, this.m_lastMousePosition.y);
+            const to = this._rayTrackOnSphere(event.clientX, event.clientY);
+            this._pan(form, to);
+        }
+    }
+    /**
+     * 
+     * @param {*} event 
+     */
+    mouseup(event) {
+        this.stopListen(this._global, 'mousemove', this.mousemove, this);
+        this.stopListen(this._global, 'mouseup', this.mouseup, this);
+        this.fire('dragEnd', event)
     }
     /**
      * 
@@ -296,52 +395,6 @@ class GlobalController extends EventEmitter {
             //如果不是，则围绕中心点
             panStart.add(panEnd.clone().sub(panStart).scale(dynfactor));
         }
-    }
-    /**
-     * 
-     * @param {*} event 
-     */
-    mousedown(event) {
-        preventDefault(event);
-        stopPropagation(event);
-        //rotate
-        const c = this.getMouseOnCircle(event.pageX, event.pageY);
-        if (c !== null) {
-            this._moveCurr = c.ndc;
-            this._movePrev = this._moveCurr.clone();
-        }
-        //pan
-        this._panStart = this.getMouseOnScreen(event.pageX, event.pageY);
-        this._panEnd = this._panStart.clone();
-        //zoom
-        this._zoomStart = this.getMouseOnScreen(event.pageX, event.pageY);
-        this._zoomEnd = this._zoomStart.clone();
-        //resgister document events
-        this.listenTo(this._global, 'mousemove', this.mousemove, this);
-        this.listenTo(this._global, 'mouseup', this.mouseup, this);
-    }
-    /**
-     * 
-     * @param {*} event 
-     */
-    mousemove(event) {
-        //rotate
-        const c = this.getMouseOnCircle(event.pageX, event.pageY);
-        if (c !== null) {
-            this._movePrev = this._moveCurr.clone();
-            this._moveCurr = c.ndc;
-        }
-        //pan
-        this._panEnd = this.getMouseOnScreen(event.pageX, event.pageY);
-    }
-    /**
-     * 
-     * @param {*} event 
-     */
-    mouseup(event) {
-        this.stopListen(this._global, 'mousemove', this.mousemove, this);
-        this.stopListen(this._global, 'mouseup', this.mouseup, this);
-        this.fire('dragEnd', event)
     }
     /**
      * 
