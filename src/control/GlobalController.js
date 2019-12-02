@@ -227,19 +227,15 @@ class GlobalController extends EventEmitter {
     }
     /**
      * 
-     * @param {Vec3} v1 
-     * @param {Vec3} v2 
-     */
-    _getVectorsAngle(v1, v2){
-        if(v1.len() === 0 || v2.len() ===0 )
-            return 0;
-        else{
-            const theta = v1.dot(v2)/(v1.len()*v2.len());
-            return Math.acos(theta);
-        }
-    }
-    /**
+     * 先确定z, 后确定x, 最后根据 z和x确定y
      * 
+     * XAisxx | XAisxy | XAisxz | <- 相机x方向 通过透视矩阵up方向叉乘z方向，得到XAxis方向
+     * ---------------------------
+     * YAisxx | YAisxy | YAisxz | <- 相机y方向，通过z和x方向叉乘，得到YAxis方向
+     * ---------------------------
+     * ZAisxx | ZAisxy | ZAisxz | <- 相机z方向，目标指朝向相机的方向，即ZAxis
+     * ---------------------------
+     *   Tx   |   Ty   |   Yz   | <- 相机位置
      */
     rotateCamera() {
         if (this._moveCurr === null || this._movePrev === null) return;
@@ -248,22 +244,28 @@ class GlobalController extends EventEmitter {
             //rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
             moveCurr = this._moveCurr,
             movePrev = this._movePrev;
-        const ori = this._normalizedDeviceCoordinateToSpaceCoordinate(moveCurr);
-        const des = this._normalizedDeviceCoordinateToSpaceCoordinate(movePrev);
-        const angle = -1 * this._getVectorsAngle(ori, des);
+        const p0x = this._normalizedDeviceCoordinateToSpaceCoordinate(moveCurr);
+        const p1x = this._normalizedDeviceCoordinateToSpaceCoordinate(movePrev);
+        const angle = - p0x.angle(p1x);
+        //
         if (angle) {
+            //https://juejin.im/post/5c92f2666fb9a070b70beb98
+            //旋转的本质就是绕相机的 y 方向旋转 angle，考虑到在地图上平移的方向，重新计算up
+            //计算旋转轴，即为相机的y
             this._eye = camera.position.clone().sub(target);
-            const eyeDirection = this._eye.clone().normalize();
-            const objectUpDirection = camera.up.clone().normalize();
-            const objectSidewaysDirection = objectUpDirection.clone().cross(eyeDirection).normalize();
-            objectUpDirection.normalize().scale(movePrev.y - moveCurr.y);
-            objectSidewaysDirection.normalize().scale(movePrev.x - moveCurr.x);
-            objectUpDirection.add(objectSidewaysDirection);
-            moveDirection = objectUpDirection.clone();
-            const axis = moveDirection.clone().cross(this._eye).normalize();
+            const zAisx = this._eye.clone().normalize();
+            const up = camera.up.clone().normalize();
+            const xAisx = up.clone().cross(zAisx).normalize();
+            //
+            up.normalize().scale(movePrev.y - moveCurr.y);
+            xAisx.normalize().scale(movePrev.x - moveCurr.x);
+            up.add(xAisx);
+            //
+            const axis = up.clone().cross(zAisx).normalize();
             const quaternion = new Quat().setAxisAngle(axis, angle);
             this._eye.applyQuat(quaternion);
             camera.up.applyQuat(quaternion);
+            //
             this._lastAxis = axis.clone();
             this._lastAngle = angle;
         }
@@ -304,7 +306,7 @@ class GlobalController extends EventEmitter {
         stopPropagation(event);
         //rotate
         const c = this.getMouseOnCircle(event.pageX, event.pageY);
-        if(c!==null){
+        if (c !== null) {
             this._moveCurr = c.ndc;
             this._movePrev = this._moveCurr.clone();
         }
@@ -325,7 +327,7 @@ class GlobalController extends EventEmitter {
     mousemove(event) {
         //rotate
         const c = this.getMouseOnCircle(event.pageX, event.pageY);
-        if(c!==null){
+        if (c !== null) {
             this._movePrev = this._moveCurr.clone();
             this._moveCurr = c.ndc;
         }
@@ -393,7 +395,6 @@ class GlobalController extends EventEmitter {
         //3. update position and lookat center
         camera.position = target.clone().add(this._eye).value;
         camera.lookAt(target.value);
-        camera._update();
     }
 }
 

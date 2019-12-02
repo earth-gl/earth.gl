@@ -46,11 +46,11 @@ class PerspectiveCamera extends Camera {
          */
         this._target = new Vec3().set(0, 0, 0);
         /**
-         * @type {Vec3}
+         * @type {Vec3}， 初始化设置相机位置从 笛卡尔坐标系中的 x轴正方向看向原点(0,0,0), 故最后坐标系遵循笛卡尔
          */
-        this._position = new Vec3().set(0, 1, 0);
+        this._position = new Vec3().set(1, 0, 0);
         /**
-         * @type {Vec3}, 使用z轴承为正方向
+         * @type {Vec3} 使用z轴承为正方向
          */
         this._up = new Vec3().set(0, 0, 1);
         /**

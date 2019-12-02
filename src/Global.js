@@ -122,7 +122,7 @@ class Global extends EventEmitter {
         /**
          * 添加进animation
          */
-        AnimateCache.push(()=>{
+        AnimateCache.push(() => {
             this.render();
         });
         /**
@@ -141,8 +141,10 @@ class Global extends EventEmitter {
             camera = this._camera,
             canvas = this._canvas,
             gl = this._gl;
+        //本初子午线
+        this.centerTo(113, 33, 8000000);
         //setting camera position at wuhan
-        camera.position = [-5441407.598258391, 12221601.56749016, 8664632.212488363];
+        //camera.position = [-5441407.598258391, 12221601.56749016, 8664632.212488363];
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -176,7 +178,7 @@ class Global extends EventEmitter {
     /**
      * get global document element
      */
-    get domElement(){
+    get domElement() {
         return this._canvas;
     }
     /**
