@@ -53,10 +53,6 @@ class GlobalController extends EventEmitter {
          */
         this.m_recentPanDistancesOrAngles = [0, 0, 0, 0, 0];
         /**
-         * @type {Vec2}
-         */
-        this.m_mouseDelta = new Vec2();
-        /**
          * @type {Vec3}
          */
         this.m_lastRotateGlobeFromVector = new Vec3();
@@ -238,32 +234,12 @@ class GlobalController extends EventEmitter {
         this.m_lastRotateGlobeFromVector = from.clone();
         this.m_lastRotateGlobeAxis = from.clone().cross(to).normalize();
         this.m_lastRotateGlobeAngle = from.angle(to);
-        this._handlePan();
-    }
-    /**
-     * 
-     */
-    _handlePan(){
-        const angle = this.m_lastRotateGlobeAngle;
-        this.m_rotateGlobeQuaternion = new Quat().setAxisAngle(this.m_lastRotateGlobeAxis, this.m_lastRotateGlobeAngle).normalize();
-        this.m_currentPanDistanceOrAngleIndex = (this.m_currentPanDistanceOrAngleIndex + 1) % USER_INPUTS_TO_CONSIDER;
-        this.m_recentPanDistancesOrAngles[this.m_currentPanDistanceOrAngleIndex] = angle;
-        this.m_lastAveragedPanDistanceOrAngle = this.m_recentPanDistancesOrAngles.reduce((a, b) => a + b) / USER_INPUTS_TO_CONSIDER;
-        //rotate mapview
-        const from = this.m_lastRotateGlobeFromVector.clone();
-        const to = this.m_lastRotateGlobeFromVector.clone().applyQuat(this.m_rotateGlobeQuaternion);
-        //rotate view
-        this._rotateCamera(from, to);
-    }
-    /**
-     * }{ debug 
-     * @param {Vec3} from 
-     * @param {Vec3} to 
-     */
-    _rotateCamera(from, to){
-        const q = new Quat().setFromUnitVectors(from.clone().normalize(), to.clone().normalize()).invert();
-        const m4 = Mat4.fromQuat(q);
-        this.camera.applyMatrix(m4);
+        //旋转四元数
+        this.m_rotateGlobeQuaternion = new Quat().setAxisAngle(this.m_lastRotateGlobeAxis, -this.m_lastRotateGlobeAngle);
+        const offset = this.camera.position.clone().sub(this.target);
+        offset.applyQuat(this.m_rotateGlobeQuaternion);
+        this.camera.up.applyQuat(this.m_rotateGlobeQuaternion);
+        this.camera.position = offset.add(this.target).value;
     }
     /**
      * 设置触发状态
@@ -293,11 +269,11 @@ class GlobalController extends EventEmitter {
      */
     mousemove(event) {
         //鼠标移动距离(像素)
-        this.m_mouseDelta.set(event.clientX - this.m_lastMousePosition.x, event.clientY - this.m_lastMousePosition.y);
         if (this.m_state === STATE.PAN) {
             const form = this._rayTrackOnSphere(this.m_lastMousePosition.x, this.m_lastMousePosition.y);
             const to = this._rayTrackOnSphere(event.clientX, event.clientY);
             this._pan(form, to);
+            this.m_lastMousePosition.set(event.clientX, event.clientY); 
         }
     }
     /**
@@ -305,6 +281,7 @@ class GlobalController extends EventEmitter {
      * @param {*} event 
      */
     mouseup(event) {
+        this.m_state = STATE.NONE;
         this.stopListen(this._global, 'mousemove', this.mousemove, this);
         this.stopListen(this._global, 'mouseup', this.mouseup, this);
         this.fire('dragEnd', event)
