@@ -142,7 +142,7 @@ class Global extends EventEmitter {
             canvas = this._canvas,
             gl = this._gl;
         //本初子午线
-        this.centerTo(113, 33, 8000000);
+        this.centerTo(113, 29, 4000);
         //setting camera position at wuhan
         //camera.position = [-5441407.598258391, 12221601.56749016, 8664632.212488363];
         camera.lookAt([0, 0, 0]);
