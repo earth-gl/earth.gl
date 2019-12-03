@@ -284,16 +284,6 @@ class GlobalController extends EventEmitter {
                 });
             this.tween.start();
         }
-        // const camera = this.camera;
-        // let zs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius); //zoom speed
-        // zs = zs > 0 ? zs * 2 : 0;
-        // const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zs;
-        // if (factor !== 1.0 && factor > 0.0) {
-        //     this._eye.scale(factor);
-        // } else {
-        //     this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
-        // }
-        // this._zoomStart = this._zoomEnd.clone();
     }
     /**
      * 设置触发状态
@@ -353,36 +343,6 @@ class GlobalController extends EventEmitter {
         this.m_zoomAnimationStartTime = performance.now();
         this.m_zoomDeltaRequested = zoomLevel - this.zoomLevelTargeted;
         this._zoom(zoomLevel, event.clientX, event.clientY);
-        // const fr = this._zoomStart._out[1];
-        // let to = fr;
-        // //使用timeout方式，延后执行update
-        // switch (event.deltaMode) {
-        //     case 2: //zoom in pages
-        //         to = fr + event.deltaY * 0.025;
-        //         break;
-        //     case 1: //zoom in lines
-        //         to = fr - event.deltaY * 0.01;
-        //         break;
-        //     default: //undefined, 0, assume pixels
-        //         to = fr - event.deltaY / 12500;
-        //         break;
-        // }
-        // //x: oriV2.x, y: oriV2.y, x: this._moveCurr.x, y: this._moveCurr.y,
-        // if (!this.tween) {
-        //     this.tween = new Tween()
-        //         .form({ z: fr })
-        //         .to({ z: to }, 800)
-        //         .easing(Tween.Easing.Quadratic.In)
-        //         .onUpdate((v) => {
-        //             this._zoomStart._out[1] = v.z;
-        //         })
-        //         .onComplete(() => {
-        //             this._global.fire('zoomend', event);
-        //             this.tween = null;
-        //         });
-        //     this.tween.start();
-        // }
-        //
         preventDefault(event);
         stopPropagation(event);
     }

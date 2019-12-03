@@ -1,5 +1,5 @@
 const Geographic = require('./../core/Geographic'),
-    { PSEUDOMERCATOR: WGS84 } = require('./../core/Ellipsoid');
+    { PSEUDOMERCATOR } = require('./../core/Ellipsoid');
 /**
  * 三维空间矩形内插，实现球面贴图, 默认使用 8x8 个顶点
  * @param {import('./../core/Rectangle')} boundary 
@@ -22,7 +22,7 @@ const interpolation = function (boundary) {
                 start.latitude + y * factor * rangeY,
                 0);
             //convert to space coord
-            const spaceCoord = WGS84.geographicToSpace(g1);
+            const spaceCoord = PSEUDOMERCATOR.geographicToSpace(g1);
             //push vertices
             vertices = vertices.concat(spaceCoord._out);
             //texcoords
