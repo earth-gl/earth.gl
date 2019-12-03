@@ -1,4 +1,4 @@
-const WGS84 = require('./Ellipsoid').WGS84,
+const { PSEUDOMERCATOR } = require('./Ellipsoid'),
     Geographic = require('./Geographic'),
     { Vec3 } = require('kiwi.matrix');
 
@@ -11,7 +11,7 @@ class Projection {
         /**
          * @type {Ellipsoid}
          */
-        this._ellipsoid = WGS84;
+        this._ellipsoid = PSEUDOMERCATOR;
         /**
          * @type {Number}
          */

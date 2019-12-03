@@ -172,18 +172,6 @@ class PerspectiveCamera extends Camera {
     }
     /**
      * 
-     * @param {Mat4} m 
-     */
-    applyMatrix(m){
-        // 1.apply matrix
-        const m4 = m.multiply(this._viewMatrix);
-        // 2.decomp
-        const { position } = m4.decompose();
-        // 3.update camera position
-        this.position = position.value;
-    }
-    /**
-     * 
      */
     _update() {
         /**

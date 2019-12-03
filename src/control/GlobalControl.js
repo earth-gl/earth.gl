@@ -5,7 +5,7 @@
 const { Quat, Vec2, Vec3, Mat4 } = require('kiwi.matrix'),
     Ray = require('../core/Ray'),
     Tween = require('../core/Tween'),
-    { WGS84 } = require('../core/Ellipsoid'),
+    { PSEUDOMERCATOR: WGS84 } = require('../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
 /**
@@ -225,8 +225,17 @@ class GlobalController extends EventEmitter {
     }
     /**
      * 
-     * @param {Vec3} from, space coordinate on earth
-     * @param {Vec3} to, space coordinate on earth
+     * 先确定z, 后确定x, 最后根据 z和x确定y
+     * 
+     * XAisxx | XAisxy | XAisxz | <- 相机x方向 通过透视矩阵up方向叉乘z方向，得到XAxis方向
+     * ---------------------------
+     * YAisxx | YAisxy | YAisxz | <- 相机y方向，通过z和x方向叉乘，得到YAxis方向
+     * ---------------------------
+     * ZAisxx | ZAisxy | ZAisxz | <- 相机z方向，目标指朝向相机的方向，即ZAxis
+     * ---------------------------
+     *   Tx   |   Ty   |   Yz   | <- 相机位置
+     * @param {Vec3} from , space coordinate on earth
+     * @param {Vec3} to , space coordinate on earth
      */
     _pan(from, to) {
         // Assign the new animation start time.
@@ -303,78 +312,6 @@ class GlobalController extends EventEmitter {
     }
     /**
      * 
-     * 先确定z, 后确定x, 最后根据 z和x确定y
-     * 
-     * XAisxx | XAisxy | XAisxz | <- 相机x方向 通过透视矩阵up方向叉乘z方向，得到XAxis方向
-     * ---------------------------
-     * YAisxx | YAisxy | YAisxz | <- 相机y方向，通过z和x方向叉乘，得到YAxis方向
-     * ---------------------------
-     * ZAisxx | ZAisxy | ZAisxz | <- 相机z方向，目标指朝向相机的方向，即ZAxis
-     * ---------------------------
-     *   Tx   |   Ty   |   Yz   | <- 相机位置
-     */
-    rotateCamera() {
-        if (this._moveCurr === null || this._movePrev === null) return;
-        const target = this.target, //默认是 (0,0,0),
-            camera = this.camera,
-            //rs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius), //rotate speed
-            moveCurr = this._moveCurr,
-            movePrev = this._movePrev;
-        const p0x = this._normalizedDeviceCoordinateToSpaceCoordinate(moveCurr);
-        const p1x = this._normalizedDeviceCoordinateToSpaceCoordinate(movePrev);
-        const angle = - p0x.angle(p1x);
-        //
-        if (angle) {
-            //https://juejin.im/post/5c92f2666fb9a070b70beb98
-            //旋转的本质就是绕相机的 y 方向旋转 angle，考虑到在地图上平移的方向，重新计算up
-            //计算旋转轴，即为相机的y
-            this._eye = camera.position.clone().sub(target);
-            const zAisx = this._eye.clone().normalize();
-            const up = camera.up.clone().normalize();
-            const xAisx = up.clone().cross(zAisx).normalize();
-            //
-            up.normalize().scale(movePrev.y - moveCurr.y);
-            xAisx.normalize().scale(movePrev.x - moveCurr.x);
-            up.add(xAisx);
-            //
-            const axis = up.clone().cross(zAisx).normalize();
-            const quaternion = new Quat().setAxisAngle(axis, angle);
-            this._eye.applyQuat(quaternion);
-            camera.up.applyQuat(quaternion);
-            //
-            this._lastAxis = axis.clone();
-            this._lastAngle = angle;
-        }
-        //assign movePrev position
-        this._movePrev = this._moveCurr.clone();
-    }
-    /**
-     * 
-     */
-    panCamera() {
-        const panStart = this._panStart,
-            panEnd = this._panEnd,
-            panSpeed = this.panSpeed,
-            camera = this.camera,
-            dynfactor = this._dynamicDampingFactor,
-            target = this.target,
-            up = camera.up,
-            eye = this._eye,
-            mouseChange = panEnd.clone().sub(panStart);
-        if (mouseChange.len()) {
-            mouseChange.scale(eye.len() * panSpeed);
-            const pan = eye.clone();
-            pan.cross(up.clone()).normalize().scale(mouseChange.value[0]);
-            pan.add(up.clone().normalize().scale(mouseChange.value[1]));
-            camera.position.add(pan);
-            target.add(pan);
-            //如果是右键移动，则改变panStart
-            //如果不是，则围绕中心点
-            panStart.add(panEnd.clone().sub(panStart).scale(dynfactor));
-        }
-    }
-    /**
-     * 
      * @param {*} event 
      */
     mousewheel(event) {
@@ -410,21 +347,6 @@ class GlobalController extends EventEmitter {
                 });
             this.tween.start();
         }
-    }
-    /**
-     * 
-     */
-    update() {
-        const camera = this.camera,
-            target = this.target;
-        this._eye = camera.position.clone().sub(target);
-        //1. rotate
-        this.rotateCamera();
-        //2. zoom
-        this.zoomCamera();
-        //3. update position and lookat center
-        camera.position = target.clone().add(this._eye).value;
-        camera.lookAt(target.value);
     }
 }
 

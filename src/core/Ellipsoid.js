@@ -1,7 +1,8 @@
 const Geographic = require('./Geographic'),
     { Vec3 } = require('kiwi.matrix'),
     { sin, cos, EPSILON1, EPSILON12 } = require('./../utils/revise'),
-    { PHYSICAL_CONSTANT } = require('./../utils/constant');
+    { PHYSICAL_CONSTANT } = require('./../utils/constant'),
+    semimajorAxis = Math.max(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);
 /**
  * @class
  */
@@ -205,9 +206,14 @@ class Ellipsoid {
     }
 }
 /**
+ * WGS84
  * @type {Ellipsoid}
  */
-// Ellipsoid.WGS84 = new Ellipsoid(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);
-Ellipsoid.WGS84 = new Ellipsoid(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_X);
+Ellipsoid.WGS84 = new Ellipsoid(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);
+/**
+ * EPSG3857，使用最长半轴作为半径
+ * @type {Ellipsoid}
+ */
+Ellipsoid.PSEUDOMERCATOR = new Ellipsoid(semimajorAxis, semimajorAxis, semimajorAxis);
 
 module.exports = Ellipsoid;

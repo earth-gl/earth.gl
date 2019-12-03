@@ -22,11 +22,10 @@ const { AnimateCache, update } = require('./utils/loop'),
     merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
     ImagerySurface = require('./scene/ImagerySurface'),
-    //GlobalControl = require('./control/GlobalControl'),
     GlobalControl = require('./control/GlobalControl'),
-    { WGS84 } = require('./core/Ellipsoid'),
+    { PSEUDOMERCATOR } = require('./core/Ellipsoid'),
+    maximumRadius = PSEUDOMERCATOR.maximumRadius,
     Geographic = require('./core/Geographic'),
-    maximumRadius = require('./core/Ellipsoid').WGS84.maximumRadius,
     EventEmitter = require('./core/EventEmitter'),
     Quadtree = require('./core/Quadtree'),
     PerspectiveCamera = require('./camera/PerspectiveCamera');
@@ -85,7 +84,7 @@ class Global extends EventEmitter {
         /**
          * @type {Trackball}
          */
-        this._trackball = null;
+        this._globalControl = null;
         /**
          * 
          */
@@ -93,7 +92,7 @@ class Global extends EventEmitter {
         /**
          * 
          */
-        this._camera = new PerspectiveCamera(60, this._width, this._height, 0.01, maximumRadius * 3);
+        this._camera = new PerspectiveCamera(50, this._width, this._height, 0.01, maximumRadius * 2);
         /**
          * 计算瓦片规则
          * @type {Quadtree}
@@ -141,10 +140,8 @@ class Global extends EventEmitter {
             camera = this._camera,
             canvas = this._canvas,
             gl = this._gl;
-        //本初子午线
-        this.centerTo(113, 29, 4000);
         //setting camera position at wuhan
-        //camera.position = [-5441407.598258391, 12221601.56749016, 8664632.212488363];
+        this.centerTo(113, 29, 10000);
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -157,10 +154,7 @@ class Global extends EventEmitter {
     _registerDomEvents() {
         //统一注册dom事件
         addDomEvent(this.domElement, domEventNames, this._handleDomEvent, this);
-        //
-        this._trackball = new GlobalControl(this);
-        //this._trackball.update();
-        //
+        this._globalControl = new GlobalControl(this);
         this.fire('loaded', {}, true);
     }
     /**
@@ -192,7 +186,7 @@ class Global extends EventEmitter {
      */
     centerTo(lng, lat, h = 10000) {
         const camera = this._camera;
-        const space = WGS84.geographicToSpace(new Geographic(lng, lat, h, true));
+        const space = PSEUDOMERCATOR.geographicToSpace(new Geographic(lng, lat, h, true));
         camera.position = space._out;
     }
     /**
@@ -217,7 +211,7 @@ class Global extends EventEmitter {
             timeStampScale = this._timeStampScale,
             timeStamp0 = this._timeStamp0,
             timeStamp = (performance.now() - timeStamp0) * timeStampScale || 0,
-            trackball = this._trackball,
+            trackball = this._globalControl,
             camera = this._camera;
         //gl state
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -226,8 +220,6 @@ class Global extends EventEmitter {
         gl.depthFunc(gl.LEQUAL);
         gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        //update trackball and camera
-        trackball.update();
         //render surface
         this._globalSurfaces.forEach(o => {
             o.render(camera, timeStamp);

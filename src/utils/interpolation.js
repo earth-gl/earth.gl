@@ -1,5 +1,5 @@
 const Geographic = require('./../core/Geographic'),
-    { WGS84 } = require('./../core/Ellipsoid');
+    { PSEUDOMERCATOR: WGS84 } = require('./../core/Ellipsoid');
 /**
  * 三维空间矩形内插，实现球面贴图, 默认使用 8x8 个顶点
  * @param {import('./../core/Rectangle')} boundary 

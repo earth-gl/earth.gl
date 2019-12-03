@@ -1,7 +1,7 @@
 const { Vec2, Vec3 } = require('kiwi.matrix'),
     merge = require('./../utils/merge'),
     Rectangle = require('./Rectangle'),
-    WGS84 = require('./Ellipsoid').WGS84,
+    { PSEUDOMERCATOR } = require('./Ellipsoid'),
     WebMercatorProjection = require('./Projection').WebMercatorProjection;
 /**
  * https://github.com/AnalyticalGraphicsInc/cesium/blob/f87fbadb79d8410deeb5c3f66228c235344a44f2/Source/Core/WebMercatorTilingScheme.js#L42
@@ -40,7 +40,7 @@ class QuadtreeTileSchema {
         /**
          * 
          */
-        this._ellipsoid = options.ellipsoid || WGS84;
+        this._ellipsoid = options.ellipsoid || PSEUDOMERCATOR;
         /**
          * 
          */

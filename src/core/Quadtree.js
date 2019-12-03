@@ -1,6 +1,6 @@
 const QuadtreeTile = require('./QuadtreeTile'),
-    { WGS84 } = require('./Ellipsoid'),
-    maximumRadius = WGS84.maximumRadius,
+    { PSEUDOMERCATOR } = require('./Ellipsoid'),
+    maximumRadius = PSEUDOMERCATOR.maximumRadius,
     EventEmitter = require('./EventEmitter'),
     quadtreeTileSchema = require('./QuadtreeTileSchema').WEB_MERCATOR_TILING_SCHEME;
 /**
@@ -162,7 +162,7 @@ class Quadtree extends EventEmitter {
         const zeroLevelTiles = this._zeroLevelTiles,
             pickedZeroLevelTiles = [];
         //1.转化camera 到椭球体
-        const geographic = WGS84.spaceToGeographic(cameraSpacePosition);
+        const geographic = PSEUDOMERCATOR.spaceToGeographic(cameraSpacePosition);
         //2.计算tile rectangle与 geo coord 相交
         for (var i = 0, len = zeroLevelTiles.length; i < len; i++) {
             const quadtreeTile = zeroLevelTiles[i];
@@ -189,7 +189,7 @@ class Quadtree extends EventEmitter {
         //2019/2/10 修正，改为与四角的距离取最大error
         let err = 0;
         for (let i = 0, len = bounds.length; i < len; i++) {
-            const spacePostion = WGS84.geographicToSpace(bounds[i]);
+            const spacePostion = PSEUDOMERCATOR.geographicToSpace(bounds[i]);
             const distance = cameraSpacePosition.clone().sub(spacePostion).len();
             const error = (maxGeometricError * height) / (distance * sseDenominator);
             err = error > err ? error : err;
