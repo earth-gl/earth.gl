@@ -141,7 +141,7 @@ class Global extends EventEmitter {
             canvas = this._canvas,
             gl = this._gl;
         //setting camera position at wuhan
-        this.centerTo(113, 29, 10000);
+        this.centerTo(113, 29, 16568462.211214133);
         camera.lookAt([0, 0, 0]);
         //adjust for devicePixelRatio
         canvas.width = canvas.clientWidth * devicePixelRatio;

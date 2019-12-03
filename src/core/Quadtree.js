@@ -53,6 +53,11 @@ class Quadtree extends EventEmitter {
          */
         this._renderingQuadtreeTiles = [];
         /**
+         * 相机在不同缩放层级的最大高度
+         * @type {Array}
+         */
+        this._maximumCameraHeight = [];
+        /**
          * register events
          */
         this._registerEvents();
@@ -62,19 +67,20 @@ class Quadtree extends EventEmitter {
         this._prepareGeometricErrors();
     }
     /**
-     * broadcast the events again
-     */
-    broadcast(){
-        const renderingQuadtreeTiles = this._renderingQuadtreeTiles;
-        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
-    }
-    /**
      * 
      */
     _prepareGeometricErrors() {
         //calcute geometric error
-        const geometricError = this._geometricError;
-        for (var i = 0; i < 24; i++) geometricError[i] = this._computeMaximumGeometricError(i);
+        const height = this._camera.height,
+            sseDenominator = this._camera.sseDenominator,
+            geometricError = this._geometricError,
+            maximumCameraHeight = this._maximumCameraHeight;
+        //计算geometric error
+        for (var i = 0; i < 24; i++) 
+            geometricError[i] = this._computeMaximumGeometricError(i);
+        //计算每个缩放层级的摄像头最大高度
+        for(let i=0; i<24;i++)
+            maximumCameraHeight[i] = geometricError[i] * height * 0.5 / sseDenominator;
         //calcute tile and rectangle
         this._zeroLevelTiles = this._computeZeroLevelTiles();
     }
@@ -195,6 +201,20 @@ class Quadtree extends EventEmitter {
             err = error > err ? error : err;
         }
         return err;
+    }
+    /**
+     * 
+     * @param {*} level 
+     */
+    maximumCameraHeight(level){
+        return this._maximumCameraHeight[level];
+    }
+    /**
+     * broadcast the events again
+     */
+    broadcast(){
+        const renderingQuadtreeTiles = this._renderingQuadtreeTiles;
+        this.fire('updatedTiles', { waitRendering: renderingQuadtreeTiles }, true);
     }
 }
 

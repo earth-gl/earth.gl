@@ -6,7 +6,7 @@ canvas.style.width = `${width}px`;
 canvas.style.height = `${height}px`;
 
 //create global
-const scene = new earth.gl.Global({
+const global = new earth.gl.Global({
     canvas: canvas,
     width: width,
     height: height
@@ -14,7 +14,7 @@ const scene = new earth.gl.Global({
 
 //create surface
 const globalSurface = new earth.gl.scene.ImagerySurface();
-scene.add(globalSurface);
+global.add(globalSurface);
 
 // const tiles3d = new G3DTiles({
 //     rootPath:'http://localhost:5500/examples/B3DM/Scene/',

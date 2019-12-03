@@ -5,7 +5,7 @@
 const { Quat, Vec2, Vec3, Mat4 } = require('kiwi.matrix'),
     Ray = require('../core/Ray'),
     Tween = require('../core/Tween'),
-    { PSEUDOMERCATOR: WGS84 } = require('../core/Ellipsoid'),
+    { PSEUDOMERCATOR } = require('../core/Ellipsoid'),
     EventEmitter = require('../core/EventEmitter'),
     { preventDefault, stopPropagation } = require('../utils/domEvent');
 /**
@@ -221,7 +221,7 @@ class GlobalController extends EventEmitter {
         const space = this._normalizedDeviceCoordinateToSpaceCoordinate(pndc);
         const d = space.sub(this.camera.position.clone()).normalize();
         const ray = new Ray(this.camera.position.clone(), d);
-        return ray.intersectSphere(WGS84);
+        return ray.intersectSphere(PSEUDOMERCATOR);
     }
     /**
      * 
@@ -249,6 +249,51 @@ class GlobalController extends EventEmitter {
         offset.applyQuat(this.m_rotateGlobeQuaternion);
         this.camera.up.applyQuat(this.m_rotateGlobeQuaternion);
         this.camera.position = offset.add(this.target).value;
+    }
+    /**
+     * https://github.com/heremaps/harp.gl/blob/7d23554e9e00626c9e14e5edf995a30daff12523/%40here/harp-mapview/lib/Utils.ts#L104
+     * @param {Number} level 
+     * @param {Vec3} targetSpace 
+     */
+    _zoom(level, clientX, clientY) {
+        // const target = this.zoomTarget.clone();
+        const delta = this.camera.position.len() - PSEUDOMERCATOR.maximumRadius - this._global._quadtree.maximumCameraHeight(level);
+        //tween
+        if (!this.tween) {
+            const cached = { pre : this._rayTrackOnSphere(clientX, clientY), len :0 };
+            console.log(cached.pre.value);
+            console.log("===============================================");
+            this.tween = new Tween()
+                .form({ len: 0 })
+                .to({ len: delta }, 800)
+                .easing(Tween.Easing.Quadratic.In)
+                .onUpdate((v) => {
+                    const eyeDirection = this.camera.position.clone().sub(this.target).normalize();
+                    const deltaDistance = v.len - cached.len;
+                    const delta = eyeDirection.scale(deltaDistance);
+                    this.camera.position = this.camera.position.clone().sub(delta).value;
+                    const target = this._rayTrackOnSphere(clientX, clientY);
+                    this._pan(cached.pre, target);
+                    //cached.pre = target;
+                    cached.len = v.len;
+                    console.log(cached.pre.value);
+                })
+                .onComplete(() => {
+                    this._global.fire('zoomend', event);
+                    this.tween = null;
+                });
+            this.tween.start();
+        }
+        // const camera = this.camera;
+        // let zs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius); //zoom speed
+        // zs = zs > 0 ? zs * 2 : 0;
+        // const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zs;
+        // if (factor !== 1.0 && factor > 0.0) {
+        //     this._eye.scale(factor);
+        // } else {
+        //     this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
+        // }
+        // this._zoomStart = this._zoomEnd.clone();
     }
     /**
      * 设置触发状态
@@ -282,7 +327,7 @@ class GlobalController extends EventEmitter {
             const form = this._rayTrackOnSphere(this.m_lastMousePosition.x, this.m_lastMousePosition.y);
             const to = this._rayTrackOnSphere(event.clientX, event.clientY);
             this._pan(form, to);
-            this.m_lastMousePosition.set(event.clientX, event.clientY); 
+            this.m_lastMousePosition.set(event.clientX, event.clientY);
         }
     }
     /**
@@ -297,56 +342,49 @@ class GlobalController extends EventEmitter {
     }
     /**
      * 
-     */
-    zoomCamera() {
-        const camera = this.camera;
-        let zs = WGS84.oneOverMaximumRadius * (camera.position.distance(this.target) - WGS84.maximumRadius); //zoom speed
-        zs = zs > 0 ? zs * 2 : 0;
-        const factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * zs;
-        if (factor !== 1.0 && factor > 0.0) {
-            this._eye.scale(factor);
-        } else {
-            this._zoomStart._out[1] += (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
-        }
-        this._zoomStart = this._zoomEnd.clone();
-    }
-    /**
-     * 
-     * @param {*} event 
+     * @param {MouseEvent} event 
      */
     mousewheel(event) {
+        //缩放中心
+        this.zoomTarget = this._rayTrackOnSphere(event.clientX, event.clientY);
+        this.zoomLevelTargeted = this._global.getLevel();
+        const zoomLevel = this.zoomLevelTargeted + (event.deltaY > 0 ? -1 : 1);
+        this.m_startZoom = this._global.getLevel();
+        this.m_zoomAnimationStartTime = performance.now();
+        this.m_zoomDeltaRequested = zoomLevel - this.zoomLevelTargeted;
+        this._zoom(zoomLevel, event.clientX, event.clientY);
+        // const fr = this._zoomStart._out[1];
+        // let to = fr;
+        // //使用timeout方式，延后执行update
+        // switch (event.deltaMode) {
+        //     case 2: //zoom in pages
+        //         to = fr + event.deltaY * 0.025;
+        //         break;
+        //     case 1: //zoom in lines
+        //         to = fr - event.deltaY * 0.01;
+        //         break;
+        //     default: //undefined, 0, assume pixels
+        //         to = fr - event.deltaY / 12500;
+        //         break;
+        // }
+        // //x: oriV2.x, y: oriV2.y, x: this._moveCurr.x, y: this._moveCurr.y,
+        // if (!this.tween) {
+        //     this.tween = new Tween()
+        //         .form({ z: fr })
+        //         .to({ z: to }, 800)
+        //         .easing(Tween.Easing.Quadratic.In)
+        //         .onUpdate((v) => {
+        //             this._zoomStart._out[1] = v.z;
+        //         })
+        //         .onComplete(() => {
+        //             this._global.fire('zoomend', event);
+        //             this.tween = null;
+        //         });
+        //     this.tween.start();
+        // }
+        //
         preventDefault(event);
         stopPropagation(event);
-        //zfactor
-        const fr = this._zoomStart._out[1];
-        let to = fr;
-        //使用timeout方式，延后执行update
-        switch (event.deltaMode) {
-            case 2: //zoom in pages
-                to = fr + event.deltaY * 0.025;
-                break;
-            case 1: //zoom in lines
-                to = fr - event.deltaY * 0.01;
-                break;
-            default: //undefined, 0, assume pixels
-                to = fr - event.deltaY / 12500;
-                break;
-        }
-        //x: oriV2.x, y: oriV2.y, x: this._moveCurr.x, y: this._moveCurr.y,
-        if (!this.tween) {
-            this.tween = new Tween()
-                .form({ z: fr })
-                .to({ z: to }, 800)
-                .easing(Tween.Easing.Quadratic.In)
-                .onUpdate((v) => {
-                    this._zoomStart._out[1] = v.z;
-                })
-                .onComplete(() => {
-                    this._global.fire('zoomend', event);
-                    this.tween = null;
-                });
-            this.tween.start();
-        }
     }
 }
 
