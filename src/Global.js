@@ -21,7 +21,6 @@
 const { AnimateCache, update } = require('./utils/loop'),
     merge = require('./utils/merge'),
     { addDomEvent, domEventNames } = require('./utils/domEvent'),
-    ImagerySurface = require('./scene/ImagerySurface'),
     GlobalControl = require('./control/GlobalControl'),
     { PSEUDOMERCATOR } = require('./core/Ellipsoid'),
     maximumRadius = PSEUDOMERCATOR.maximumRadius,
@@ -29,6 +28,11 @@ const { AnimateCache, update } = require('./utils/loop'),
     EventEmitter = require('./core/EventEmitter'),
     Quadtree = require('./core/Quadtree'),
     PerspectiveCamera = require('./camera/PerspectiveCamera');
+/**
+ * 渲染实体
+ */
+const ImagerySurface = require('./scene/ImagerySurface'),
+    GLTFLoader = require('./scene/GLTFLoader');
 /**
  * default webgl context options
  */

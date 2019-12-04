@@ -1,6 +1,6 @@
 {
   "name": "earth.gl",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "author": "@axmand",
   "main": "index.js",
@@ -33,7 +33,7 @@
     "babel-preset-env": "^1.7.0",
     "glslify": "^7.0.0",
     "gulp": "^4.0.0",
-    "kiwi.gltfloader": "0.0.1",
+    "kiwi.gltfloader": "0.0.3",
     "kiwi.matrix": "^0.5.2",
     "rollup": "^1.7.0",
     "rollup-plugin-babel": "^4.3.2",
