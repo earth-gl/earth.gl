@@ -4,7 +4,9 @@ a minimal library for global visualization
 
 # Coordinate System #
 
->1. 地理相关三维算法，坐标基于笛卡尔坐标系，所以系统的三维空间坐标构建在笛卡尔坐标系之下，与WebGL坐标系不同的是：
+>地理空间中的三维表达是基于笛卡尔坐标系（算法默认也使用笛卡尔坐标系）</br>
+ earth.gl的三维空间坐标构建在笛卡尔坐标系之下（与cesium一致）</br>
+ 与WebGL坐标系不同之处如下图所示</br>
 ```
            y                                         z
            |                                         |
@@ -18,7 +20,29 @@ a minimal library for global visualization
        Z                                        x
             WebGL                                         笛卡尔
 ```
- >2. 最终通过camear投影成屏幕NDC坐标
+ > 1.首先构建笛卡尔坐标系，用于表达空间位置, 原点（0,0,0）为地球的中心。</br>
+   2.使用最长的半轴作为半径构建椭球体（实际上是正圆）,代码参考 Ellipsoid.js</br>
+   3.输入相机的初始位置坐标，形式为（经度，纬度，离里面高度（米））</br>
+   4.首先对经纬度转换，假设在单位圆内，根据经纬度可以得到空间坐标x,y,z
+```
+//笛卡尔坐标系下的x, y, z
+x = cos(latitude) * cos(longitude);
+y = cos(latitude) * sin(longitude);
+z = sin(latitude);
+```
+> 5.单位圆上的x,y,z换算成以真实的米, (x,y,z)是垂直于球的向量，离地高度就是
+```
+//earth.gl构造的是正圆，所以不用如此复杂的计算
+//此计算过程适合椭球体的（当然也适用于正圆）
+radiiSquared = (radii*radii, radii*radii, radii*radii);
+k = radiiSquared.multiply(x,y,z);
+gamma = sqrt(n.clone().dot(k));
+k = k.scale(1/gamma);
+//计算离地高度后，矢量相加(k+h）即摄像机在笛卡尔空间的坐标
+//h = 离地高度 dot (x,y,z)
+camera.position = k.add(h);
+```
+>6. 摄像机的用途是将笛卡尔构建的三维坐标换算成屏幕坐标NDC，
 ```         1 
             |
             |
@@ -27,6 +51,6 @@ a minimal library for global visualization
             |
            -1 
 ```
-
-
-由于大部分空间算法都使用笛卡尔坐标系，所以本系统设置camera时，进行了重定义，反算出的三维空间坐标符合第二卡坐标系统
+>7. earth.gl 目前仅构建了透视矩阵(PerspectiveCamera)</br>
+通过设置 up 方向为（0，0，1）表示笛卡尔坐标系</br>
+其他部分与webgl常规的投影算法一致</br>
