@@ -7,7 +7,7 @@ a minimal library for global visualization
 >坐标系统解释：</br>
  地理空间中的三维表达是基于笛卡尔坐标系（算法默认也使用笛卡尔坐标系）</br>
  earth.gl的三维空间坐标构建在笛卡尔坐标系之下（与cesium一致）</br>
- 与WebGL坐标系不同之处如下图所示, 根绝右手法则（注意xoy平面，x垂直于屏幕）</br>
+ 与WebGL坐标系不同之处如下图所示(注意xoy平面，基于右手法则，ox垂直于屏幕）</br>
 ```javascript
            y                                         z
            |                                         |
@@ -45,13 +45,18 @@ camera.position = k.add(h);
 ```
 >6. 摄像机的用途是将笛卡尔构建的三维坐标换算成屏幕坐标NDC，
 ```javascript
-            1 
-            |
-            |
--1 --------------------- 1
-            |
-            |
-           -1 
+
+           y                                                1.0f
+           |                                                 |
+           |                                                 |
+           |                                                 |
+           |__ __ __ __ __x       =>        -1.0f __ __ __ __|__ __ __ __ __  1.0f
+          / o                                                |                x
+         /                                                   |
+        /                                                    |
+       /                                                   -1.0f
+       Z                                                     y
+            WebGL                                           NDC
 ```
 >7. earth.gl 目前仅构建了透视矩阵(PerspectiveCamera)</br>
 > 通过设置 up 方向为（0，0，1）表示笛卡尔坐标系</br>
