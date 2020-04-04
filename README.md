@@ -27,17 +27,17 @@ a minimal library for global visualization
  > 4. 首先对经纬度转换，假设在单位圆内，根据经纬度可以得到空间坐标x,y,z
 ```javascript
 //笛卡尔坐标系下的x, y, z
-x = cos(latitude) * cos(longitude);
-y = cos(latitude) * sin(longitude);
-z = sin(latitude);
+const x = cos(latitude) * cos(longitude);
+const y = cos(latitude) * sin(longitude);
+const z = sin(latitude);
 ```
 > 5. 单位圆上的x,y,z换算成以真实的米, (x,y,z)是垂直于球的向量，离地高度就是
 ```javascript
 //earth.gl构造的是正圆，所以不用如此复杂的计算
 //此计算过程适合椭球体的（当然也适用于正圆）
-radiiSquared = (radii*radii, radii*radii, radii*radii);
-k = radiiSquared.multiply(x,y,z);
-gamma = sqrt(n.clone().dot(k));
+const radiiSquared = (radii*radii, radii*radii, radii*radii);
+let k = radiiSquared.multiply(x,y,z);
+const gamma = sqrt(n.clone().dot(k));
 k = k.scale(1/gamma);
 //计算离地高度后，矢量相加(k+h）即摄像机在笛卡尔空间的坐标
 //h = 离地高度 dot (x,y,z)
@@ -58,6 +58,34 @@ camera.position = k.add(h);
        Z                                                     y
             WebGL                                           NDC
 ```
->7. earth.gl 目前仅构建了透视矩阵(PerspectiveCamera)</br>
-> 通过设置 up 方向为（0，0，1）表示笛卡尔坐标系</br>
+>7. earth.gl 目前仅构建了PerspectiveCamera</br>
+> 通过设置 up 方向为 Vec3(0，0，1) 表示笛卡尔坐标系</br>
 > 其他部分与webgl常规的投影算法一致</br>
+
+# Tile System #
+>1. 栅格瓦片系统
+>1.1 通过distance error计算地图的level</br>
+>1.2 通过PerspectiveCamera矩阵构造的视锥（Frustrum）与地球表面相交覆盖的区域，获取瓦片</br>
+>1.3 在交互Camera时会更新Frustrum相关参数（在Quadtree.js应用相关参数计算覆盖区域）</br>
+>1.4 获取到瓦片和瓦片的boundary后，通过构建8x8个顶点的曲面，在曲面上贴瓦片纹理以实现球面的效果(utils/interpolation.js)</br>
+``` javascript
+const lerp = 8;
+ for (let x = 0; x <= lerp; x++)
+        for (let y = 0; y <= lerp; y++) {
+             const g1 = new Geographic(
+                start.longitude + x * factor * rangeX,
+                start.latitude + y * factor * rangeY,
+                0);
+            //convert to space coord
+            const spaceCoord = PSEUDOMERCATOR.geographicToSpace(g1);
+            //push vertices
+            vertices = vertices.concat(spaceCoord._out);
+            //texcoords
+            texcoords = texcoords.concat([x * factor, y * factor]);
+        }
+```
+>2. 矢量瓦片系统
+>2.1 矢量瓦片系统相比于栅格瓦片系统，多了经纬度坐标换算笛卡尔坐标的过程。</br>
+>2.2 绘制方法远比直接应用纹理，将瓦片当作纹理贴在8x8个顶点构成的曲面上复杂。
+```
+```
