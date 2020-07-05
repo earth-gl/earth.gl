@@ -1,6 +1,9 @@
-const Global = require('./Global'),
+const 
+    //Earth Object
+    Global = require('./Global'),
+    //TMS Surface
     ImagerySurface = require('./scene/ImagerySurface'),
-    //camera
+    //Cameras
     PerspectiveCamera = require('./camera/PerspectiveCamera');
 
 module.exports = {

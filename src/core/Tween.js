@@ -13,7 +13,9 @@ const { TweenCache } = require('./../utils/loop'),
  *  .start()
  */
 class Tween {
-
+    /**
+     * 
+     */
     constructor() {
         /**
          * @type {Object}
@@ -60,24 +62,35 @@ class Tween {
          */
         this._id = Tween.nextId();
     }
-
+    /**
+     * 
+     */
     get id() {
         return this._id;
     }
-
+    /**
+     * 
+     * @param {*} properties 
+     */
     form(properties) {
         this._valuesStart = properties;
         //存储拷贝对象
         this._objective = merge({}, properties);
         return this;
     }
-
+    /**
+     * 
+     * @param {*} properties 
+     * @param {*} duration 
+     */
     to(properties, duration) {
         this._valuesEnd = properties;
         this._duration = duration || this._duration;
         return this;
     }
-
+    /**
+     * 
+     */
     start() {
         if (this._isPlaying) return true;
         Tween.add(this);
@@ -104,27 +117,42 @@ class Tween {
             this.update(time);
         }
     }
-
+    /**
+     * 
+     * @param {*} cb 
+     */
     onStart(cb) {
         this._onStartCallback = cb;
         return this;
     }
-
+    /**
+     * 
+     * @param {*} cb 
+     */
     onComplete(cb) {
         this._onCompleteCallback = cb;
         return this;
     }
-
+    /**
+     * 
+     * @param {*} cb 
+     */
     onUpdate(cb) {
         this._onUpdateCallback = cb;
         return this;
     }
-
+    /**
+     * 
+     * @param {*} easing 
+     */
     easing(easing) {
         this._easingFunction = easing;
         return this;
     }
-
+    /**
+     * 
+     * @param {*} time 
+     */
     update(time) {
         if (time < this._startTime) return true;
         //开始事件触发

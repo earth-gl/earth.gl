@@ -2,8 +2,8 @@ const Geographic = require('./Geographic'),
     { Vec3 } = require('kiwi.matrix'),
     { sin, cos, EPSILON1, EPSILON12 } = require('./../utils/revise'),
     { PHYSICAL_CONSTANT } = require('./../utils/constant'),
-    semimajorAxis = Math.max(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);
-/**
+    semimajorAxis = Math.max(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);//半长轴
+/** 
  * @class
  */
 class Ellipsoid {

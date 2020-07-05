@@ -1,5 +1,6 @@
 /**
  * 3d 可渲染对象基类
+ * @typedef {import("./../camera/Camera")} Camera
  * @class Object3D
  */
 class Object3D {
@@ -20,7 +21,8 @@ class Object3D {
         this._gl = gl;
     }
     /**
-     * 渲染
+     * 渲染, 指定相机参数渲染
+     * @param {Camera} camera
      */
     render(camera){
 
