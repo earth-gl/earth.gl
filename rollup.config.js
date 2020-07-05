@@ -4,7 +4,7 @@ import babel from "rollup-plugin-babel";
 import glslify from "rollup-plugin-glslify";
 
 export default {
-    input: "./src/init.js",
+    input: "./src/index.js",
     output:{
         name:"earth",
         exports: "named",

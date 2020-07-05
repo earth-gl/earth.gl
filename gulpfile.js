@@ -44,5 +44,6 @@ const build = () => {
 
 //only build
 exports.build = build;
+
 //wath and build
 exports.watch = watch;

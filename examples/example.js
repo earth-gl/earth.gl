@@ -13,7 +13,7 @@ const global = new earth.gl.Global({
 });
 
 //create surface
-const globalSurface = new earth.gl.scene.ImagerySurface();
+const globalSurface = new earth.gl.ImagerySurface();
 global.add(globalSurface);
 
 // const tiles3d = new G3DTiles({

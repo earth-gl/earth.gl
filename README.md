@@ -2,7 +2,20 @@
 
 a minimal library for global visualization
 
-# Coordinate System #
+## build ##
+``` javascript
+//rollup
+rollup -c 
+//npm
+npm run compile
+```
+
+## debug ##
+```
+gulp watch
+```
+
+## coordinate system ##
 
 >坐标系统解释：</br>
  地理空间中的三维表达是基于笛卡尔坐标系（算法默认也使用笛卡尔坐标系）</br>

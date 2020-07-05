@@ -5,12 +5,8 @@ const Global = require('./Global'),
 
 module.exports = {
     gl: {
-        Global: Global,
-        camera: {
-            PerspectiveCamera
-        },
-        scene: {
-            ImagerySurface
-        },
+        Global,
+        PerspectiveCamera,
+        ImagerySurface
     }
 };
