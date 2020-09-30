@@ -150,9 +150,7 @@ parcel examples/example.html
 ```
 gulp watch
 ```
-
-## coordinate system ##
-
+## 坐标系统 ##
 >坐标系统解释：</br>
  地理空间中的三维表达是基于笛卡尔坐标系（算法默认也使用笛卡尔坐标系）</br>
  earth.gl的三维空间坐标构建在笛卡尔坐标系之下（与cesium一致）</br>
@@ -210,7 +208,7 @@ camera.position = k.add(h);
 > earth.gl 目前仅构建了PerspectiveCamera</br>
 > 通过设置 up 方向为 Vec3(0，0，1) 表示笛卡尔坐标系</br>
 > 其他部分与webgl常规的投影算法一致</br>
-
+## 瓦片系统 (未完) ##
 # Tile System #
 > 栅格瓦片系统</br>
 > 通过distance error计算地图的level</br>
@@ -235,4 +233,5 @@ const lerp = 8, factor = 1/lerp;
 ```
 >矢量瓦片系统
 >矢量瓦片系统相比于栅格瓦片系统，多了经纬度坐标换算笛卡尔坐标的过程。</br>
->绘制方法远比直接应用纹理，将瓦片当作纹理贴在8x8个顶点构成的曲面上复杂。
+>绘制方法远比直接应用纹理，将瓦片当作纹理贴在8x8个顶点构成的曲面上。
+
