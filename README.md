@@ -1,14 +1,150 @@
 # earth.gl
 
-a minimal library for global visualization
+a minimal library for global visualization under Typescript
+
+## Typescript Usage ##
+
+> 首先,需要安装typescript
+```
+npm install --save-dev typescript
+```
+
+> eslint 用于typescript语法规则检查
+``` 
+//eslint基础
+npm install --save-dev eslint
+//语法解析器
+npm install --save-dev typescript @typescript-eslint/parser
+//eslint默认规则的补充，提供适用于ts语法的规则检查
+npm install --save-dev @typescript-eslint/eslint-plugin
+```
+
+> 创建配置文件 .eslintrc.json
+```javascript
+module.exports = {
+    parser: '@typescript-eslint/parser',
+    plugins: ['@typescript-eslint'],
+    rules: {
+        // 禁止使用 var
+        'no-var': "error",
+        // 优先使用 interface 而不是 type
+        '@typescript-eslint/consistent-type-definitions': [
+            "error",
+            "interface"
+        ]
+    }
+}
+```
+
+> 使用Prettier修复格式错误
+```
+npm install --save-dev prettier
+```
+>创建 prettier.config.js 文件，配置格式规则
+```
+// prettier.config.js or .prettierrc.js
+module.exports = {
+    // 一行最多 100 字符
+    printWidth: 100,
+    // 使用 4 个空格缩进
+    tabWidth: 4,
+    // 不使用缩进符，而使用空格
+    useTabs: false,
+    // 行尾需要有分号
+    semi: true,
+    // 使用单引号
+    singleQuote: true,
+    // 对象的 key 仅在必要时用引号
+    quoteProps: 'as-needed',
+    // jsx 不使用单引号，而使用双引号
+    jsxSingleQuote: false,
+    // 末尾不需要逗号
+    trailingComma: 'none',
+    // 大括号内的首尾需要空格
+    bracketSpacing: true,
+    // jsx 标签的反尖括号需要换行
+    jsxBracketSameLine: false,
+    // 箭头函数，只有一个参数的时候，也需要括号
+    arrowParens: 'always',
+    // 每个文件格式化的范围是文件的全部内容
+    rangeStart: 0,
+    rangeEnd: Infinity,
+    // 不需要写文件开头的 @prettier
+    requirePragma: false,
+    // 不需要自动在文件开头插入 @prettier
+    insertPragma: false,
+    // 使用默认的折行标准
+    proseWrap: 'preserve',
+    // 根据显示样式决定 html 要不要折行
+    htmlWhitespaceSensitivity: 'css',
+    // 换行符使用 lf
+    endOfLine: 'lf'
+};
+```
+>在vscode/setting.json中配置Prettier插件, 实现保存文件时自动格式化并且自动修复 ESLint 错误
+```
+{
+    "files.eol": " ",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "typescript",
+            "autoFix": true
+        }
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}
+```
+> 可选配置：使用AlloyTeam的ESlint配置
+```
+npm install --save-dev eslint typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-alloy
+```
+>根目录下创建 .eslintrc.js，配置eslint规则
+```
+module.exports = {
+    extends: [
+        'alloy',
+        'alloy/typescript',
+    ],
+    env: {
+        // 您的环境变量（包含多个预定义的全局变量）
+        // Your environments (which contains several predefined global variables)
+        //
+        // browser: true,
+        // node: true,
+        // mocha: true,
+        // jest: true,
+        // jquery: true
+    },
+    globals: {
+        // 您的全局变量（设置为 false 表示它不允许被重新赋值）
+        // Your global variables (setting to false means it's not allowed to be reassigned)
+        //
+        // myGlobal: false
+    },
+    rules: {
+        // 自定义您的规则
+        // Customize your rules
+    }
+};
+```
 
 ## build ##
 ``` javascript
 //rollup
-rollup -c 
+~~rollup -c~~
 //npm
-npm run compile
+~~npm run compile~~
+//改用parcel，启动监控
+parcel examples/example.html
+
 ```
+
 
 ## debug ##
 ```
