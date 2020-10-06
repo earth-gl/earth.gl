@@ -1,7 +1,17 @@
-const earth = require('./../src/init');
+import { Object3D } from '../src/core/Object3D';
+import { App } from '../src/app';
+
+// let ss = new Object3D();
+
+// let sss2 = new Object3D();
 
 
-let a = "asdg";
+const app = new App(document.body);
+
+// const earth = require('./../src/init');
+
+
+// let a = "asdg";
 
 // /* eslint-disable */
 // const canvas = document.getElementById('mapCanvas');

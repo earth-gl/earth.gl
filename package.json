@@ -5,9 +5,7 @@
   "author": "@axmand",
   "main": "index.js",
   "scripts": {
-    "compile": "rollup -c",
-    "shader": "",
-    "prepublish": "npm run compile"
+    "dev": "parcel examples/example.html"
   },
   "repository": {
     "type": "git",
@@ -18,5 +16,8 @@
     "url": "https://github.com/axmand/earth.gl/issues"
   },
   "homepage": "https://github.com/axmand/earth.gl#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "@webgpu/types": "0.0.31",
+    "typescript": "^4.0.3"
+  }
 }
