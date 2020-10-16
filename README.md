@@ -4,9 +4,9 @@ a minimal library for global visualization
 
 ## build ##
 ``` javascript
-//rollup
-rollup -c 
-//npm
+//debug
+npm run dev
+//build
 npm run compile
 ```
 

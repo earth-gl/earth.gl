@@ -5,7 +5,7 @@ const Geographic = require('./../core/Geographic'),
  * @param {import('./../core/Rectangle')} boundary 
  */
 const interpolation = function (boundary) {
-    const lerp = 8,
+    const lerp = 12,
         factor = 1 / lerp,
         rangeX = boundary.width,
         rangeY = boundary.height,

@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "parcel examples/example.html",
-    "compile": "rollup -c",
+    "compile": "parcel build src/index.js --target browser",
     "shader": "",
     "prepublish": "npm run compile"
   },
