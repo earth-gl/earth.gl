@@ -1,3 +1,5 @@
+const earth = require('../src/index');
+
 /* eslint-disable */
 const canvas = document.getElementById('mapCanvas');
 const width = window.innerWidth - 20;
