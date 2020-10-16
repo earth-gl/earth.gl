@@ -1,152 +1,13 @@
 # earth.gl
 
-a minimal library for global visualization under Typescript
-
-## Typescript Usage ##
-
-> 首先, 需要安装typescript
-```
-npm install --save-dev typescript
-```
-
-> eslint 用于typescript语法规则检查
-``` 
-//eslint基础
-npm install --save-dev eslint
-//语法解析器
-npm install --save-dev typescript @typescript-eslint/parser
-//eslint默认规则的补充，提供适用于ts语法的规则检查
-npm install --save-dev @typescript-eslint/eslint-plugin
-```
-
-> 创建配置文件 .eslintrc.json
-```javascript
-module.exports = {
-    parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
-    rules: {
-        // 禁止使用 var
-        'no-var': "error",
-        // 优先使用 interface 而不是 type
-        '@typescript-eslint/consistent-type-definitions': [
-            "error",
-            "interface"
-        ]
-    }
-}
-```
-
-> 使用Prettier修复格式错误
-```
-npm install --save-dev prettier
-```
->创建 prettier.config.js 文件，配置格式规则
-```
-// prettier.config.js or .prettierrc.js
-module.exports = {
-    // 一行最多 100 字符
-    printWidth: 100,
-    // 使用 4 个空格缩进
-    tabWidth: 4,
-    // 不使用缩进符，而使用空格
-    useTabs: false,
-    // 行尾需要有分号
-    semi: true,
-    // 使用单引号
-    singleQuote: true,
-    // 对象的 key 仅在必要时用引号
-    quoteProps: 'as-needed',
-    // jsx 不使用单引号，而使用双引号
-    jsxSingleQuote: false,
-    // 末尾不需要逗号
-    trailingComma: 'none',
-    // 大括号内的首尾需要空格
-    bracketSpacing: true,
-    // jsx 标签的反尖括号需要换行
-    jsxBracketSameLine: false,
-    // 箭头函数，只有一个参数的时候，也需要括号
-    arrowParens: 'always',
-    // 每个文件格式化的范围是文件的全部内容
-    rangeStart: 0,
-    rangeEnd: Infinity,
-    // 不需要写文件开头的 @prettier
-    requirePragma: false,
-    // 不需要自动在文件开头插入 @prettier
-    insertPragma: false,
-    // 使用默认的折行标准
-    proseWrap: 'preserve',
-    // 根据显示样式决定 html 要不要折行
-    htmlWhitespaceSensitivity: 'css',
-    // 换行符使用 lf
-    endOfLine: 'lf'
-};
-```
->在vscode/setting.json中配置Prettier插件, 实现保存文件时自动格式化并且自动修复 ESLint 错误
-```
-{
-    "files.eol": " ",
-    "editor.tabSize": 4,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "eslint.autoFixOnSave": true,
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        {
-            "language": "typescript",
-            "autoFix": true
-        }
-    ],
-    "typescript.tsdk": "node_modules/typescript/lib"
-}
-```
-> 可选配置：使用AlloyTeam的ESlint配置
-```
-npm install --save-dev eslint typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-alloy
-```
->根目录下创建 .eslintrc.js，配置eslint规则
-```
-module.exports = {
-    extends: [
-        'alloy',
-        'alloy/typescript',
-    ],
-    env: {
-        // 您的环境变量（包含多个预定义的全局变量）
-        // Your environments (which contains several predefined global variables)
-        //
-        // browser: true,
-        // node: true,
-        // mocha: true,
-        // jest: true,
-        // jquery: true
-    },
-    globals: {
-        // 您的全局变量（设置为 false 表示它不允许被重新赋值）
-        // Your global variables (setting to false means it's not allowed to be reassigned)
-        //
-        // myGlobal: false
-    },
-    rules: {
-        // 自定义您的规则
-        // Customize your rules
-    }
-};
-```
+a minimal library for global visualization
 
 ## build ##
-> 已弃用javascript rollup方式
 ``` javascript
 //rollup
-rollup -c
+rollup -c 
 //npm
 npm run compile
-
-```
-> 改用typescript 
-```
-//parcel，启动监控
-parcel examples/example.html
 ```
 
 ## debug ##
@@ -237,15 +98,4 @@ const lerp = 8, factor = 1/lerp;
 >矢量瓦片系统
 >矢量瓦片系统相比于栅格瓦片系统，多了经纬度坐标换算笛卡尔坐标的过程。</br>
 >绘制方法远比直接应用纹理，将瓦片当作纹理贴在8x8个顶点构成的曲面上。
-
-## WebGPU ##
-> SwapChain 的中文名字叫做交换链，它的工作主要是用来向显示器输送绘制完毕的图像。为了更好的理解交换链的作用，我们把它与 WebGL 中的帧缓冲（Frame Buffer）做对比。
-
-显示器的显示和显卡的渲染是并行执行的，显示器会根据自身硬件的刷新率（例如大部分液晶显示器的刷新率是 60 Hz，一些高端的电竞显示器可以达到 144 Hz），按时向显卡索要用于显示在显示器上的图像，储存这个图像的缓冲就是我们所说的帧缓冲。
-
-在 WebGL 中，我们拥有一个默认的帧缓冲（Default Frame Buffer），如果不做任何其他操作，那么当我们执行绘制命令（draw call）的时候，所有绘制的内容都会填充到默认帧缓冲中，而显卡会把这个默认的帧缓冲直接提交给显示器，並显示在显示器中。
-
-但是这种显示方式会造成一个问题，当显示器已经显示完毕当前的图像，向显卡索要下一帧的图像时，如果渲染还没有完成，显示器就会取走一张还没有绘制完毕的图像，这张图像的一部分是当前渲染的那些内容，剩下的还是上一帧的内容，这就会导致图像的撕裂。就好比考试的时候，不管你答没答完卷，到点了老师都会收走卷子。
-
-所以在成熟的 WebGL 应用中，开发者会创建一个额外的后台帧缓冲，当后台帧缓冲渲染完毕的时候，用它和前台帧缓冲进行交换（Swap），提交给显示器，然后使用空闲出来的那个帧缓冲继续渲染，使用这样的机制可以确保显示器取走的永远都会是一个渲染完毕的图像。这种交换机制并不会真的进行数据交换，而仅仅是交换了两个帧缓冲在显存中的指针，所以不会带来性能上的消耗。在这种显示方式下，我们的渲染频率永远不会超过显示器的刷新频率
 

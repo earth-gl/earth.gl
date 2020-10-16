@@ -4,8 +4,6 @@
 #build
 dist/
 
-.cache/
-
 #node
 package-lock.json
 
