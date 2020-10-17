@@ -31,8 +31,8 @@ const { AnimateCache, update } = require('./utils/loop'),
 /**
  * 渲染实体
  */
-const ImagerySurface = require('./scene/ImagerySurface'),
-    GLTFLoader = require('./scene/GLTFLoader');
+const ImagerySurface = require('./layer/TileLayer'),
+    GLTFLoader = require('./layer/GLTFLayer');
 /**
  * default webgl context options
  */
@@ -231,4 +231,10 @@ class Global extends EventEmitter {
     }
 }
 
-module.exports = Global;
+module.exports = {
+    gl: {
+        Global,
+        PerspectiveCamera,
+        ImagerySurface
+    }
+};

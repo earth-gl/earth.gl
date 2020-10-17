@@ -1,6 +1,7 @@
 const { EPSILON7 } = require('./../utils/revise');
 /**
  * @class
+ * @typedef {{import('../../node_modules/kiwi.matrix/src/matrix/Vec3')}} Vec3
  */
 class BoundingSphere {
     /**

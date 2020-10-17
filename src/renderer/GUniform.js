@@ -1,9 +1,9 @@
 /**
  * @class
+ * @typedef {import("./GProgram")} GProgram
  */
 class GUniform {
     /**
-     * @typedef {import("./GProgram")} GProgram
      * @param {GProgram} program 
      * @param {string} uniformName 
      */
@@ -17,7 +17,7 @@ class GUniform {
          */
         this._gl = program._gl;
         /**
-         * 
+         * @type {string}
          */
         this._uniformName = uniformName;
         /**

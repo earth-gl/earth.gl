@@ -16,7 +16,8 @@ const requestImage = require('../utils/requestImage'),
     vertText = require('./../shader/surface-vs.glsl');
 /**
  * request terrain data for cesium server
- * @typedef {import('./../camera/PerspectiveCamera')} PerspectiveCamera
+ * @typedef {import('../camera/PerspectiveCamera')} PerspectiveCamera
+ * @typedef {import("../core/Quadtree")} Quadtree
  * @class
  */
 class ImagerySurface extends Object3D{
@@ -37,7 +38,6 @@ class ImagerySurface extends Object3D{
         this._tileCaches = {};
     }
     /**
-     * @typedef {import("../core/Quadtree")} Quadtree
      * @param {WebGLRenderingContext} gl 
      * @param {Quadtree} quadtree 
      */

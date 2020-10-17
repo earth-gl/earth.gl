@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "author": "@axmand",
-  "main": "index.js",
+  "main": "Global.js",
   "scripts": {
     "dev": "parcel examples/example.html",
-    "compile": "parcel build src/index.js --target browser",
+    "compile": "parcel build src/Global.js --target browser",
     "shader": "",
     "prepublish": "npm run compile"
   },

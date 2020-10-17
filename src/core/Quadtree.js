@@ -7,18 +7,18 @@ const QuadtreeTile = require('./QuadtreeTile'),
  * 预建瓦片规则
  * @class
  * @fires 'updatedTiles'
+ * @typedef {import("./QuadtreeTileSchema")} QuadtreeTileSchema
+ * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
+ * @typedef {import("../layer/GGlobal")} Global
  */
 class Quadtree extends EventEmitter {
     /**
-     * @typedef {import("./../camera/PerspectiveCamera")} PerspectiveCamera
-     * @typedef {import("../scene/GGlobal")} Global
      * @param {PerspectiveCamera} camera 
      * @param {Global} global
      */
     constructor(camera, global) {
         super();
         /**
-         * @typedef {import("./QuadtreeTileSchema")} QuadtreeTileSchema
          * @type {QuadtreeTileSchema}
          */
         this._tileSchema = quadtreeTileSchema;

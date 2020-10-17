@@ -1,4 +1,4 @@
-const earth = require('../src/index');
+const earth = require('../src/Global');
 
 /* eslint-disable */
 const canvas = document.getElementById('mapCanvas');

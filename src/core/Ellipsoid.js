@@ -5,6 +5,8 @@ const Geographic = require('./Geographic'),
     semimajorAxis = Math.max(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);//半长轴
 /** 
  * @class
+ * @typedef {import('../../node_modules/kiwi.matrix/src/matrix/Vec3')} Vec3
+ * @typedef {import('./Geographic')} Geographic
  */
 class Ellipsoid {
     /**
@@ -79,7 +81,7 @@ class Ellipsoid {
     }
     /**
      * 地理坐标转化
-     * @type {Geographic}
+     * @returns {Geographic}
      */
     geodeticSurfaceNormalCartographic(cartographic) {
         const longitude = cartographic.longitude,

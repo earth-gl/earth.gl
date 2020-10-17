@@ -1,12 +1,12 @@
 /**
  * 载入gltf模型，并在earth下渲染
  */
-const Object3D = require('./../core/Object3D'),
-    defaultValue = require('./../utils/defaultValue'),
+const Object3D = require('../core/Object3D'),
+    defaultValue = require('../utils/defaultValue'),
     { GLTF } = require('kiwi.gltfloader');
 /**
  * https://github.com/axmand/earth.gl/blob/54d01d4dc843754f2acb51b211edb0d2fa6ed87c/src/loader/GLTFLoader.js
- * @typedef {import ('./../Global')} Global
+ * @typedef {import ('../Global')} Global
  */
 class GLTFLoader extends Object3D {
     /**
