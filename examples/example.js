@@ -1,22 +1,23 @@
-const earth = require('../src/Global');
+
+// const earth = require('../src/Global');
 
 /* eslint-disable */
-const canvas = document.getElementById('mapCanvas');
-const width = window.innerWidth - 20;
-const height = window.innerHeight - 20;
-canvas.style.width = `${width}px`;
-canvas.style.height = `${height}px`;
+// const canvas = document.getElementById('mapCanvas');
+// const width = window.innerWidth - 20;
+// const height = window.innerHeight - 20;
+// canvas.style.width = `${width}px`;
+// canvas.style.height = `${height}px`;
 
 //create global
-const global = new earth.gl.Global({
-    canvas: canvas,
-    width: width,
-    height: height
-});
+// const global = new earth.gl.Global({
+//     canvas: canvas,
+//     width: width,
+//     height: height
+// });
 
 //create surface
-const globalSurface = new earth.gl.ImagerySurface();
-global.add(globalSurface);
+// const globalSurface = new earth.gl.ImagerySurface();
+// global.add(globalSurface);
 
 // const tiles3d = new G3DTiles({
 //     rootPath:'http://localhost:5500/examples/B3DM/Scene/',

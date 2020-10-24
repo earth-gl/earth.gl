@@ -6,6 +6,7 @@ const { TYPE2NUMOFCOMPONENT } = require('../utils/revise');
 /**
  * 与GBuffer搭配，为Buffer设置attribName的读取方式等
  * @class
+ * @typedef {import("../renderer/GBufferView")} GBufferView
  * @typedef {import("../renderer/GBuffer")} GBuffer
  */
 class GAccessor {
@@ -14,7 +15,7 @@ class GAccessor {
      * const verticesAccessor = new GAccessor(gProgram, verticesBuffer, gl.FLOAT, "VEC3");
      *
      * @param {WebGLRenderingContext} gl
-     * @param {GBuffer} gBufferView 
+     * @param {GBufferView} gBufferView 
      * @param {Number} componentType  gl.Float or others
      * @param {String} read type, SCALAR, VEC2, VEC3, VEC4, MAT4, MAT3, MAT4
      * @param {Number} count log this accessor need how much data form raw length
@@ -30,7 +31,7 @@ class GAccessor {
          */
         this._gl = gl;
         /**
-         * @type {GBuffer}
+         * @type {GBufferView}
          */
         this._gBufferView = gBufferView;
         /**
