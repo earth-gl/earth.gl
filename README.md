@@ -1,6 +1,6 @@
 # earth.gl
 
-a minimal library for global visualization
+a geospatial infrasturcture toolset/visual
 
 ## build ##
 ``` javascript
