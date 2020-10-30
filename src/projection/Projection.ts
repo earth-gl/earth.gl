@@ -1,5 +1,5 @@
 import { Vec3 } from "kiwi.matrix";
-import { Ellipsoid, PSEUDOMERCATOR } from './Ellipsoid';
+import { Ellipsoid } from './Ellipsoid';
 import { Geographic } from "./Geographic";
 /**
  * 投影类

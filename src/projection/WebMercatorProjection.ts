@@ -1,5 +1,5 @@
 import { GLMatrix, Vec3 } from 'kiwi.matrix';
-import { sin, log, atan, exp } from '../utils/umath';
+import { sin, log, atan, exp } from '../util/fixed';
 import { Projection } from './Projection';
 import { PSEUDOMERCATOR } from './Ellipsoid';
 import { Geographic } from './Geographic';

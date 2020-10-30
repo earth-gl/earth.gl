@@ -1,6 +1,6 @@
 import { GLMatrix } from 'kiwi.matrix';
 import { Geographic } from './../projection/Geographic';
-import { EPSILON } from './../utils/umath';
+import { EPSILON } from './../util/fixed';
 
 const TWO_PI = 2 * Math.PI;
 /**

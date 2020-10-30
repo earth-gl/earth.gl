@@ -1,6 +1,6 @@
 import { Geographic } from './Geographic';
 import { Vec3 } from 'kiwi.matrix';
-import { sin, cos, EPSILON, PHYSICAL_CONSTANT } from './../utils/umath';
+import { sin, cos, EPSILON, PHYSICAL_CONSTANT } from '../util/fixed';
 
 //最长半长轴
 const semimajorAxis = Math.max(PHYSICAL_CONSTANT.EARTH_RADIUS_X, PHYSICAL_CONSTANT.EARTH_RADIUS_Y, PHYSICAL_CONSTANT.EARTH_RADIUS_Z);
