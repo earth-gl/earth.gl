@@ -12,3 +12,5 @@ export { Rectangle } from './core/Rectangle';
 export { Quadtree } from './core/Quadtree';
 export { QuadtreeTile } from './core/QuadtreeTile';
 export { QuadtreeTileSchema } from './core/QuadtreeTileSchema';
+//expand
+export { Global } from './expand/Global';

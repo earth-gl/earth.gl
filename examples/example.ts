@@ -1,6 +1,11 @@
 
-import { WebMercatorProjection, Geographic, Quadtree } from './../src/index';
+import { WebMercatorProjection, Geographic, Quadtree, Global } from './../src/index';
 
+const g = new Global({
+    width:100,
+    height:100,
+    canvas:"mapCanvas"
+});
 
 const wm = new WebMercatorProjection();
 const go = new Geographic(114.2344412, 33.23313241234342, 0);
