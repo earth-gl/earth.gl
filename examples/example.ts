@@ -1,12 +1,15 @@
 
-import { Vec2 } from 'kiwi.matrix';
-import { WebMercator, Geographic} from './../src/index';
+import { WebMercatorProjection, Geographic, Quadtree } from './../src/index';
 
 
-const wm = new WebMercator();
-const go = new Geographic(114.2344412,33.23313241234342,0);
+const wm = new WebMercatorProjection();
+const go = new Geographic(114.2344412, 33.23313241234342, 0);
 const v1 = wm.project(go);
 const v3 = wm.unproject(v1);
+const tree = new Quadtree();
+tree.on("hi", function () {
+    alert("hello");
+});
 
-const v5 = "";
+tree.update();
 

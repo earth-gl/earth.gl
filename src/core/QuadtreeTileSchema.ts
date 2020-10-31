@@ -1,6 +1,6 @@
 import { Vec2, Vec4, Vec3 } from "kiwi.matrix";
-import { Ellipsoid } from "../projection/Ellipsoid";
-import { Projection } from "../projection/Projection";
+import { Ellipsoid } from "./Ellipsoid";
+import { Projection } from "./Projection";
 import { Rectangle } from './Rectangle';
 
 /**
