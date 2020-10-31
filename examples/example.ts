@@ -7,6 +7,8 @@ const g = new Global({
     canvas:"mapCanvas"
 });
 
+alert(g.name);
+
 const wm = new WebMercatorProjection();
 const go = new Geographic(114.2344412, 33.23313241234342, 0);
 const v1 = wm.project(go);

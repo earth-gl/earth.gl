@@ -13,4 +13,6 @@ export { Quadtree } from './core/Quadtree';
 export { QuadtreeTile } from './core/QuadtreeTile';
 export { QuadtreeTileSchema } from './core/QuadtreeTileSchema';
 //expand
+import "./expand/handler/Global.DOMEvents";
 export { Global } from './expand/Global';
+
