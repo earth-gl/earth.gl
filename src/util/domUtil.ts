@@ -59,4 +59,18 @@ const removeDOMEvent = function (element: HTMLElement, eventName: string, handle
     });
 }
 
-export { addDOMEvent, removeDOMEvent }
+const preventDefault = function(e:Event):void{
+    if(e.preventDefault) 
+        e.preventDefault();
+    else
+        e.returnValue = false;
+}
+
+const stopPropagation = function(e:Event):void{
+    if(e.stopPropagation)
+        e.stopPropagation();
+    else
+        e.cancelBubble = true;
+}
+
+export { addDOMEvent, removeDOMEvent, preventDefault }

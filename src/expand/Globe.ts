@@ -33,7 +33,7 @@ class Globe extends EventEmitter {
         super();
         this._canvas = (isString(options.canvas) ? document.getElementById(options.canvas as string) : options.canvas) as HTMLCanvasElement;
         this._devicePixelRatio = options.devicePixelRatio | browser.devicePixelRatio;
-        this.initialization();
+        this._initialize();
     }
     /**
      * dom元素
@@ -42,9 +42,9 @@ class Globe extends EventEmitter {
         return this._canvas;
     }
     /**
-     * 
+     * 初始化
      */
-    private initialization(): void {
+    private _initialize(): void {
         //hook
         Globe.LoadHooks.forEach((hook) => {
             const { func, args } = hook;
