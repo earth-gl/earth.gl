@@ -40,6 +40,9 @@ Globe.prototype.onDOMEvent = function (element: HTMLElement, eventName: string, 
 }
 /**
  * 统一预处理DOM
+ * 1. 处理输入延迟
+ * 2. 模拟doble click
+ * 3. 统一处理touch，clcik
  */
 Globe.prototype.handleDOMEvent = function (e: Event): void {
     const ctx = (this as Globe);

@@ -4,6 +4,7 @@
  * apply 调用...rest args
  */
 
+import { browser } from './browser';
 import { splitWords } from './splitWords';
 
 const prefix = 'earth_gl_domEvent';
@@ -20,7 +21,10 @@ const addDOMEvent = function (element: HTMLElement, eventName: string, handler: 
         if (hit >= 0) removeDOMEvent(element, type, handler);
         element[key].push(eventHandler);
         //}{debug IE和非IE浏览器略有区别
-        element.addEventListener(type, eventHandler, false);
+        if (browser.ie)
+            element.addEventListener(type, eventHandler, false);
+        else
+            element.addEventListener(type, eventHandler, { capture: false, passive: false });
     });
 }
 
@@ -54,6 +58,5 @@ const removeDOMEvent = function (element: HTMLElement, eventName: string, handle
         element[key].splice(hit, 1);
     });
 }
-
 
 export { addDOMEvent, removeDOMEvent }
