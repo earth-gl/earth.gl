@@ -47,6 +47,7 @@ Globe.prototype.onDOMEvent = function (element: HTMLElement, eventName: string, 
 Globe.prototype.handleDOMEvent = function (e: Event): void {
     const ctx = (this as Globe);
     const sss = e; 
+    console.log(e.type);
 }
 /**
  * 统一注册DOM事件
