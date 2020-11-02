@@ -110,7 +110,8 @@ class Rectangle {
      * @param geodeticCoordinate 
      */
     contain(geodeticCoordinate: GeodeticCoordinate): boolean {
-        const lng = geodeticCoordinate.longitude, lat = geodeticCoordinate.latitude;
+        const lng = GLMatrix.toRadian(geodeticCoordinate.longitude), 
+            lat = GLMatrix.toRadian(geodeticCoordinate.latitude);
         const west = GLMatrix.toRadian(this._west),
             south = GLMatrix.toRadian(this._south),
             north = GLMatrix.toRadian(this._north);

@@ -52,6 +52,7 @@ Globe.prototype.registerQuadtree = function (tileSchema: QuadtreeTileSchema): vo
     //
     ctx.zeroLevelTiles = ctx.computeZeroLevelTiles();
     ctx.visualRevealTiles = ctx.computeQuadtreeTileByDistanceError();
+    console.log(ctx.visualRevealTiles);
 }
 /**
  * 
