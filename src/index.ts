@@ -12,7 +12,7 @@ export { Rectangle } from './core/Rectangle';
 export { QuadtreeTile } from './core/QuadtreeTile';
 export { QuadtreeTileSchema } from './core/QuadtreeTileSchema';
 //expand
-import './expand/handler/Globe.DOMEvents';
+import './expand/handler/Globe.Handler.DOMEvents';
 import './expand/handler/Globe.Handler.Pan';
 import './expand/Globe.Camera';
 import './expand/Globe.Quadtree';

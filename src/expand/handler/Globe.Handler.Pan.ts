@@ -1,6 +1,6 @@
 import { Globe } from './../Globe';
 import { splitWords } from './../../util/splitWords';
-import { IDOMEventParam } from './Globe.DOMEvents';
+import { IDOMEventParam } from './Globe.Handler.DOMEvents';
 import { Vec2 } from 'kiwi.matrix';
 /**
  * pan event arguments
