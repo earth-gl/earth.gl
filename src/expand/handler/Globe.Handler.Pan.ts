@@ -26,10 +26,10 @@ const END_EVENTS = {
     MSPointerDown: 'touchend'
 };
 
-const enum PAN_EVENTS {
-    panstart = 'panstart',
-    paning = 'paning',
-    panend = 'panend'
+const PAN_EVENTS = {
+    panstart: 'panstart',
+    paning: 'paning',
+    panend: 'panend'
 }
 
 /**
@@ -46,7 +46,7 @@ declare module './../Globe' {
         /**
          * 移除 moveevents, endevents
          */
-        releasePanEvents(): void;
+        releasePanHandlerEvents(): void;
         panMousedownOrTouchstart(args: IDOMEventParam): void;
         panMousemoveOrTouchmove(args: IDOMEventParam): void;
         panMouseupOrTouchend(args: IDOMEventParam): void;
@@ -131,7 +131,7 @@ Globe.prototype.panMousemoveOrTouchmove = function (args: IDOMEventParam): void 
  */
 Globe.prototype.panMouseupOrTouchend = function (args: IDOMEventParam): void {
     const ctx = this as Globe, e = args.domEvent;
-    ctx.releasePanEvents();
+    ctx.releasePanHandlerEvents();
     const currentPosition = new Vec2();
     if (e['changedTouches'] && e['changedTouches'][0]) {
         const a = e['changedTouches'][0] as Touch;
@@ -153,7 +153,7 @@ Globe.prototype.panMouseupOrTouchend = function (args: IDOMEventParam): void {
 /**
  * 清除所有pan操作
  */
-Globe.prototype.releasePanEvents = function (): void {
+Globe.prototype.releasePanHandlerEvents = function (): void {
     const ctx = this as Globe;
     for (const key in MOVE_EVENTS) {
         const moveEventName = MOVE_EVENTS[key];
@@ -163,6 +163,6 @@ Globe.prototype.releasePanEvents = function (): void {
     }
 }
 
-Globe.RegistHook(Globe.prototype.registerPanHandlerHood);
+Globe.registerHook(Globe.prototype.registerPanHandlerHood);
 
-export { Globe, PAN_EVENTS }
+export { Globe, PAN_EVENTS, IPanEventParam }

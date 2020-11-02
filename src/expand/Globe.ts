@@ -25,7 +25,7 @@ class Globe extends EventEmitter {
     /**
      * Global启动时执行的钩子
      */
-    public static LoadHooks: Array<{ func: Function, args: any[] }> = new Array<{ func: Function, args: any[] }>();
+    public static hooks: Array<{ func: Function, args: any[] }> = new Array<{ func: Function, args: any[] }>();
     /**
      * 
      */
@@ -39,8 +39,8 @@ class Globe extends EventEmitter {
      * @param func 
      * @param args 
      */
-    static RegistHook(func: Function, ...args: any[]) {
-        Globe.LoadHooks.push({ func, args });
+    static registerHook(func: Function, ...args: any[]) {
+        Globe.hooks.push({ func, args });
     }
     /**
      * 
@@ -71,7 +71,7 @@ class Globe extends EventEmitter {
      */
     private _initialize(): void {
         //hook
-        Globe.LoadHooks.forEach((hook) => {
+        Globe.hooks.forEach((hook) => {
             const { func, args } = hook;
             func.apply(this, args);
         })

@@ -118,7 +118,7 @@ class PerspectiveCamera extends Camera {
     get viewMatrix(): Mat4 {
         return this._viewMatrix;
     }
-    
+
     get invertViewMatrix(): Mat4 {
         return this._invertViewMatrix;
     }
@@ -133,6 +133,14 @@ class PerspectiveCamera extends Camera {
 
     get frustrum(): Frustrum {
         return this._frustrum;
+    }
+
+    get target(): Vec3 {
+        return this._target;
+    }
+
+    get up():Vec3{
+        return this._up;
     }
 }
 

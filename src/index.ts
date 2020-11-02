@@ -16,5 +16,6 @@ import './expand/handler/Globe.Handler.DOMEvents';
 import './expand/handler/Globe.Handler.Pan';
 import './expand/Globe.Camera';
 import './expand/Globe.Quadtree';
+import './expand/Globe.Pan';
 export { Globe } from './expand/Globe';
 

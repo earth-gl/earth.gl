@@ -39,9 +39,13 @@ abstract class Camera {
 
     abstract get viewProjectionMatrix(): Mat4;
 
-    abstract lookAt(v: Vec3): void;
+    abstract get target():Vec3;
 
-    abstract get frustrum():Frustrum
+    abstract get frustrum():Frustrum;
+
+    abstract get up():Vec3;
+    
+    abstract lookAt(v: Vec3): void;
 }
 
 export { Camera }

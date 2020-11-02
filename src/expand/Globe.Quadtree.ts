@@ -3,6 +3,7 @@ import './Globe.Camera'
 import { QuadtreeTileSchema, webMercatorTileSchema } from './../core/QuadtreeTileSchema';
 import { QuadtreeTile } from './../core/QuadtreeTile';
 import { Vec3 } from 'kiwi.matrix';
+
 //
 const maximumScreenSpaceError = 2.0;
 /**
@@ -15,8 +16,8 @@ declare module './Globe' {
         pickZeroLevelQuadtreeTiles(position: Vec3): Array<QuadtreeTile>;
         computeMaximumGeometricError(level: number): number;
         computeZeroLevelTiles(): Array<QuadtreeTile>;
-        computeQuadtreeTileByDistanceError(): Array<QuadtreeTile>;
         computeSpaceError(quadtreeTile: QuadtreeTile): number;
+        updateQuadtreeTileByDistanceError(): void;
         //当前globe的缩放层级
         level: number;
         //distance error划分
@@ -51,8 +52,7 @@ Globe.prototype.registerQuadtree = function (tileSchema: QuadtreeTileSchema): vo
     }
     //
     ctx.zeroLevelTiles = ctx.computeZeroLevelTiles();
-    ctx.visualRevealTiles = ctx.computeQuadtreeTileByDistanceError();
-    console.log(ctx.visualRevealTiles);
+    ctx.updateQuadtreeTileByDistanceError();
 }
 /**
  * 
@@ -117,7 +117,7 @@ Globe.prototype.computeSpaceError = function (quadtreeTile: QuadtreeTile): numbe
     return err;
 }
 
-Globe.prototype.computeQuadtreeTileByDistanceError = function (): Array<QuadtreeTile> {
+Globe.prototype.updateQuadtreeTileByDistanceError = function ():void {
     const ctx = this as Globe;
     const position = ctx.camera.position.clone();
     let level = 0;
@@ -149,8 +149,10 @@ Globe.prototype.computeQuadtreeTileByDistanceError = function (): Array<Quadtree
     }
     //set current level
     ctx.level = level;
-    return renderingQuadtreeTiles;
+    ctx.visualRevealTiles =  renderingQuadtreeTiles;
+    //}{debug
+    console.log(ctx.visualRevealTiles);
 }
 
 //注册web墨卡托瓦片规则
-Globe.RegistHook(Globe.prototype.registerQuadtree, webMercatorTileSchema);
+Globe.registerHook(Globe.prototype.registerQuadtree, webMercatorTileSchema);

@@ -136,6 +136,6 @@ Globe.prototype.registerDOMEventsHook = function () {
 /**
  * 钩子，插件需要预执行的方法注册到钩子里
  */
-Globe.RegistHook(Globe.prototype.registerDOMEventsHook);
+Globe.registerHook(Globe.prototype.registerDOMEventsHook);
 
 export { IDOMEventParam }

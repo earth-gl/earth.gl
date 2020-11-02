@@ -33,10 +33,6 @@ declare module './Globe' {
         registerCamera(coord: GeodeticCoordinate): void;
         camera: Camera;
         view: IViewContainer;
-        //平移
-        pan(from: Vec3, to: Vec3): void;
-        //缩放
-        zoom(to: Vec3, level: number): void;
         //获取屏幕坐标与空间坐标(0,0,0)连线，与参考椭球体表面相交点坐标
         rayTrackOnSphere(point: IPoint): Vec3
         normalizedDeviceCoordinate(point: IPoint): Vec3;
@@ -117,4 +113,6 @@ Globe.prototype.geographicToSpaceCoordinate = function (coord: GeodeticCoordinat
     return space;
 }
 
-Globe.RegistHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 10000));
+Globe.registerHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 100000));
+
+export { IPoint }
