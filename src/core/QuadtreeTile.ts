@@ -63,6 +63,22 @@ class QuadtreeTile {
         this._boundary = this._quadtreeTileSchema.tileXYToRectangle(x, y, level);
     }
     /**
+     * 
+     */
+    get boundary(): Rectangle {
+        const tileSchema = this._quadtreeTileSchema,
+            x = this._x,
+            y = this._y,
+            l = this._level;
+        return tileSchema.tileXYToRectangle(x, y, l);
+    }
+    /**
+     * 
+     */
+    get level(): number {
+        return this._level;
+    }
+    /**
      * foreach quard tree
      */
     get children(): QuadtreeTile[] {
@@ -107,7 +123,7 @@ class QuadtreeTile {
     /**
      * Gets the northeast child tile.
      */
-    get northeastChild():QuadtreeTile {
+    get northeastChild(): QuadtreeTile {
         this._northeastChild = this._northeastChild || new QuadtreeTile(
             this._quadtreeTileSchema,
             this._x * 2 + 1,

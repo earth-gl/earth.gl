@@ -1,4 +1,5 @@
 import { Mat4, Vec3 } from 'kiwi.matrix';
+import { Frustrum } from '../core/Frustrum';
 
 /**
  * https://juejin.im/post/5a0872d4f265da43062a4156
@@ -26,23 +27,21 @@ abstract class Camera {
     /**
      * 
      */
-    constructor() {
-        this._invertViewMatrix = new Mat4();
-        this._projectionMatrix = new Mat4();
-        this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._invertViewMatrix);
-    }
+    constructor() { }
 
-    abstract get position():Vec3;
+    abstract get position(): Vec3;
 
-    abstract get viewMatrix():Mat4;
+    abstract get viewMatrix(): Mat4;
 
-    abstract get invertViewMatrix():Mat4;
+    abstract get invertViewMatrix(): Mat4;
 
-    abstract get projectionMatrix():Mat4;
+    abstract get projectionMatrix(): Mat4;
 
-    abstract get viewProjectionMatrix():Mat4;
-    
-    abstract lookAt(v: Vec3): void
+    abstract get viewProjectionMatrix(): Mat4;
+
+    abstract lookAt(v: Vec3): void;
+
+    abstract get frustrum():Frustrum
 }
 
 export { Camera }

@@ -1,6 +1,6 @@
 import { Vec2, Vec4, Vec3 } from "kiwi.matrix";
 import { Ellipsoid } from "./Ellipsoid";
-import { Projection } from "./Projection";
+import { Projection, WebMercatorProjection } from "./Projection";
 import { Rectangle } from './Rectangle';
 
 /**
@@ -97,4 +97,7 @@ class QuadtreeTileSchema {
     }
 }
 
-export { QuadtreeTileSchema }
+//Web墨卡托
+const webMercatorTileSchema = new QuadtreeTileSchema(new WebMercatorProjection(), 1, 1);
+
+export { QuadtreeTileSchema, webMercatorTileSchema }

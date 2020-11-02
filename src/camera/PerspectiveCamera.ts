@@ -130,6 +130,10 @@ class PerspectiveCamera extends Camera {
     get viewProjectionMatrix(): Mat4 {
         return this._viewProjectionMatrix;
     }
+
+    get frustrum(): Frustrum {
+        return this._frustrum;
+    }
 }
 
 export { PerspectiveCamera, Frustrum }

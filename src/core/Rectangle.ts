@@ -63,6 +63,12 @@ class Rectangle {
      */
     static MAX_VALUE = new Rectangle(new GeodeticCoordinate(-180, -90), new GeodeticCoordinate(180, 90));
     /**
+     * 
+     */
+    get bounds(): Array<GeodeticCoordinate> {
+        return [this.southwest, this.northwest, this.northeast, this.southeast];
+    }
+    /**
      * get southwets in radians
      */
     get southwest(): GeodeticCoordinate {
@@ -101,10 +107,10 @@ class Rectangle {
     }
     /**
      * 计算地理坐标是否在范围内
-     * @param geograpihc 
+     * @param geodeticCoordinate 
      */
-    contain(geograpihc: GeodeticCoordinate): boolean {
-        const lng = geograpihc.longitude, lat = geograpihc.latitude;
+    contain(geodeticCoordinate: GeodeticCoordinate): boolean {
+        const lng = geodeticCoordinate.longitude, lat = geodeticCoordinate.latitude;
         const west = GLMatrix.toRadian(this._west),
             south = GLMatrix.toRadian(this._south),
             north = GLMatrix.toRadian(this._north);
