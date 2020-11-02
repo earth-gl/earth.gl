@@ -117,5 +117,4 @@ Globe.prototype.geographicToSpaceCoordinate = function (coord: GeodeticCoordinat
     return space;
 }
 
-Globe.RegistHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 100000));
-
+Globe.RegistHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 10000));

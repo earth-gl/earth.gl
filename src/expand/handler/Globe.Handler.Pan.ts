@@ -1,5 +1,5 @@
-import { Globe } from './Globe';
-import { splitWords } from '../util/splitWords';
+import { Globe } from './../Globe';
+import { splitWords } from './../../util/splitWords';
 import { IDOMEventParam } from './Globe.DOMEvents';
 import { Vec2 } from 'kiwi.matrix';
 /**
@@ -37,7 +37,7 @@ const enum PAN_EVENTS {
  * https://github.com/maptalks/maptalks.js/blob/1d98540a0af728e80cbac133278143fc1c6a4c51/src/handler/Drag.js
  * 提供Global的Pan事件发布
  */
-declare module './Globe' {
+declare module './../Globe' {
     interface Globe {
         /**
          * 注册到hook的初始化执行钩子

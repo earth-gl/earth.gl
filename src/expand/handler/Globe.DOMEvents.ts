@@ -1,5 +1,5 @@
-import { Globe } from './Globe';
-import { addDOMEvent, preventDefault } from '../util/domUtil';
+import { Globe } from './../Globe';
+import { addDOMEvent, preventDefault } from '../../util/domUtil';
 /**
  * 
  */
@@ -43,7 +43,7 @@ const eventTypes =
  * https://www.tslang.cn/docs/handbook/declaration-merging.html
  * https://github.com/maptalks/maptalks.js/blob/master/src/map/Map.DomEvents.js
  */
-declare module './Globe' {
+declare module './../Globe' {
     interface Globe {
         registerDOMEventsHook(): void;
         onDOMEvent(obj: HTMLElement, eventName: string, handler: Function, context: object): void;
