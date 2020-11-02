@@ -1,5 +1,5 @@
-import { Geographic } from './GeodeticCoordinate';
-import { Vec3 } from 'kiwi.matrix';
+import { GeodeticCoordinate } from './GeodeticCoordinate';
+import { GLMatrix, Vec3 } from 'kiwi.matrix';
 import { sin, cos, EPSILON, PHYSICAL_CONSTANT } from '../util/fixed';
 
 //最长半长轴
@@ -91,9 +91,9 @@ class Ellipsoid {
      * 地理坐标转化成空间向量，从(0,0,0)指向地球表明的方向向量
      * @param cartographic 
      */
-    private _geodeticSurfaceNormalCartographic(cartographic: Geographic): Vec3 {
-        const longitude = cartographic.longitude,
-            latitude = cartographic.latitude,
+    private _geodeticSurfaceNormalCartographic(cartographic: GeodeticCoordinate): Vec3 {
+        const longitude = GLMatrix.toRadian(cartographic.longitude),
+            latitude =  GLMatrix.toRadian(cartographic.latitude),
             cosLatitude = cos(latitude);
         const x = cosLatitude * cos(longitude),
             y = cosLatitude * sin(longitude),
@@ -194,21 +194,21 @@ class Ellipsoid {
      * cartographicPosition = WGS84.spaceToGeographic(position);
      * 
      */
-    spaceToGeographic(spaceCoord: Vec3): Geographic {
+    spaceToGeographic(spaceCoord: Vec3): GeodeticCoordinate {
         const p = this._scaleToGeodeticSurface(spaceCoord);
         const n = this._geodeticSurfaceNormal(p);
         const h = spaceCoord.clone().sub(p);
         var longitude = Math.atan2(n.y, n.x);
         var latitude = Math.asin(n.z);//resprent value in radian 
         var height = Math.sign(h.clone().dot(spaceCoord)) * h.len();
-        return new Geographic(longitude, latitude, height);
+        return new GeodeticCoordinate(GLMatrix.toDegree(longitude), GLMatrix.toDegree(latitude), height);
     }
     /**
      * convert geographic coord to sapce coord (x, y, z)
      * @description 地理坐标转成空间坐标
      * @param {Geographic} geographic 
      */
-    geographicToSpace(geographic: Geographic): Vec3 {
+    geographicToSpace(geographic: GeodeticCoordinate): Vec3 {
         const radiiSquared = this._radiiSquared,
             n = this._geodeticSurfaceNormalCartographic(geographic),
             k = radiiSquared.clone().multiply(n);

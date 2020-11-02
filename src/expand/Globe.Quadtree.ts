@@ -25,6 +25,8 @@ declare module './Globe' {
         maximumCameraHeight: number[];
         //初始化层Tileinfo
         zeroLevelTiles: Array<QuadtreeTile>;
+        //视椎区全部瓦片
+        visualRevealTiles:Array<QuadtreeTile>;
         //瓦片规范
         quadtreeTileSchema: QuadtreeTileSchema;
     }
@@ -49,6 +51,7 @@ Globe.prototype.registerQuadtree = function (tileSchema: QuadtreeTileSchema): vo
     }
     //
     ctx.zeroLevelTiles = ctx.computeZeroLevelTiles();
+    ctx.visualRevealTiles = ctx.computeQuadtreeTileByDistanceError();
 }
 /**
  * 
@@ -96,7 +99,6 @@ Globe.prototype.computeSpaceError = function (quadtreeTile: QuadtreeTile): numbe
     //摄像机位置与瓦片中心的距离,距离由两部分构成
     //1.相机在椭球体上的投影点
     const level = quadtreeTile.level,
-        camera = ctx.camera,
         maxGeometricError = ctx.geometricError[level],
         sseDenominator = ctx.camera.frustrum.sseDenominator,
         height = ctx.view.height,
