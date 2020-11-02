@@ -1,5 +1,5 @@
 import { Ellipsoid } from './Ellipsoid';
-import { Geographic } from "./Geographic";
+import { GeodeticCoordinate } from "./GeodeticCoordinate";
 import { GLMatrix, Vec3 } from 'kiwi.matrix';
 import { sin, log, atan, exp } from '../util/fixed';
 import { PSEUDOMERCATOR } from './Ellipsoid';
@@ -45,12 +45,12 @@ abstract class Projection {
      * 
      * @param geographic geographic in radius
      */
-    abstract project(geographic: Geographic): Vec3;
+    abstract project(geographic: GeodeticCoordinate): Vec3;
     /**
      * 
      * @param v3 
      */
-    abstract unproject(v3: Vec3): Geographic;
+    abstract unproject(v3: Vec3): GeodeticCoordinate;
 }
 
 
@@ -91,7 +91,7 @@ class WebMercatorProjection extends Projection {
      * 
      * @param geographic 
      */
-    project(geographic: Geographic): Vec3 {
+    project(geographic: GeodeticCoordinate): Vec3 {
         const semimajorAxis = this._semimajorAxis;
         const x = GLMatrix.toRadian(geographic.longitude) * semimajorAxis,
             y = this._geodeticLatitudeToMercatorAngle(GLMatrix.toRadian(geographic.latitude)) * semimajorAxis,
@@ -102,12 +102,12 @@ class WebMercatorProjection extends Projection {
      * 
      * @param v3 
      */
-    unproject(v3: Vec3): Geographic {
+    unproject(v3: Vec3): GeodeticCoordinate {
         const oneOverEarthSemimajorAxis = this._oneOverSemimajorAxis,
             longitude = v3.x * oneOverEarthSemimajorAxis,
             latitude = this._mercatorAngleToGeodeticLatitude(v3.y * oneOverEarthSemimajorAxis),
             height = v3.z;
-        return new Geographic(GLMatrix.toDegree(longitude), GLMatrix.toDegree(latitude), height);
+        return new GeodeticCoordinate(GLMatrix.toDegree(longitude), GLMatrix.toDegree(latitude), height);
     }
 }
 

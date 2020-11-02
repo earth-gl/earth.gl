@@ -2,7 +2,7 @@
  * represent position in geographic coordinate system
  * @class
  */
-class Geographic {
+class GeodeticCoordinate {
     /**
      * represent in meters
      */
@@ -46,4 +46,4 @@ class Geographic {
     }
 }
 
-export { Geographic }
+export { GeodeticCoordinate }

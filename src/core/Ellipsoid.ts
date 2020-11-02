@@ -1,4 +1,4 @@
-import { Geographic } from './Geographic';
+import { Geographic } from './GeodeticCoordinate';
 import { Vec3 } from 'kiwi.matrix';
 import { sin, cos, EPSILON, PHYSICAL_CONSTANT } from '../util/fixed';
 

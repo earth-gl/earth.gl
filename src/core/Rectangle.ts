@@ -1,5 +1,5 @@
 import { GLMatrix } from 'kiwi.matrix';
-import { Geographic } from './Geographic';
+import { GeodeticCoordinate } from './GeodeticCoordinate';
 import { EPSILON } from './../util/fixed';
 
 const TWO_PI = 2 * Math.PI;
@@ -52,7 +52,7 @@ class Rectangle {
      * @param sw southwest 经纬度表示(degree)
      * @param ne northeast 经纬度表示(degree)
      */
-    constructor(sw: Geographic, ne: Geographic) {
+    constructor(sw: GeodeticCoordinate, ne: GeodeticCoordinate) {
         this._south = sw.latitude;
         this._west = sw.longitude;
         this._north = ne.latitude;
@@ -61,35 +61,35 @@ class Rectangle {
     /**
      * 地理范围最大值
      */
-    static MAX_VALUE = new Rectangle(new Geographic(-180, -90), new Geographic(180, 90));
+    static MAX_VALUE = new Rectangle(new GeodeticCoordinate(-180, -90), new GeodeticCoordinate(180, 90));
     /**
      * get southwets in radians
      */
-    get southwest(): Geographic {
-        return new Geographic(this._west, this._south, 0.0);
+    get southwest(): GeodeticCoordinate {
+        return new GeodeticCoordinate(this._west, this._south, 0.0);
     }
     /**
     * get north west in radians
     */
-    get northwest(): Geographic {
-        return new Geographic(this._west, this._north, 0.0);
+    get northwest(): GeodeticCoordinate {
+        return new GeodeticCoordinate(this._west, this._north, 0.0);
     }
     /**
      * 
      */
-    get northeast(): Geographic {
-        return new Geographic(this._east, this._north, 0.0);
+    get northeast(): GeodeticCoordinate {
+        return new GeodeticCoordinate(this._east, this._north, 0.0);
     }
     /**
      * get sourheast in radians
      */
-    get southeast(): Geographic {
-        return new Geographic(this._east, this._south, 0.0);
+    get southeast(): GeodeticCoordinate {
+        return new GeodeticCoordinate(this._east, this._south, 0.0);
     }
     /**
      * get center of rectangle
      */
-    get center(): Geographic {
+    get center(): GeodeticCoordinate {
         const west = GLMatrix.toRadian(this._west),
             south = GLMatrix.toRadian(this._south),
             north = GLMatrix.toRadian(this._north);
@@ -97,13 +97,13 @@ class Rectangle {
         east = east < west ? east + TWO_PI : east;
         const longitude = negativePiToPi((west + east) * 0.5);
         const latitude = (south + north) * 0.5;
-        return new Geographic(GLMatrix.toDegree(longitude), GLMatrix.toDegree(latitude), 0.0);
+        return new GeodeticCoordinate(GLMatrix.toDegree(longitude), GLMatrix.toDegree(latitude), 0.0);
     }
     /**
      * 计算地理坐标是否在范围内
      * @param geograpihc 
      */
-    contain(geograpihc: Geographic): boolean {
+    contain(geograpihc: GeodeticCoordinate): boolean {
         const lng = geograpihc.longitude, lat = geograpihc.latitude;
         const west = GLMatrix.toRadian(this._west),
             south = GLMatrix.toRadian(this._south),

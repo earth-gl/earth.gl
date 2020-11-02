@@ -1,22 +1,26 @@
 import { Globe } from './Globe';
-import { addDOMEvent, preventDefault, removeDOMEvent } from './../util/domUtil';
-
+import { addDOMEvent, preventDefault } from '../util/domUtil';
 /**
  * 
  */
 const now = function (): number {
     return Date.now();
 }
-
+/**
+ * 
+ */
 interface IDOMEventParam {
-    domEvent: Event,
+    domEvent: TouchEvent | MouseEvent,
     coordinate?: any,
     viewPoint?: any,
     point2d?: any
 }
-
 /**
  * 浏览器控件支持的交互类型
+ * 提供：
+ * -浏览器支持的交互事件注册
+ * -无效的事件响应
+ * 
  */
 const eventTypes =
     'mousedown ' +
@@ -41,7 +45,7 @@ const eventTypes =
  */
 declare module './Globe' {
     interface Globe {
-        registerDOMEvents(): void;
+        registerDOMEventsHook(): void;
         onDOMEvent(obj: HTMLElement, eventName: string, handler: Function, context: object): void;
         handleDOMEvent(e: Event): void;
         /**
@@ -58,7 +62,7 @@ declare module './Globe' {
  * 单个DOM事件过滤
  */
 Globe.prototype.onDOMEvent = function (element: HTMLElement, eventName: string, handler: Function, context: object): void {
-    const ctx = (this as Globe);
+    const ctx = this as Globe;
     addDOMEvent(element, eventTypes, ctx.handleDOMEvent, ctx);
 }
 /**
@@ -68,8 +72,8 @@ Globe.prototype.onDOMEvent = function (element: HTMLElement, eventName: string, 
  * 3. 统一处理touch，clcik
  */
 Globe.prototype.handleDOMEvent = function (e: Event): void {
-    const ctx = (this as Globe);
-    const type = e.type;
+    const type = e.type,
+        ctx = this as Globe;
     //prevent default context menu
     if (type === 'contextmenu')
         preventDefault(e);
@@ -93,18 +97,19 @@ Globe.prototype.handleDOMEvent = function (e: Event): void {
                 mimicClick = true;
         }
     }
-    //
-    // ctx.emit()
-
+    //发送事件
+    ctx.emit(type, ctx.parseEvent(e, type));
 }
-
-Globe.prototype.parseEvent = function (e: Event, type: string): IDOMEventParam {
+/**
+ * 
+ */
+Globe.prototype.parseEvent = function (e: TouchEvent | MouseEvent, type: string): IDOMEventParam {
     if (!e) return;
-    const ctx = (this as Globe);
+    const ctx = this as Globe;
     const DOMEventParam: IDOMEventParam = {
         domEvent: e
     };
-    if (type !== 'leypress' && ctx.getActualEvent(e)) {
+    if (type !== 'keypress' && ctx.getActualEvent(e)) {
         // const containerPoint = getEventContainerPoint(actual, this._containerDOM);
         // DOMEventParam = extend(DOMEventParam, {
         //     'coordinate': this.containerPointToCoord(containerPoint),
@@ -115,20 +120,22 @@ Globe.prototype.parseEvent = function (e: Event, type: string): IDOMEventParam {
     }
     return DOMEventParam;
 }
-
+/**
+ * 
+ */
 Globe.prototype.getActualEvent = function (e: Event): boolean {
     return e['touches'] && e['touches'].length > 0 ? e['touches'][0] : e['changedTouches'] && e['changedTouches'].length > 0 ? e['changedTouches'][0] : e;
 }
-
 /**
  * 统一注册DOM事件
  */
-Globe.prototype.registerDOMEvents = function () {
-    const ctx = (this as Globe);
-    ctx.onDOMEvent(ctx.Canvas, eventTypes, ctx.handleDOMEvent, ctx);
+Globe.prototype.registerDOMEventsHook = function () {
+    const ctx = this as Globe;
+    ctx.onDOMEvent(ctx.canvas, eventTypes, ctx.handleDOMEvent, ctx);
 }
-
 /**
  * 钩子，插件需要预执行的方法注册到钩子里
  */
-Globe.RegistHook(Globe.prototype.registerDOMEvents);
+Globe.RegistHook(Globe.prototype.registerDOMEventsHook);
+
+export { IDOMEventParam }

@@ -1,4 +1,4 @@
-import { Mat4 } from 'kiwi.matrix';
+import { Mat4, Vec3 } from 'kiwi.matrix';
 
 /**
  * https://juejin.im/post/5a0872d4f265da43062a4156
@@ -10,7 +10,7 @@ import { Mat4 } from 'kiwi.matrix';
  * example:
  * const uMatrix = projectionMatrix * viewMatrix * objectMatrix
  */
-class Camera {
+abstract class Camera {
     /**
      * 视角矩阵 
      */
@@ -31,6 +31,18 @@ class Camera {
         this._projectionMatrix = new Mat4();
         this._viewProjectionMatrix = this._projectionMatrix.clone().multiply(this._invertViewMatrix);
     }
+
+    abstract get position():Vec3;
+
+    abstract get viewMatrix():Mat4;
+
+    abstract get invertViewMatrix():Mat4;
+
+    abstract get projectionMatrix():Mat4;
+
+    abstract get viewProjectionMatrix():Mat4;
+    
+    abstract lookAt(v: Vec3): void
 }
 
 export { Camera }

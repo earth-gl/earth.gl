@@ -107,10 +107,29 @@ class PerspectiveCamera extends Camera {
      * @param v 长度为3的数组，分别表示x,y,z
      */
     lookAt(v: Vec3): void {
-        this._target.set(v[0], v[1], v[2]);
+        this._target.set(v.x, v.y, v.z);
         this._update();
     }
 
+    get position(): Vec3 {
+        return this._position;
+    }
+
+    get viewMatrix(): Mat4 {
+        return this._viewMatrix;
+    }
+    
+    get invertViewMatrix(): Mat4 {
+        return this._invertViewMatrix;
+    }
+
+    get projectionMatrix(): Mat4 {
+        return this._projectionMatrix;
+    }
+
+    get viewProjectionMatrix(): Mat4 {
+        return this._viewProjectionMatrix;
+    }
 }
 
 export { PerspectiveCamera, Frustrum }
