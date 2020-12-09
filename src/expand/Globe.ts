@@ -2,7 +2,9 @@ import { EventEmitter } from 'events';
 import { isString } from '../util/isString';
 import { browser } from '../util/browser';
 import { Ellipsoid } from '../core/Ellipsoid';
+import { checkWebGPUSupport } from './../render/WebGPU';
 import { Projection, WebMercatorProjection } from '../core/Projection';
+
 
 interface IGlobeOption {
     canvas: string | HTMLCanvasElement,
@@ -48,6 +50,7 @@ class Globe extends EventEmitter {
      */
     constructor(options: IGlobeOption) {
         super();
+        if(!checkWebGPUSupport()) return;
         this._canvas = (isString(options.canvas) ? document.getElementById(options.canvas as string) : options.canvas) as HTMLCanvasElement;
         this._devicePixelRatio = options.devicePixelRatio | browser.devicePixelRatio;
         this._prjection = new WebMercatorProjection();
@@ -63,7 +66,7 @@ class Globe extends EventEmitter {
     /**
      * 获取投影的参考椭球
      */
-    public get ellipsoid():Ellipsoid{
+    public get ellipsoid(): Ellipsoid {
         return this._ellipsoid;
     }
     /**
