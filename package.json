@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/axmand/earth.gl.git"
+    "url": "git+https://github.com/KIWI-ST/kiwi.geosketchpad.git"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/axmand/earth.gl/issues"
+    "url": "https://github.com/KIWI-ST/kiwi.geosketchpad/issues"
   },
-  "homepage": "https://github.com/axmand/earth.gl#readme",
+  "homepage": "https://github.com/KIWI-ST/kiwi.geosketchpad#readme",
   "devDependencies": {
     "glslify": "^7.1.1",
     "glslify-bundle": "^5.1.1",
