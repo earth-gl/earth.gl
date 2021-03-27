@@ -2,14 +2,15 @@ import { EventEmitter } from 'events';
 import { isString } from '../util/isString';
 import { browser } from '../util/browser';
 import { Ellipsoid } from '../core/Ellipsoid';
-import { checkWebGPUSupport } from './../render/WebGPU';
+// import { checkWebGPUSupport } from './../render/WebGPU';
 import { Projection, WebMercatorProjection } from '../core/Projection';
-
+import { GeodeticCoordinate } from '../core/GeodeticCoordinate';
 
 interface IGlobeOption {
-    canvas: string | HTMLCanvasElement,
     width: number,
     height: number,
+    coordinate: GeodeticCoordinate,
+    canvas: string | HTMLCanvasElement,
     devicePixelRatio?: number
 }
 /**
@@ -50,12 +51,17 @@ class Globe extends EventEmitter {
      */
     constructor(options: IGlobeOption) {
         super();
-        if(!checkWebGPUSupport()) return;
+        // if(!checkWebGPUSupport()) return;
         this._canvas = (isString(options.canvas) ? document.getElementById(options.canvas as string) : options.canvas) as HTMLCanvasElement;
         this._devicePixelRatio = options.devicePixelRatio | browser.devicePixelRatio;
         this._prjection = new WebMercatorProjection();
         this._ellipsoid = this._prjection.ellipsoid;
-        this._initialize();
+        this.registerCamera(options.coordinate);
+        //hook init
+        Globe.hooks.forEach((hook) => {
+            const { func, args } = hook;
+            func.apply(this, args);
+        });
     }
     /**
      * dom元素
@@ -69,17 +75,6 @@ class Globe extends EventEmitter {
     public get ellipsoid(): Ellipsoid {
         return this._ellipsoid;
     }
-    /**
-     * 初始化
-     */
-    private _initialize(): void {
-        //hook
-        Globe.hooks.forEach((hook) => {
-            const { func, args } = hook;
-            func.apply(this, args);
-        })
-    }
-
 }
 
 export { Globe }

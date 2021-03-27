@@ -113,6 +113,6 @@ Globe.prototype.geographicToSpaceCoordinate = function (coord: GeodeticCoordinat
     return space;
 }
 
-Globe.registerHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 100000));
+// Globe.registerHook(Globe.prototype.registerCamera, new GeodeticCoordinate(114.32345, 33.31283, 100000));
 
 export { IPoint }
