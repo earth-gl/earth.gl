@@ -12,11 +12,12 @@ export { Rectangle } from './core/Rectangle';
 export { QuadtreeTile } from './core/QuadtreeTile';
 export { QuadtreeTileSchema } from './core/QuadtreeTileSchema';
 //expand
-import './expand/handler/Globe.Handler.DOMEvents';
-import './expand/handler/Globe.Handler.Pan';
-import './expand/Globe.Camera';
-import './expand/Globe.Quadtree';
-import './expand/Globe.Pan';
-
-export { Globe } from './expand/Globe';
+import './globe/handler/Globe.Handler.DOMEvents';
+import './globe/handler/Globe.Handler.Pan';
+import './globe/Globe.Camera';
+import './globe/Globe.Quadtree';
+import './globe/Globe.Pan';
+import './globe/Globe.Renderer';
+//
+export { Globe } from './globe/Globe';
 

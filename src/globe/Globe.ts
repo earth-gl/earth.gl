@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import { isString } from '../util/isString';
 import { browser } from '../util/browser';
 import { Ellipsoid } from '../core/Ellipsoid';
-// import { checkWebGPUSupport } from './../render/WebGPU';
 import { Projection, WebMercatorProjection } from '../core/Projection';
 import { GeodeticCoordinate } from '../core/GeodeticCoordinate';
 
@@ -51,7 +50,6 @@ class Globe extends EventEmitter {
      */
     constructor(options: IGlobeOption) {
         super();
-        // if(!checkWebGPUSupport()) return;
         this._canvas = (isString(options.canvas) ? document.getElementById(options.canvas as string) : options.canvas) as HTMLCanvasElement;
         this._devicePixelRatio = options.devicePixelRatio | browser.devicePixelRatio;
         this._prjection = new WebMercatorProjection();
