@@ -17,7 +17,8 @@ import './globe/handler/Globe.Handler.Pan';
 import './globe/Globe.Camera';
 import './globe/Globe.Quadtree';
 import './globe/Globe.Pan';
-import './globe/Globe.Renderer';
+import './globe/Globe.Sketchpad';
+//
+import './render/Renderer';
 //
 export { Globe } from './globe/Globe';
-
