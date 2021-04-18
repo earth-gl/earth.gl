@@ -1,6 +1,6 @@
 # earth.gl
 
-a geospatial infrasturcture toolset/visual
+a geospatial toolset for visualization
 
 ## build ##
 ``` javascript
