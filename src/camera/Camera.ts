@@ -1,6 +1,4 @@
 import { Mat4, Vec3 } from 'kiwi.matrix';
-import { Frustrum } from '../core/Frustrum';
-
 /**
  * https://juejin.im/post/5a0872d4f265da43062a4156
  * https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-3d-camera.html
@@ -12,22 +10,19 @@ import { Frustrum } from '../core/Frustrum';
  * const uMatrix = projectionMatrix * viewMatrix * objectMatrix
  */
 abstract class Camera {
-    /**
-     * 视角矩阵 
-     */
+    /*** 视角矩阵*/
+    protected _viewMatrix: Mat4;
+    /*** 视角逆矩阵 */
     protected _invertViewMatrix: Mat4;
-    /**
-     * 投影矩阵
-     */
+    /*** 投影矩阵*/
     protected _projectionMatrix: Mat4;
-    /**
-     * 视角投影矩阵
-     */
+    /*** 视角投影矩阵*/
     protected _viewProjectionMatrix: Mat4;
-    /**
-     * 
-     */
+
+    /*** */
     constructor() { }
+
+    abstract set position(v: Vec3);
 
     abstract get position(): Vec3;
 
@@ -35,17 +30,21 @@ abstract class Camera {
 
     abstract get invertViewMatrix(): Mat4;
 
+    abstract get identityMatrix():Mat4;
+
     abstract get projectionMatrix(): Mat4;
 
     abstract get viewProjectionMatrix(): Mat4;
 
-    abstract get target():Vec3;
+    abstract get target(): Vec3;
 
-    abstract get frustrum():Frustrum;
+    abstract get up(): Vec3;
+    /** 视锥参数 */
+    abstract get sseDenominator(): number;
 
-    abstract get up():Vec3;
-    
     abstract lookAt(v: Vec3): void;
+
+    abstract _updateProjectionMatrix(): void;
 }
 
 export { Camera }
