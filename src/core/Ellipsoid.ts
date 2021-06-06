@@ -1,4 +1,4 @@
-import { GeodeticCoordinate } from './GeodeticCoordinate';
+import { GeodeticCoordinate } from '../geo/GeodeticCoord';
 import { GLMatrix, Vec3 } from 'kiwi.matrix';
 import { sin, cos, EPSILON, PHYSICAL_CONSTANT } from '../util/fixed';
 

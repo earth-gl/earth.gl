@@ -3,7 +3,7 @@ import { isString } from '../util/isString';
 import { browser } from '../util/browser';
 import { Ellipsoid } from '../core/Ellipsoid';
 import { Projection, WebMercatorProjection } from '../core/Projection';
-import { GeodeticCoordinate } from '../core/GeodeticCoordinate';
+import { GeodeticCoordinate } from '../geo/GeodeticCoord';
 
 interface IGlobeOption {
     width: number,

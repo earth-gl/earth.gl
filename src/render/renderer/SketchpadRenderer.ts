@@ -9,16 +9,24 @@ import { IRendererOS } from '../IRendererOS';
  */
 class SketchpadRenderer implements IRendererOS {
 
-    /** 全局渲染对象 */
+    /** 
+     * 全局渲染对象 
+     */
     protected _gl: WebGLRenderingContext;
 
-    /** 图层，数据管理 */
+    /** 
+     * 图层，数据管理 
+     */
     protected _skpd: Sketchpad;
 
-    /** canvas 元素 */
+    /** 
+     * canvas 元素 
+     */
     protected _canvas: OffscreenCanvas;
 
-    /** Globe 对象 */
+    /** 
+     * Globe 对象 
+     */
     protected _g: Globe;
 
     /**

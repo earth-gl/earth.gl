@@ -1,8 +1,20 @@
 /**
  * represent position in geographic coordinate system
+ * 
+ *          Z                                          
+ *          |                                          
+ *          |                                          
+ *          |                                          
+ *          |__ __ __ __ __ Y      
+ *         / o                                        
+ *        /                                          
+ *       /                                         
+ *      /                                          
+ *      X                                         
+ * 
  * @class
  */
-class GeodeticCoordinate {
+class GeodeticCoord {
     /**
      * represent in meters
      */
@@ -46,4 +58,4 @@ class GeodeticCoordinate {
     }
 }
 
-export { GeodeticCoordinate }
+export { GeodeticCoord }

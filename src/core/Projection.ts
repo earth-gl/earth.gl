@@ -1,5 +1,5 @@
 import { Ellipsoid } from './Ellipsoid';
-import { GeodeticCoordinate } from "./GeodeticCoordinate";
+import { GeodeticCoordinate } from "../geo/GeodeticCoord";
 import { GLMatrix, Vec3 } from 'kiwi.matrix';
 import { sin, log, atan, exp } from '../util/fixed';
 import { PSEUDOMERCATOR } from './Ellipsoid';
