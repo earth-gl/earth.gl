@@ -1,5 +1,5 @@
 import { Vec3 } from 'kiwi.matrix';
-import { Globe } from './Globe';
+import { Globe } from '../Globe';
 
 declare module './Globe' {
   interface Globe {

@@ -1,8 +1,8 @@
 import { Quat, Vec2, Vec3 } from 'kiwi.matrix';
-import { Globe } from './Globe';
+import { Globe } from '../Globe';
 import { IPoint } from './Globe.Camera'
-import { PAN_EVENTS, IPanEventParam } from './handler/Globe.Handler.Pan';
-import './Globe.Quadtree';
+import { PAN_EVENTS, IPanEventParam } from './Globe.Handler.Pan';
+import '../Globe.Quadtree';
 
 declare module './Globe' {
     interface Globe {

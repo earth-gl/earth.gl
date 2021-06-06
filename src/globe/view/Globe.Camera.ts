@@ -1,9 +1,9 @@
 import { Vec3 } from 'kiwi.matrix';
-import { Globe } from './Globe';
-import { Camera } from '../camera/Camera';
-import { PerspectiveCamera } from '../camera/PerspectiveCamera';
-import { Ray } from '../core/Ray';
-import { GeodeticCoordinate } from '../core/GeodeticCoordinate';
+import { Globe } from '../Globe';
+import { Camera } from '../../camera/Camera';
+import { PerspectiveCamera } from '../../camera/PerspectiveCamera';
+import { Ray } from '../../core/Ray';
+import { GeodeticCoordinate } from '../../core/GeodeticCoordinate';
 /**
  * 地图容器区域信息
  */
